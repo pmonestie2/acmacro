@@ -1,4 +1,5 @@
 import time
+from keyboard_input import send as send_scan_code
 import win32api
 import win32con
 import win32gui
@@ -49,7 +50,12 @@ def normalize_key(k: str) -> int:
 
 
 def _send(vk: int, is_down: bool):
-    """Send a single key event using keybd_event."""
+    """Send game arrows as scan codes; preserve other special-key input."""
+    if vk in EXT_KEYS:
+        scan_code = {win32con.VK_LEFT: 0x4B, win32con.VK_RIGHT: 0x4D,
+                     win32con.VK_UP: 0x48, win32con.VK_DOWN: 0x50}[vk]
+        send_scan_code(scan_code, release=not is_down)
+        return
     flags = 0
     if vk in EXT_KEYS:
         flags |= win32con.KEYEVENTF_EXTENDEDKEY
@@ -64,12 +70,16 @@ def key_press(key: str, delay: float = 0.03):
     vk = normalize_key(key)
     if vk>=0:
         _send(vk, True)
-        SLEEP_FN(delay)
-        _send(vk, False)
+        try:
+            SLEEP_FN(delay)
+        finally:
+            _send(vk, False)
     else:
         pag.keyDown(key, _pause=False)
-        SLEEP_FN(delay)
-        pag.keyUp(key, _pause=False)
+        try:
+            SLEEP_FN(delay)
+        finally:
+            pag.keyUp(key, _pause=False)
 
 def find_window_exact(title_substr: str) -> int:
     """Try to find a window whose title contains `title_substr`."""
