@@ -1,0 +1,11 @@
+# Copy to config_player.txt and edit for the character to run.
+# Slots are numbered 0 through 4 (top to bottom on the character screen).
+[player]
+name = YourCharacter
+player_type = je
+character_slot = 0
+username = YourAccountLogin
+password = REPLACE_ME
+mission_count = 6
+low_job = false
+avoid_pit = false

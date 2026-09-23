@@ -1,4 +1,4 @@
-"""Scan-code input for game arrow keys."""
+"""Scan-code input for game keys."""
 import ctypes
 from ctypes import wintypes
 
@@ -22,8 +22,8 @@ user32 = ctypes.WinDLL('user32', use_last_error=True)
 user32.SendInput.argtypes = [wintypes.UINT, ctypes.POINTER(Input), ctypes.c_int]
 user32.SendInput.restype = wintypes.UINT
 
-def send(scan, release=False):
+def send(scan, release=False, *, extended=True):
     event = Input(type=1, payload=Payload(keyboard=Keyboard(
-        vk=0, scan=scan, flags=0x0008 | 0x0001 | (0x0002 if release else 0))))
+        vk=0, scan=scan, flags=0x0008 | (0x0001 if extended else 0) | (0x0002 if release else 0))))
     if user32.SendInput(1, ctypes.byref(event), ctypes.sizeof(event)) != 1:
         raise ctypes.WinError(ctypes.get_last_error())

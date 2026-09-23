@@ -1,0 +1,21 @@
+[
+  {
+    "object_id": "0x0001873e",
+    "type_id": 1834,
+    "name": "Gas Cloud",
+    "level": 3,
+    "source": "user confirmed currently selected cloud; latest outgoing 0x0017 target is 0x1873e",
+    "processes": [
+      {
+        "Id": 3276,
+        "ProcessName": "client",
+        "started": "2026-09-23T00:12:01.5847065Z"
+      },
+      {
+        "Id": 8656,
+        "ProcessName": "net7proxy",
+        "started": "2026-09-23T00:12:00.0898681Z"
+      }
+    ]
+  }
+]

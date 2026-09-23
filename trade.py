@@ -1,17 +1,20 @@
 import threading
+import argparse
 from ac import AcController, PLAYER
-from macro_context import key_press
+from chatproc import reset_chat, stop_chat
+from player import load_player_config
+from gui import key_press
 from objects import PRASAD_TRADE_OBJ
-from util import log
-from watchdog import RestartException, run_every
+from util import log, log_event, configure_event_log
+from watchdog import RestartException, StopMacro, run_every
 
 
 class TradeRunner:
-    def __init__(self, controller: AcController) -> None:
+    def __init__(self, controller: AcController = None) -> None:
         self.controller = controller
 
     def _test(self, obj, **kwargs) -> bool:
-        return obj.test(offset=(self.controller.offset_x, self.controller.offset_y), **kwargs)
+        return self.controller.test_obj(obj, **kwargs)
 
     def all_somer(self):
         self.controller._yield(5)
@@ -64,10 +67,22 @@ class TradeRunner:
                 log(f"Unknown pos destination {PLAYER.current_position} {PLAYER.current_dest}")
             self.controller._yield(2)
 
-    def run(self):
-        PLAYER.toon_name = "lightt"
-        PLAYER.toon_position = 2
-        run_every(20, AcController("Earth & Beyond").check_chat_response)
+    def run(self, player_settings):
+        PLAYER.configure(player_settings)
+        log_event(f"Trade macro starting for player {PLAYER.toon_name}.")
+        reset_chat(PLAYER.toon_name)
+        chat_event = run_every(20, lambda: self.controller.check_chat_response() if self.controller else None)
+        try:
+            self._run_loop()
+        finally:
+            chat_event.set()
+            stop_chat()
+            if self.controller:
+                self.controller.terminate()
+            chat_event.join()
+            log_event("Trade macro shutdown complete.")
+
+    def _run_loop(self):
         while True:
             try:
                 log(f"start - thread:{threading.current_thread().name}")
@@ -89,4 +104,15 @@ class TradeRunner:
 
 
 if __name__ == "__main__":
-    TradeRunner().run()
+    configure_event_log()
+    parser = argparse.ArgumentParser(description="Earth & Beyond trade macro.")
+    parser.add_argument("player_config", help="Player settings file.")
+    args = parser.parse_args()
+    try:
+        settings = load_player_config(args.player_config)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    try:
+        TradeRunner().run(settings)
+    except StopMacro as exc:
+        log_event(str(exc))

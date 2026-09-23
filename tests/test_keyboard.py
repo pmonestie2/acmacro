@@ -2,7 +2,7 @@ import ctypes
 import sys
 from pathlib import Path
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import gui
@@ -41,11 +41,30 @@ class KeyboardTests(unittest.TestCase):
                 gui.key_press('left', 1)
             sleep.assert_not_called()
 
+    def test_space_scan_code_is_not_extended(self):
+        with patch.object(keyboard_input.user32, 'SendInput', side_effect=self.capture_event):
+            keyboard_input.send(0x39, extended=False)
+            keyboard_input.send(0x39, release=True, extended=False)
+        self.assertEqual(self.events, [(1, 0, 0x39, 8), (1, 0, 0x39, 10)])
+
     def test_forward_keeps_pyautogui_method(self):
         with patch('gui.pag.keyDown') as down, patch('gui.pag.keyUp') as up, patch('gui.SLEEP_FN'):
             gui.key_press('a', 2)
             down.assert_called_once_with('a', _pause=False)
             up.assert_called_once_with('a', _pause=False)
+
+    def test_keys_use_pyautogui_and_release_on_interruption(self):
+        cases = [('space', 'space'), ('SPACE', 'space'), ('{SPACE}', 'space'),
+                 (' ', 'space'), ('ENTER', 'enter'), ('{RETURN}', 'enter'),
+                 ('{ESC}', 'esc'), ('escape', 'esc'), ('{TAB}', 'tab'),
+                 ('F1', 'f1'), ('a', 'a'), ('A', 'A'), ('!', '!'), ('{', '{')]
+        for key, expected in cases:
+            with self.subTest(key=key), patch('gui.pag.keyDown') as down, patch('gui.pag.keyUp') as up, patch('gui.send_scan_code') as special, patch('gui.SLEEP_FN', side_effect=KeyboardInterrupt):
+                with self.assertRaises(KeyboardInterrupt):
+                    gui.key_press(key, 0.2)
+                down.assert_called_once_with(expected, _pause=False)
+                up.assert_called_once_with(expected, _pause=False)
+                special.assert_not_called()
 
 
 if __name__ == '__main__':

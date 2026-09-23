@@ -6,7 +6,7 @@ import time
 import os
 import sys
 
-from util import log
+from util import log, log_event
 
 # Globals that coordinate between threads
 
@@ -15,8 +15,29 @@ from util import log
 class RestartException(Exception):
     pass
 
+
+class StopMacro(Exception):
+    """A final stop request; must never be treated as a relogin/restart."""
+
+
+class GameWindowLost(RuntimeError):
+    """The game disappeared during an operation; the runner must relogin."""
+
+
+class GameUnresponsive(RuntimeError):
+    """The game did not acknowledge a readiness check; kill and relogin."""
+
+
+class RepeatingTask(threading.Event):
+    """A stop event whose worker can be drained before COM/process shutdown."""
+
+    def join(self, timeout=None):
+        if self.thread is not threading.current_thread():
+            self.thread.join(timeout)
+
 _interrupt_queue: queue.Queue[Callable[[], None]] = queue.Queue()
-_lock = threading.Lock()
+_lock = threading.RLock()
+_processing = False
 
 def request_interrupt(action: Callable[[], None]) -> None:
     """
@@ -27,23 +48,35 @@ def request_interrupt(action: Callable[[], None]) -> None:
     _interrupt_queue.put(action)
 
 def run_interrupts() -> None:
-    global _interrupt_queue
-    if _interrupt_queue.qsize()>0:
+    global _processing
+    with _lock:
+        if _processing:
+            return
+        _processing = True
+    try:
+        while True:
+            try:
+                action = _interrupt_queue.get_nowait()
+            except queue.Empty:
+                break
+            action()
+    finally:
         with _lock:
-            while _interrupt_queue.qsize() > 0:
-                # get a lock so we don't run_every thread while we're processing
-                action = _interrupt_queue.get()
-                action()
+            _processing = False
 
-def run_every(seconds: float, action: Callable[[], None]) -> threading.Event:
-    _stop = threading.Event()
+def run_every(seconds: float, action: Callable[[], None]) -> RepeatingTask:
+    _stop = RepeatingTask()
     def _run_every(seconds: float, action: Callable[[], None]) -> None:
         log(f"run_every thread started: {threading.current_thread().name} method {action}")
-        while not _stop.is_set():
-            _stop.wait(seconds)
-            with _lock:
+        while not _stop.wait(seconds):
+            if _stop.is_set():
+                break
+            try:
                 action()
-    threading.Thread(target=lambda: _run_every(seconds, action), daemon=True).start()
+            except Exception as exc:
+                log_event(f"Scheduled check failed: {exc}")
+    _stop.thread = threading.Thread(target=lambda: _run_every(seconds, action), daemon=True)
+    _stop.thread.start()
     return _stop
 
 def restart_script():

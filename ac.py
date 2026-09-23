@@ -15,15 +15,22 @@ import threading
 import time
 from typing import Callable, List, Optional, Tuple
 
+from gui import bring_to_front_exact, find_window_exact, key_press, client_geometry
+from PIL import Image
 import pyautogui as pag
 import win32gui
 
-from chatproc import read_chat_internal
-from gui import bring_to_front_exact, find_window_exact, key_press
+from chatproc import (
+    begin_chat, chat_ready, read_chat_internal, next_reply, reply_decision, reply_sent, suspend_chat, stop_chat,
+)
+from chat_audit import log_interaction
+
+from config import SERVER_IP, GAME_CLIENT, net7_proxy
 from objects import *
-from util import log, log_every
-from watchdog import RestartException, request_interrupt, run_every, run_interrupts
+from util import log, log_every, log_event
+from watchdog import GameWindowLost, GameUnresponsive, RestartException, StopMacro, request_interrupt, run_every, run_interrupts
 import memory
+from player import Player, PLAYER
 
 pag.PAUSE = 0.03
 
@@ -32,31 +39,10 @@ SLOT_POS = [50, 90, 130, 170, 196]
 POS_CHANGE_TIME = 300
 STUCK_TIMEOUT = 1500
 RELOGIN_TIME = 90
+MAX_RELOGINS = 3
+RELOGIN_WINDOW = 10 * 60
 
 
-class Player:
-    def __init__(self) -> None:
-        self.toon_name = "lightje"
-        self.type_ = "je"
-        self.toon_position = 0
-        self.password = "tolp101"
-        self.current_position = "earth"
-        self.previous_position = "earthP"
-        self.current_dest = "earth"
-        self.relogin_time = time.time()
-        self.mission_count = 6
-        self.set_time = time.time()
-
-    def set_pos(self, pos: Optional[str]) -> None:
-        if not pos:
-            return
-        self.previous_position = self.current_position
-        self.current_position = pos
-        if self.previous_position != pos:
-            self.set_time = time.time()
-
-
-PLAYER = Player()
 _CHECK_PROGRESS_LOCK = threading.Lock()
 
 
@@ -68,8 +54,19 @@ class AcController:
         self.player = PLAYER
         self.offset_x = 0
         self.offset_y = 0
+        self.window = None
         self.init_window()
-        self.schedule_event:Optional[threading.Event]
+        self.schedule_event: Optional[threading.Event] = None
+        self.relogin_attempts = 0
+        self._last_progress_version = self.player.progress_version
+        self._relogin_times = deque()
+        self._logging_in = False
+        self._restart_pending = False
+        self._reply_pending = False
+        self._chat_stop = None
+        self._stopping = False
+        self._progress_generation = 0
+        self._terminated = False
 
     def init_window(self) -> None:
         self.window = find_window_exact(self.window_name)
@@ -80,18 +77,44 @@ class AcController:
                 left, top = win32gui.ClientToScreen(hwnd, (0, 0))
                 self.offset_x, self.offset_y = left, top
                 log(f"rect:{left, top}")
-            except Exception:
+            except win32gui.error:
+                if not win32gui.IsWindow(hwnd):
+                    self.window = None
+                else:
+                    raise
                 self.offset_x = 0
                 self.offset_y = 0
         log(f"AcController initialized for window '{self.window_name}' with offset ({self.offset_x}, {self.offset_y})")
 
     # --- coordinate translation ---
-    def translate(self, x: int, y: int) -> Tuple[int, int]:
-        return x + self.offset_x, y + self.offset_y
+    def require_window(self) -> None:
+        if not self.window or not win32gui.IsWindow(self.window):
+            self.init_window()
+        if not self.window:
+            raise GameWindowLost(f"{self.window_name} window disappeared.")
 
-    def test_obj(self, obj:ActoolObject, screenshot=None) -> bool:
-        """Run ActoolObject.test with controller offset applied."""
-        return obj.test(offset=(self.offset_x, self.offset_y), screenshot=screenshot)
+    def refresh_offset(self) -> None:
+        self.require_window()
+        try:
+            self.client_size, self.screen_size, origin = client_geometry(self.window)
+        except (win32gui.error, RuntimeError):
+            # It can close between the IsWindow check and GetClientRect/ClientToScreen.
+            if not win32gui.IsWindow(self.window):
+                self.window = None
+                raise GameWindowLost(f"{self.window_name} window disappeared while reading its geometry.") from None
+            raise
+        self.offset_x, self.offset_y = origin
+
+    def translate(self, x: int, y: int) -> Tuple[int, int]:
+        self.refresh_offset()
+        sx = self.screen_size[0] / self.client_size[0]
+        sy = self.screen_size[1] / self.client_size[1]
+        return round(x * sx) + self.offset_x, round(y * sy) + self.offset_y
+
+    def test_obj(self, obj:ActoolObject, screenshot=None, **kwargs) -> bool:
+        """Test against a screenshot in game coordinates, excluding window borders."""
+        screenshot = self.screenshot() if screenshot is None else screenshot
+        return obj.test(screenshot=screenshot, **kwargs)
 
     # --- pyautogui wrappers ---
 
@@ -109,7 +132,11 @@ class AcController:
         pag.click()
 
     def screenshot(self):
-        return pag.screenshot()
+        self.refresh_offset()
+        image = pag.screenshot(region=(self.offset_x, self.offset_y, *self.screen_size))
+        if image.size != self.client_size:
+            image = image.resize(self.client_size, Image.Resampling.NEAREST)
+        return image
 
     def typewrite(self, text: str, interval: float = 0.02) -> None:
         pag.typewrite(text, interval=interval)
@@ -128,6 +155,12 @@ class AcController:
             target = current + seconds
             while current < target:
                 time.sleep(_incr)
+                # A STOP can arrive while a login interrupt is already running.
+                # Check it directly so it need not wait for that interrupt to finish.
+                if self._chat_stop and not self._stopping:
+                    self._stop_for_chat()
+                if not self._logging_in and not self._terminated:
+                    self.require_window()
                 run_interrupts()
                 current += _incr
 
@@ -151,8 +184,11 @@ class AcController:
 
     # --- game helpers ---
     def sbreset(self, value: int) -> None:
-        memory.setmemory_u32_active(0x00BDBB80, 0)
-        memory.setmemory_u32_active(0x00BDB1C0, value)
+        if not self.bring_to_front():
+            self.require_window()
+            raise RuntimeError("Cannot focus the game for starbase reset.")
+        memory.setmemory_u32_window(self.window, 0x00BDBB80, 0)
+        memory.setmemory_u32_window(self.window, 0x00BDB1C0, value)
         self.say("/starbase reset")
         self._yield(1)
 
@@ -697,63 +733,178 @@ class AcController:
         self._yield(1)
 
     def killenb(self):
+        log_event("Closing game and Net-7 processes.")
         subprocess.run(["taskkill", "/F", "/IM", "net7proxy.exe"], check=False)
         subprocess.run(["taskkill", "/F", "/IM", "client.exe"], check=False)
         subprocess.run(["taskkill", "/F", "/IM", "LaunchNet7.exe"], check=False)
         self._yield(3)
 
     def launchEnb(self):
-        subprocess.Popen(r"C:\\MACROS\\startenb.bat", shell=True)
+        proxy = net7_proxy()
+        if not GAME_CLIENT.is_file():
+            raise FileNotFoundError(f"Cannot find the game client: {GAME_CLIENT}. Set ENB_CLIENT to its full path.")
+        log_event("Launching game through Net-7.")
+        return subprocess.Popen(
+            [str(proxy), f"/ADDRESS:{SERVER_IP}", f"/CLIENT:{GAME_CLIENT}", "/SSL:443", "/POPT"],
+            cwd=proxy.parent,
+        )
 
     def init_read_chat(self):
-        if self.bring_to_front():
-            txt = f"/t {self.player.toon_name} hello_{random.randint(1000,9999)}_{random.randint(200,9999)}"
-            self.say(txt)
-            log(f"init read chat: sent {txt}")
-        else:
-            log("init read chat: bring to front failed")
+        if not self.bring_to_front():
+            self.require_window()
+            raise RuntimeError("Cannot focus the game to initialize chat.")
+        marker = begin_chat()
+        self.say(f"/t {self.player.toon_name} {marker}")
+        log_event(f"Chat session armed; waiting for marker {marker} in chat.log.")
+        deadline = time.monotonic() + 60
+        while not chat_ready():
+            self.check_chat_response()
+            self._yield(0.5)
+            if time.monotonic() >= deadline and not chat_ready():
+                raise GameUnresponsive("Chat startup marker not found within 60 seconds; game may be frozen.")
 
     def check_chat_response(self):
         log_every("chat_response", f"checking chat response thread={threading.current_thread().name}", interval=150.0)
-        response = read_chat_internal()
-        if response:
-            sp = response.split("__")
-            if len(sp) >= 2 and (len(sp[1]) > 1 or sp[0].strip() == "1"):
-                def answer_fn():
-                    log(f"chat response: {response} thread={threading.current_thread().name}")
-                    if len(sp) >= 2:
-                        msg = sp[1]
-                        cmd = sp[0].strip()
-                        if len(msg) > 1:
-                            key_press("r")
-                            self._yield(0.2)
-                            self.say(msg)
-                        if cmd == "1":
-                            self.killenb()
-                            sys.exit(0)
-                request_interrupt(answer_fn)
+        read_chat_internal()
+        with _CHECK_PROGRESS_LOCK:
+            if self._stopping or self._chat_stop or (self._terminated and not self._logging_in) or self._reply_pending:
+                return
+            reply = next_reply()
+            if not reply:
+                return
+            decision = reply_decision(reply)
+            if decision is None:
+                return
+            if decision.action == "STOP":
+                self._chat_stop = (reply, decision)
+                request_interrupt(self._stop_for_chat)
+                return
+            if self._logging_in or not chat_ready():
+                return
+            self._reply_pending = True
 
-    def relogin(self):
-        log("---------------LOGIN CALLED----------------")
+        def answer_fn():
+            try:
+                while not self._terminated and not self._logging_in and chat_ready():
+                    reply = next_reply()
+                    if not reply:
+                        return
+                    decision = reply_decision(reply)
+                    if decision is None:
+                        return
+                    if decision.action == "STOP":
+                        self._chat_stop = (reply, decision)
+                        self._stop_for_chat()
+                    if not self.bring_to_front():
+                        return
+                    sender = reply[0]
+                    self.say(f"/t {sender} {decision.response}")
+                    reply_sent(reply, decision.response)
+                    log_interaction(self.player.toon_name, reply, decision, response_sent=True)
+                    log_event(f"Chat reply to {sender}: action={decision.action}; response={decision.response}")
+            finally:
+                with _CHECK_PROGRESS_LOCK:
+                    self._reply_pending = False
+        request_interrupt(answer_fn)
+
+    def _stop_for_chat(self):
+        if self._stopping or not self._chat_stop:
+            return
+        self._stopping = True
+        reply, decision = self._chat_stop
+        log_event(f"Chat action STOP from {reply[0]}; response={decision.response}")
+        self.terminate()
+        stop_chat()
+        sent, closed, errors = False, False, []
+        try:
+            if decision.response and not self._logging_in and chat_ready() and self.bring_to_front():
+                self.say(f"/t {reply[0]} {decision.response}")
+                sent = True
+                reply_sent(reply, decision.response)
+        except (Exception, KeyboardInterrupt) as exc:
+            errors.append(f"Reply send failed: {type(exc).__name__}")
+        finally:
+            try:
+                self.killenb()
+                closed = not bool(find_window_exact(self.window_name))
+                if not closed:
+                    errors.append("Game window remains after close request")
+            except (Exception, KeyboardInterrupt) as exc:
+                errors.append(f"Game close failed: {type(exc).__name__}")
+            try:
+                log_interaction(self.player.toon_name, reply, decision, response_sent=sent,
+                                game_closed=closed, error="; ".join(errors) or None)
+            except OSError as exc:
+                errors.append(f"Interaction log write failed: {type(exc).__name__}")
+            reason = f"Chat action STOP from {reply[0]}; macro stopped."
+            if errors:
+                reason += " " + "; ".join(errors)
+            raise StopMacro(reason)
+
+    def relogin(self, initial=False):
+        with _CHECK_PROGRESS_LOCK:
+            if self._logging_in:
+                return
+            self._logging_in = True
+        self.terminate()
+        suspend_chat()
+        try:
+            self._login(initial)
+            self.player.relogin_time = self.player.set_time = time.time()
+        finally:
+            with _CHECK_PROGRESS_LOCK:
+                self._logging_in = False
+
+    def _record_relogin(self):
+        if self.player.progress_version != self._last_progress_version:
+            self.relogin_attempts = 0
+            self._last_progress_version = self.player.progress_version
+        now = time.monotonic()
+        while self._relogin_times and now - self._relogin_times[0] >= RELOGIN_WINDOW:
+            self._relogin_times.popleft()
+        if self.relogin_attempts >= MAX_RELOGINS or len(self._relogin_times) >= MAX_RELOGINS:
+            reason = "since last progress" if self.relogin_attempts >= MAX_RELOGINS else "within 10 minutes"
+            log_event(f"Relogin limit reached: {MAX_RELOGINS} attempts {reason}; closing game and stopping macro.")
+            self.killenb()
+            raise RuntimeError(f"Relogin limit reached ({MAX_RELOGINS} attempts {reason}). Game closed; Pluto aborted.")
+        self.relogin_attempts += 1
+        self._relogin_times.append(now)
+
+    def enter_login_credentials(self):
+        if not self.bring_to_front():
+            self.require_window()
+            raise RuntimeError("Cannot focus Earth & Beyond to enter login credentials.")
+        self.lclick(300, 190, yield_time=1)
+        self.typewrite(self.player.username)
+        self.lclick(300, 245, yield_time=1)
+        self.typewrite(self.player.password)
+        key_press("enter")
+
+    def _login(self, initial=False):
+        log_event(f"{'Login' if initial else 'Relogin'} started for {self.player.toon_name}")
         attempt = 0
-        self.say("/quit")
-        self._yield(3)
+        if self.bring_to_front():
+            self.say("/quit")
+            self._yield(3)
         while True:
+            if not (initial and attempt == 0):
+                self._record_relogin()
             attempt += 1
-            log(f"logging attempt:{attempt}")
+            log_event(f"Login attempt {attempt}; relogins since progress {self.relogin_attempts}/{MAX_RELOGINS}; in 10 minutes {len(self._relogin_times)}/{MAX_RELOGINS}")
             self.killenb()
             self.launchEnb()
             self._yield(10)
-            self.bring_to_front()
-            key_press("space")
+            if not self.bring_to_front():
+                self.require_window()
+                raise RuntimeError("Cannot focus Earth & Beyond after launch.")
+            key_press("space", 0.2)
             self._yield(10)
-            self.bring_to_front()
-            key_press("space")
+            if not self.bring_to_front():
+                self.require_window()
+                raise RuntimeError("Cannot focus Earth & Beyond during login.")
+            key_press("space", 0.2)
             self._yield(12)
-            self.init_window()
-            for ch in self.player.password:
-                key_press(ch)
-            key_press("enter")
+            self.enter_login_credentials()
             self._yield(10)
             self.lclick(220, SLOT_POS[self.player.toon_position])
             self._yield(7)
@@ -782,29 +933,27 @@ class AcController:
             self.killenb()
         else:
             self.player.relogin_time = time.time()
-        log("relogin done")
+        log_event(f"Login completed for {self.player.toon_name}")
 
     def bring_to_front(self) -> bool:
-        return bring_to_front_exact("Earth & Beyond")
+        focused = bring_to_front_exact(self.window_name)
+        if focused:
+            self.init_window()
+        return focused
 
     def check_game_progress(self):
         if not _CHECK_PROGRESS_LOCK.acquire(blocking=False):
             log("check_game_progress already running, skipping")
             return
 
-        def restart_handler():
-            log(f"RESTART ALL due to pos not changed - thread:{threading.current_thread().name} - PLAYER:{PLAYER}")
-            self.relogin()
-            log("relogin done, raising RestartException")
-            raise RestartException("request restart as relogin")
-
         try:
+            if self._terminated or self._logging_in or self._restart_pending:
+                return
             hwnd = find_window_exact(self.window_name)
             start = time.time()
             
             has_changed_pos = self.player.set_time + POS_CHANGE_TIME > start
             was_relog = self.player.relogin_time + RELOGIN_TIME > start
-            self.player.relogin = False
             since_set = start - self.player.set_time
             since_relog = start - self.player.relogin_time
             log_every(
@@ -815,23 +964,34 @@ class AcController:
                 interval=60.0,
             )
             
-            if not hwnd:
-                log("no hwnd found - relogin")
-                request_interrupt(restart_handler)
-            if was_relog:
+            if hwnd and (was_relog or has_changed_pos):
                 return
-            if not has_changed_pos:
-                log(f"position not changed or no window- relogin: win={hwnd} change_pos={has_changed_pos} relogin={was_relog}")
-                request_interrupt(restart_handler)
+            self._restart_pending = True
+            generation = self._progress_generation
+
+            def restart_handler():
+                if self._terminated or generation != self._progress_generation:
+                    return
+                log_event("Restarting: game window missing or no progress detected.")
+                self.relogin()
+                raise RestartException("request restart after relogin")
+
+            request_interrupt(restart_handler)
         finally:
             _CHECK_PROGRESS_LOCK.release()
 
     def schedule_check_game_progress(self) -> None:
+        self.terminate()
+        self._terminated = False
         self.schedule_event = run_every(30, self.check_game_progress)
 
     def terminate(self) -> None:
-        if self.schedule_event:
-            self.schedule_event.set()
+        with _CHECK_PROGRESS_LOCK:
+            self._terminated = True
+            self._progress_generation += 1
+            self._restart_pending = False
+            if self.schedule_event:
+                self.schedule_event.set()
             
 
     def activateCloack(self):

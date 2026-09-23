@@ -1,10 +1,20 @@
+#expect 1280x768
+
+import argparse
+import ctypes
+from pathlib import Path
+import subprocess
+import sys
 import threading
 import time
 from typing import Callable, Optional
 
-import pyautogui as pag
-
 from ac import AcController, PLAYER
+from chatproc import require_admin, reset_chat, stop_chat, suspend_chat
+from chat_reply import codex_executable
+from config import CHAT_LOG_PATH, CHAT_PROMPT_PATH, CHAT_INTERACTION_LOG, WINDOW_TITLE, net7_proxy
+from player import load_player_config
+import pyautogui as pag
 from gui import key_press
 from objects import (
     CHARON_MONSTER_OBJ,
@@ -24,18 +34,19 @@ from objects import (
     PLUTO_TRADE_OBJ,
     TRADE_OPEN_OBJ,
 )
-from util import log
-from watchdog import RestartException, run_every
+from util import log, log_event, configure_event_log
+from watchdog import GameWindowLost, GameUnresponsive, RestartException, StopMacro, run_every
 
 
 class PlutoRunner:
-    def __init__(self, low_job: bool = False, avoid_pit: bool = False) -> None:
+    def __init__(self, player_settings=None, low_job=None, avoid_pit=None) -> None:
         self.controller:Optional[AcController] = None
-        self.low_job = low_job
-        self.avoid_pit = avoid_pit
+        self.player_settings = player_settings
+        self.low_job = low_job if low_job is not None else bool(player_settings and player_settings.low_job)
+        self.avoid_pit = avoid_pit if avoid_pit is not None else bool(player_settings and player_settings.avoid_pit)
 
     def _test(self, obj, **kwargs) -> bool:
-        return obj.test(offset=(self.controller.offset_x, self.controller.offset_y), **kwargs)
+        return self.controller.test_obj(obj, **kwargs)
 
     def walk_job(self):
         self.controller.sbreset(739690)
@@ -58,7 +69,7 @@ class PlutoRunner:
 
     def is_good_low_job(self) -> bool:
         self.controller._yield(2)
-        sc = pag.screenshot()
+        sc = self.controller.screenshot()
         return (
             self._test(LOWJOB1_OBJ, screenshot=sc)
             or self._test(LOWJOB2_OBJ, screenshot=sc)
@@ -68,12 +79,12 @@ class PlutoRunner:
 
     def is_good_job(self) -> bool:
         self.controller._yield(2)
-        sc = pag.screenshot()
+        sc = self.controller.screenshot()
         return self._test(JOB1_OBJ, screenshot=sc) or self._test(JOB2_OBJ, screenshot=sc)
 
     def is_pit_job(self) -> bool:
         self.controller._yield(1)
-        sc = pag.screenshot()
+        sc = self.controller.screenshot()
         return (
             self._test(CHARON_PIT_OBJ, screenshot=sc)
             or self._test(CHARON_PIT1_OBJ, screenshot=sc)
@@ -130,7 +141,7 @@ class PlutoRunner:
 
         log(f"pickJob finished with {mc_real} jobs")
 
-    def pickBatchJob(self, check_job_fn: Callable[[], None]):
+    def pickBatchJob(self, check_job_fn: Callable[[], bool]):
         pc_start = 327
         for page in range(2):
             pc = pc_start
@@ -294,31 +305,142 @@ class PlutoRunner:
         PLAYER.current_dest = "earth"
 
     def run(self):
-        PLAYER.toon_name = "lightt"
-        PLAYER.toon_position = 2
-        PLAYER.mission_count = 6
-        PLAYER.type_ = "te"
-        run_every(20, AcController("Earth & Beyond").check_chat_response)
+        if self.player_settings is None:
+            raise ValueError("Pass a player configuration file to pluto.py")
+        PLAYER.configure(self.player_settings)
+        log_event(f"Pluto starting for player {PLAYER.toon_name} (type {PLAYER.type_}).")
+        require_admin()
+        self.chat_event = None
+        try:
+            reset_chat(PLAYER.toon_name)
+            self._run_loop()
+        finally:
+            # Prevent new COM reads, then drain any poll already in progress.
+            if self.chat_event:
+                self.chat_event.set()
+            if self.controller:
+                self.controller.terminate()
+            stop_chat()
+            if self.chat_event:
+                self.chat_event.join()
+            log_event("Pluto shutdown complete; background chat polling stopped.")
+
+    def _run_loop(self):
+        self.controller = AcController(WINDOW_TITLE)
+        self.chat_event = run_every(20, self.controller.check_chat_response)
+        initial = not self.controller.window
+        recover = False
         while True:
             try:
                 log(f"start - thread:{threading.current_thread().name}")
-                if self.controller:
-                    log("Terminate previous controller")
-                    self.controller.terminate()
-                self.controller = AcController("Earth & Beyond")
-                self.controller.bring_to_front()
-                self.controller._yield(7)
-                self.controller.check_game_progress()
+                self.controller.init_window()
+                if recover or not self.controller.window:
+                    log_event("Restarting game and logging in." if recover else "Game is not open; launching and logging in.")
+                    cold_start, initial = initial, False
+                    self.controller.relogin(initial=cold_start)
+                    recover = False
+                initial = False
+                if not self.controller.bring_to_front():
+                    self.controller.require_window()
+                    raise RuntimeError("Cannot focus Earth & Beyond. Make the game's desktop available and try again.")
+                self.controller.refresh_offset()
+                log(f"Game resolution: {self.controller.client_size}; physical pixels: {self.controller.screen_size}")
+                self.controller._terminated = False
                 self.controller.init_read_chat()
+                self.controller.check_chat_response()
+                self.controller._yield(0.1)
                 self.controller.schedule_check_game_progress()
                 self.find_dir()
-                PLAYER.set_pos(self.controller.get_current_position())
+                position = self.controller.get_current_position()
+                if position is None:
+                    raise RuntimeError("Could not recognize the current sector/station. Check the game view and resolution.")
+                # Recognizing our location after login is not route progress.
+                PLAYER.set_pos(position, progress=False)
                 self.route()
+            except (GameWindowLost, GameUnresponsive) as exc:
+                self.controller.terminate()
+                suspend_chat()
+                log_event(f"{exc} Recovering through relogin.")
+                # Keep this controller, its retry counters, and all queued chat/history.
+                # Consume the cold-start exemption even if the first login crashed.
+                recover, initial = True, False
+                continue
             except RestartException as re:
-                log(f"main caught RESTART exception: {re}")
+                log_event(f"main caught RESTART exception: {re}")
                 continue
 
 
+def request_elevation(argv):
+    """Relaunch this script with UAC, preserving the interpreter and arguments."""
+    script = Path(__file__).resolve().with_name("pluto_console.py")
+    execute = ctypes.windll.shell32.ShellExecuteW
+    execute.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_wchar_p,
+                       ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_int]
+    execute.restype = ctypes.c_void_p
+    result = execute(None, "runas", sys.executable,
+                     subprocess.list2cmdline([str(script), *argv]), str(script.parent), 1)
+    if not result or result <= 32:
+        print("Administrator launch was cancelled or failed. Accept the Windows UAC prompt to run Pluto.", file=sys.stderr)
+        return 1
+    print("Administrator launch requested. The new console will stay open to show any startup error.")
+    return 0
+
+
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    parser = argparse.ArgumentParser(description="Earth & Beyond Pluto job macro.")
+    parser.add_argument("player_config", type=Path, help="Player settings file, e.g. config_player.txt.")
+    parser.add_argument("--check", action="store_true", help="Check installation without sending game input.")
+    parser.add_argument("--low-job", action="store_true", default=None, help="Override config to select low-level jobs.")
+    parser.add_argument("--avoid-pit", action="store_true", default=None, help="Override config to skip Charon pit jobs.")
+    args = parser.parse_args(argv)
+    config_path = args.player_config.expanduser().resolve()
+    try:
+        settings = load_player_config(config_path)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    if args.check:
+        print(f"Player config: {config_path}")
+        print(f"Player: {settings.name}; type: {settings.player_type}; slot: {settings.character_slot}")
+        print(f"Python: {sys.executable}")
+        print(f"Net-7 proxy: {net7_proxy()}")
+        print("Imports and dependencies: OK")
+        print(f"Chat log: {CHAT_LOG_PATH} (VSS reading requires administrator access)")
+        print(f"Chat replies: {codex_executable()} (uses saved Codex login)")
+        if not CHAT_PROMPT_PATH.read_text(encoding="utf-8-sig").strip():
+            raise ValueError("chat_prompt.txt is empty")
+        print(f"Editable chat prompt: {CHAT_PROMPT_PATH}")
+        print(f"Interaction log: {CHAT_INTERACTION_LOG}")
+        controller = AcController(WINDOW_TITLE)
+        if controller.window:
+            controller.refresh_offset()
+            print(f"Game resolution: {controller.client_size[0]} x {controller.client_size[1]}")
+            print(f"Physical screen pixels: {controller.screen_size[0]} x {controller.screen_size[1]}")
+            print(f"Client origin: {controller.offset_x}, {controller.offset_y}")
+        else:
+            print("Game window: not open. Pluto will launch it and log in when started.")
+        return 0
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        # UAC changes the working directory. Preserve the selected file as an absolute path.
+        elevated_args = [str(config_path)]
+        if args.low_job:
+            elevated_args.append("--low-job")
+        if args.avoid_pit:
+            elevated_args.append("--avoid-pit")
+        return request_elevation(elevated_args)
+    try:
+        PlutoRunner(settings, low_job=args.low_job, avoid_pit=args.avoid_pit).run()
+    except StopMacro as exc:
+        log_event(str(exc))
+    except (KeyboardInterrupt, pag.FailSafeException):
+        log_event("Pluto stopped by user or mouse failsafe.")
+    except (OSError, RuntimeError) as exc:
+        log_event(f"Cannot run Pluto: {exc}")
+        return 1
+    return 0
+
+
 if __name__ == "__main__":
-    PlutoRunner().run()
+    configure_event_log()
+    raise SystemExit(main())
     

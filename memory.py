@@ -84,6 +84,18 @@ def write_process_memory_u32(h_proc, address: int, value: int) -> None:
     if not ok or n_written.value != len(data):
         raise OSError(ctypes.get_last_error(), "WriteProcessMemory failed")
 
+def setmemory_u32_window(hwnd: int, address: int, value: int) -> None:
+    """Write to the specified game window, regardless of foreground changes."""
+    pid = wintypes.DWORD(0)
+    if not hwnd or not GetWindowThreadProcessId(hwnd, ctypes.byref(pid)):
+        raise RuntimeError("Game window is unavailable")
+    h_proc = open_process(pid.value)
+    try:
+        write_process_memory_u32(h_proc, address, value)
+    finally:
+        CloseHandle(h_proc)
+
+
 def setmemory_u32_active(address: int, value: int) -> None:
     """
     Get PID of active window and write a 32-bit value at address in that process.
