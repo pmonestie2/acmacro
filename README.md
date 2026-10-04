@@ -64,6 +64,12 @@ It appends across runs, flushes each event, and is safe for background-thread
 logging. Routine position/window diagnostics stay in the console. Passwords are
 not logged. The separate chat_interactions.log retains detailed interaction records.
 
+Pluto saves a timestamped UI screenshot in `diagnostics/` on runtime errors and
+before recovering from a lost or unresponsive game. The path and error appear in
+`macro.log`. Captures use native game-client pixels, or the desktop if the game
+window is unavailable; visible chat or login details may appear. Existing captures
+are kept and excluded from Git. Normal stops and the mouse failsafe do not capture.
+
 config.py contains the server IP, chat-log path and Codex reply settings.
 NET7_PROXY, ENB_CLIENT and ENB_CHAT_LOG environment variables can override executable/log
 paths. Net-7 is discovered in standard installation directories.

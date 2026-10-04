@@ -69,9 +69,12 @@ class StartupTests(unittest.TestCase):
             runner.controller, runner.chat_event = controller, event
             raise RuntimeError("Relogin limit reached")
         with patch("pluto.require_admin"), patch("pluto.reset_chat"), patch("pluto.stop_chat") as stop_chat, \
+             patch("pluto.capture_failure") as capture, \
              patch.object(runner, "_run_loop", side_effect=abort):
             with self.assertRaisesRegex(RuntimeError, "Relogin limit"):
                 runner.run()
+        capture.assert_called_once()
+        self.assertEqual(str(capture.call_args.args[0]), "Relogin limit reached")
         event.set.assert_called_once()
         controller.terminate.assert_called_once()
         stop_chat.assert_called_once()

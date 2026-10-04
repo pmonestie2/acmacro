@@ -5,3 +5,4 @@ __pycache__/
 /config_player.txt
 /config_player_*.txt
 /protocol/captures/
+/diagnostics/

@@ -35,6 +35,7 @@ from objects import (
     TRADE_OPEN_OBJ,
 )
 from util import log, log_event, configure_event_log
+from failure_capture import capture_failure
 from watchdog import GameWindowLost, GameUnresponsive, RestartException, StopMacro, run_every
 
 
@@ -314,6 +315,11 @@ class PlutoRunner:
         try:
             reset_chat(PLAYER.toon_name)
             self._run_loop()
+        except (StopMacro, pag.FailSafeException):
+            raise
+        except Exception as exc:
+            capture_failure(exc)
+            raise
         finally:
             # Prevent new COM reads, then drain any poll already in progress.
             if self.chat_event:
@@ -358,6 +364,7 @@ class PlutoRunner:
                 PLAYER.set_pos(position, progress=False)
                 self.route()
             except (GameWindowLost, GameUnresponsive) as exc:
+                capture_failure(exc)
                 self.controller.terminate()
                 suspend_chat()
                 log_event(f"{exc} Recovering through relogin.")
