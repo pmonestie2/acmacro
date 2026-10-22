@@ -1,0 +1,26 @@
+{
+  "date":"2026-10-09",
+  "method":"Read-only client disassembly and existing packet capture analysis",
+  "inventory_transfer":{
+    "opcode":"0x0027",
+    "client_frame_bytes":28,
+    "observed_udp_bytes":36,
+    "body_fields":["ID","FromInv","FromSlot","ToInv","ToSlot","Num"],
+    "body_encoding":"Six big-endian uint32 fields",
+    "static_serializer":"0x00894e30",
+    "static_diagnostic":"0x00894f70",
+    "observed_count":1083,
+    "interpretation":"Generic inventory transfer. On 2026-10-20, live Earth vendor purchases confirmed source inventory 4 (vendor) to destination inventory 1 (cargo), destination slot 0xffffffff; see vendor_protocol_findings.json. Other inventory mappings and selling remain unverified.",
+    "price_field_present":false
+  },
+  "trade_control":{
+    "opcode":"0x001f",
+    "client_frame_bytes":9,
+    "body_fields":["PartnerID","Type"],
+    "body_encoding":"uint32 little-endian partner ID followed by byte action",
+    "static_serializer":"0x008ab410",
+    "static_diagnostic":"0x008ab500",
+    "observed_count":0,
+    "limitations":"Static client evidence only; action values and live peer-trade exchange have not been verified"
+  }
+}

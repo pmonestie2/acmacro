@@ -142,6 +142,18 @@ Object mission_7   // Test at coords 35, 479
 End
 """)
 
+MISSION_8_OBJ = ActoolObject.from_string("""
+Object mission_8   // Test at coords 35, 479
+  243=5,3|243=6,3|243=7,3|
+  243=4,5|243=8,5|
+  243=5,7|243=6,7|243=7,7|
+  243=3,9|243=9,9|
+  243=4,11|243=8,11|
+  243=5,12|243=6,12|243=7,12|
+  79=6,5|57=6,9|
+End
+""")
+
 MISSION_4_OBJ = ActoolObject.from_string("""
 object mission_4   // Test at coords 35, 481
   75=0,0|77=2,0|80=4,0|84=6,0|
@@ -552,6 +564,7 @@ End
 GATES = {
     "pluto": {
         "akeron": (405, 617),
+        "uranus": (330, 479),
         "charonS": (418, 576),
     },
     "akeron": {

@@ -1,0 +1,10 @@
+# Copy to config_player_lightje.txt and enter this character's own account details.
+[player]
+name = Lightje
+player_type = je
+character_slot = 0
+username = REPLACE_ME
+password = REPLACE_ME
+mission_count = 6
+low_job = false
+avoid_pit = false

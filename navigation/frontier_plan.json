@@ -1,0 +1,178 @@
+{
+  "sector": "Shepard",
+  "origin": {
+    "id": "0x4003c209",
+    "raw_xyz": [
+      -100861.3046875,
+      61710.7109375,
+      -1428.1884765625
+    ],
+    "last_seen": 1791736091.9506364,
+    "historical": false,
+    "map_xyz": [
+      -100.8613046875,
+      61.7107109375,
+      -1.4281884765625
+    ],
+    "age_seconds": 1.4217300415039062
+  },
+  "origin_is_fresh": true,
+  "route": [
+    {
+      "id": "0x000186a9",
+      "name": "Particle Ring 1",
+      "kind": "map_object",
+      "first_seen": 1791736080.6037037,
+      "last_seen": 1791736080.6037037,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -145700.0,
+        26990.0,
+        -1460.0
+      ],
+      "position_seen": 1791736080.6037037,
+      "sector": "Shepard",
+      "type_id": 36645,
+      "object_type": 37,
+      "asset_id": 143,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791736080.6037037,
+      "navigation_source": "0x2018"
+    },
+    {
+      "id": "0x000186a5",
+      "name": "Nav Shepard 4",
+      "kind": "map_object",
+      "first_seen": 1791736088.3026195,
+      "last_seen": 1791736088.3026195,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -75750.0,
+        23860.0,
+        -550.0
+      ],
+      "position_seen": 1791736088.3026195,
+      "sector": "Shepard",
+      "type_id": 36645,
+      "object_type": 37,
+      "asset_id": 143,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791736088.3026195,
+      "navigation_source": "0x2018"
+    }
+  ],
+  "exploration_route": [
+    {
+      "id": "0x000186a9",
+      "name": "Particle Ring 1",
+      "kind": "map_object",
+      "first_seen": 1791736080.6037037,
+      "last_seen": 1791736080.6037037,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -145700.0,
+        26990.0,
+        -1460.0
+      ],
+      "position_seen": 1791736080.6037037,
+      "sector": "Shepard",
+      "type_id": 36645,
+      "object_type": 37,
+      "asset_id": 143,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791736080.6037037,
+      "navigation_source": "0x2018"
+    },
+    {
+      "id": "0x000186a5",
+      "name": "Nav Shepard 4",
+      "kind": "map_object",
+      "first_seen": 1791736088.3026195,
+      "last_seen": 1791736088.3026195,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -75750.0,
+        23860.0,
+        -550.0
+      ],
+      "position_seen": 1791736088.3026195,
+      "sector": "Shepard",
+      "type_id": 36645,
+      "object_type": 37,
+      "asset_id": 143,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791736088.3026195,
+      "navigation_source": "0x2018"
+    }
+  ],
+  "final_gate": null,
+  "excluded_gates": [],
+  "gravity_wells": [],
+  "executable": true,
+  "execution_blocker": null,
+  "blocked": [],
+  "distance_km": 279.21840032608475,
+  "ordering": "shortest route including closest final gate",
+  "legs": [
+    {
+      "names": [
+        "Particle Ring 1",
+        "Nav Shepard 4"
+      ],
+      "via": [
+        "0x000186a9"
+      ],
+      "destination": "0x000186a5"
+    }
+  ],
+  "caution": "Only observed hazards are known. Recheck live contacts and discovery before each leg; do not click gate entry.",
+  "proxy_session": "7932_2026-10-11T14:53:45.1917877Z",
+  "generated": 1791736095.5219517,
+  "finishing_gate": {
+    "id": "0x000186a1",
+    "name": "Sector Gate to Carpenter",
+    "kind": "map_object",
+    "first_seen": 1791735909.4933827,
+    "last_seen": 1791735909.4933827,
+    "historical": false,
+    "removal_observed": false,
+    "raw_xyz": [
+      -76400.0,
+      176340.0,
+      0.0
+    ],
+    "position_seen": 1791735909.4933827,
+    "sector": "Shepard",
+    "type_id": 12299,
+    "object_type": 11,
+    "asset_id": 48,
+    "navigation_flags": 50,
+    "navigation_present": true,
+    "visited": true,
+    "nav_type": 2,
+    "is_huge": false,
+    "navigation_seen": 1791735909.4933827,
+    "navigation_source": "0x0099",
+    "signature": 65000.0
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "sector": "Uranus",
+  "origin": {
+    "id": "0x4003c204",
+    "raw_xyz": [
+      30064.630859375,
+      -48658.41796875,
+      0.0
+    ],
+    "last_seen": 1791832991.6866095,
+    "historical": false,
+    "map_xyz": [
+      30.064630859375,
+      -48.65841796875,
+      0.0
+    ],
+    "age_seconds": 0.08499956130981445
+  },
+  "origin_is_fresh": true,
+  "route": [
+    {
+      "id": "0x000186a6",
+      "name": "Saturn Way 3",
+      "kind": "map_object",
+      "first_seen": 1791832978.0682402,
+      "last_seen": 1791832978.0682402,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -25900.69921875,
+        -36194.69921875,
+        0.0
+      ],
+      "position_seen": 1791832978.0682402,
+      "sector": "Uranus",
+      "type_id": 36389,
+      "object_type": 37,
+      "asset_id": 142,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791832978.0682402,
+      "navigation_source": "0x2018"
+    }
+  ],
+  "exploration_route": [
+    {
+      "id": "0x000186a6",
+      "name": "Saturn Way 3",
+      "kind": "map_object",
+      "first_seen": 1791832978.0682402,
+      "last_seen": 1791832978.0682402,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -25900.69921875,
+        -36194.69921875,
+        0.0
+      ],
+      "position_seen": 1791832978.0682402,
+      "sector": "Uranus",
+      "type_id": 36389,
+      "object_type": 37,
+      "asset_id": 142,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791832978.0682402,
+      "navigation_source": "0x2018"
+    }
+  ],
+  "final_gate": null,
+  "excluded_gates": [],
+  "gravity_wells": [],
+  "executable": false,
+  "execution_blocker": "No gate with verified navigation coordinates is available",
+  "blocked": [],
+  "distance_km": 57.3363973042655,
+  "ordering": "shortest route including closest final gate",
+  "legs": [
+    {
+      "names": [
+        "Saturn Way 3"
+      ],
+      "via": [],
+      "destination": "0x000186a6"
+    }
+  ],
+  "caution": "Only observed hazards are known. Recheck live contacts and discovery before each leg; do not click gate entry.",
+  "deferred_destination_only": [],
+  "proxy_session": "4812_2026-10-12T19:05:02.8647394Z",
+  "generated": 1791832995.7268026
+}

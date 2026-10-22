@@ -1,0 +1,118 @@
+{
+  "proxy_session": "7932_2026-10-11T14:53:45.1917877Z",
+  "sector": "Earth",
+  "generated": 1791732120.378477,
+  "route": [
+    {
+      "id": "0x000186ac",
+      "name": "GETCo 1",
+      "kind": "map_object",
+      "first_seen": 1791731331.632469,
+      "last_seen": 1791731331.632469,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -47500.0,
+        12790.0,
+        -2000.0
+      ],
+      "position_seen": 1791731331.632469,
+      "sector": "Earth",
+      "type_id": 32549,
+      "object_type": 37,
+      "asset_id": 127,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791731331.632469,
+      "navigation_source": "0x2018"
+    },
+    {
+      "id": "0x000186b4",
+      "name": "GETCo 2",
+      "kind": "map_object",
+      "first_seen": 1791731331.741499,
+      "last_seen": 1791731331.741499,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        -70010.0,
+        9000.0,
+        -3000.0
+      ],
+      "position_seen": 1791731331.741499,
+      "sector": "Earth",
+      "type_id": 32549,
+      "object_type": 37,
+      "asset_id": 127,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791731331.741499,
+      "navigation_source": "0x2018"
+    },
+    {
+      "id": "0x000186af",
+      "name": "Nav High Earth 2",
+      "kind": "map_object",
+      "first_seen": 1791731331.632469,
+      "last_seen": 1791731331.632469,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        33980.0,
+        -4050.0,
+        2000.0
+      ],
+      "position_seen": 1791731331.632469,
+      "sector": "Earth",
+      "type_id": 32549,
+      "object_type": 37,
+      "asset_id": 127,
+      "navigation_flags": 49,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 1,
+      "is_huge": false,
+      "navigation_seen": 1791731331.632469,
+      "navigation_source": "0x2018"
+    },
+    {
+      "id": "0x000186a5",
+      "name": "Sector Gate to High Earth",
+      "kind": "map_object",
+      "first_seen": 1791731331.632469,
+      "last_seen": 1791731331.632469,
+      "historical": false,
+      "removal_observed": false,
+      "raw_xyz": [
+        41480.0,
+        -11550.0,
+        3000.0
+      ],
+      "position_seen": 1791731331.632469,
+      "sector": "Earth",
+      "type_id": 12299,
+      "object_type": 11,
+      "asset_id": 48,
+      "navigation_flags": 50,
+      "navigation_present": true,
+      "visited": false,
+      "nav_type": 2,
+      "is_huge": false,
+      "navigation_seen": 1791731331.632469,
+      "navigation_source": "0x2018"
+    }
+  ],
+  "via": [
+    "0x000186ac",
+    "0x000186b4",
+    "0x000186af"
+  ],
+  "destination": "0x000186a5",
+  "distance_km": 236.6474015579324
+}

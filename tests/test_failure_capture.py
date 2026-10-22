@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from PIL import Image
 import failure_capture
+from watchdog import StopMacro
 
 
 class FailureCaptureTests(unittest.TestCase):
@@ -39,3 +40,10 @@ class FailureCaptureTests(unittest.TestCase):
              patch.object(failure_capture, 'log_event') as log:
             self.assertIsNone(failure_capture.capture_failure(RuntimeError('original failure')))
             self.assertIn('original failure', log.call_args.args[0])
+
+    def test_stop_while_waiting_for_diagnostic_focus_is_not_swallowed(self):
+        from unittest.mock import Mock
+        controller = Mock()
+        controller.focus.acquire.side_effect = StopMacro('PM STOP')
+        with self.assertRaisesRegex(StopMacro, 'PM STOP'):
+            failure_capture.capture_failure(RuntimeError('window lost'), controller)

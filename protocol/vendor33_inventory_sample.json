@@ -1,0 +1,787 @@
+{
+  "npc_id": 33,
+  "role": "Core equipment: shields, engines, reactors and devices through IX",
+  "inventory_count": 76,
+  "slot_records_in_update": 81,
+  "captured_at": 1792498796.0422144,
+  "items": [
+    {
+      "slot": 0,
+      "item_id": 1839,
+      "price": 3183,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-IR-X1 \"Tower\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 1,
+      "item_id": 1836,
+      "price": 2567,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WS-X1 \"Roadrunner\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 2,
+      "item_id": 1832,
+      "price": 3401,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-ER-X1 \"Heater\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 3,
+      "item_id": 1831,
+      "price": 3115,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-PR-X1 \"Buckler\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 4,
+      "item_id": 1830,
+      "price": 2167,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Shark Fin L2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 5,
+      "item_id": 1896,
+      "price": 10329,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turtle Shell L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 6,
+      "item_id": 1895,
+      "price": 10329,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Shark Fin L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 7,
+      "item_id": 1894,
+      "price": 10329,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Rhinoceros Horn L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 8,
+      "item_id": 1891,
+      "price": 10290,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Eagle Wing L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 9,
+      "item_id": 1889,
+      "price": 11034,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Chameleon Skin L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 10,
+      "item_id": 1904,
+      "price": 10290,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-XR-X2 \"Pavis\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 11,
+      "item_id": 1903,
+      "price": 11073,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WR-X1 \"Lazarus\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 12,
+      "item_id": 1906,
+      "price": 10329,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WS-X2 \"Roadrunner\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 13,
+      "item_id": 1900,
+      "price": 10290,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-RS-X1 \"Guardian\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 14,
+      "item_id": 1897,
+      "price": 7248,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-PR-X2 \"Buckler\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 15,
+      "item_id": 1909,
+      "price": 11073,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-IR-X2 \"Tower\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 16,
+      "item_id": 1901,
+      "price": 7248,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-ER-X2 \"Heater\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 17,
+      "item_id": 1898,
+      "price": 11073,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-BF-X1 \"Diplomat\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 18,
+      "item_id": 1989,
+      "price": 24795,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WR-X1 \"Lazarus\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 19,
+      "item_id": 1990,
+      "price": 23503,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-XR-X2 \"Pavis\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 20,
+      "item_id": 1993,
+      "price": 23567,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WS-X2 \"Roadrunner\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 21,
+      "item_id": 1994,
+      "price": 18483,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WP-X2 \"Roadrunner Plus\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 22,
+      "item_id": 1986,
+      "price": 23503,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-RS-X1 \"Guardian\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 23,
+      "item_id": 1991,
+      "price": 14932,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-PSI-X1 \"Profiler\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 24,
+      "item_id": 1982,
+      "price": 18483,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-PR-X2 \"Buckler\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 25,
+      "item_id": 1996,
+      "price": 24795,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-IR-X2 \"Tower\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 26,
+      "item_id": 1987,
+      "price": 18483,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-ER-X2 \"Heater\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 27,
+      "item_id": 1983,
+      "price": 24795,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-BF-X1 \"Diplomat\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 28,
+      "item_id": 1907,
+      "price": 7248,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WP-X2 \"Roadrunner Plus\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 29,
+      "item_id": 2356,
+      "price": 1285145,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "DV-WS-X4 \"Roadrunner\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 30,
+      "item_id": 2352,
+      "quantity": 1,
+      "price": 1153171,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WR-X3 \"Lazarus\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 31,
+      "item_id": 2357,
+      "quantity": 1,
+      "price": 1149144,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WP-X4 ''Roadrunner Plus'' Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 32,
+      "item_id": 2346,
+      "quantity": 1,
+      "price": 1201564,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-BF-X3 \"Diplomat\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 33,
+      "item_id": 2455,
+      "quantity": 1,
+      "price": 3311497,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WP-X5 ''Roadrunner Plus'' Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 34,
+      "item_id": 2454,
+      "quantity": 1,
+      "price": 1946015,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WS-X5 \"Roadrunner\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 35,
+      "item_id": 2450,
+      "quantity": 1,
+      "price": 3831432,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WR-X4 \"Lazarus\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 36,
+      "item_id": 2444,
+      "quantity": 1,
+      "price": 4361476,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-BF-X4 \"Diplomat\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 37,
+      "item_id": 2558,
+      "quantity": 1,
+      "price": 20285,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kestrel L4",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 38,
+      "item_id": 2539,
+      "quantity": 1,
+      "price": 8053,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kestrel L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 39,
+      "item_id": 2517,
+      "quantity": 1,
+      "price": 2968,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kestrel L2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 40,
+      "item_id": 2559,
+      "quantity": 1,
+      "price": 16958,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Barn Owl",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 41,
+      "item_id": 2631,
+      "quantity": 1,
+      "price": 702062,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "CE-X6 \"Palomino\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 42,
+      "item_id": 2556,
+      "quantity": 1,
+      "price": 14671,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "CE-X5 \"Welsh\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 43,
+      "item_id": 2535,
+      "quantity": 1,
+      "price": 7092,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "CE-X4 \"Breton\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 44,
+      "item_id": 2513,
+      "quantity": 1,
+      "price": 2673,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "CE-X4 \"Breton\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 45,
+      "item_id": 2646,
+      "quantity": 1,
+      "price": 2643402,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Hunting Hawk",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 46,
+      "item_id": 2632,
+      "quantity": 1,
+      "price": 1051097,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Banded Hawk",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 47,
+      "item_id": 3214,
+      "quantity": 1,
+      "price": 6931,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "RE-X1 \"Brown Dwarf\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 48,
+      "item_id": 3195,
+      "quantity": 1,
+      "price": 2576,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "RE-X1 \"Brown Dwarf\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 49,
+      "item_id": 3280,
+      "quantity": 1,
+      "price": 109893,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "RE-X2 \"Red Dwarf\" MK. VI",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 50,
+      "item_id": 3351,
+      "quantity": 1,
+      "price": 2147098,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "RE-X3 \"White Dwarf\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 51,
+      "item_id": 3327,
+      "quantity": 1,
+      "price": 711419,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "RE-X3 \"White Dwarf\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 52,
+      "item_id": 3237,
+      "quantity": 1,
+      "price": 22716,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Charging Kelpie",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 53,
+      "item_id": 3216,
+      "quantity": 1,
+      "price": 9813,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kelpie",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 54,
+      "item_id": 3194,
+      "quantity": 1,
+      "price": 3525,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Sleeping Kelpie",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 55,
+      "item_id": 3238,
+      "quantity": 1,
+      "price": 30160,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kraken L4",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 56,
+      "item_id": 3217,
+      "quantity": 1,
+      "price": 11607,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Kraken L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 57,
+      "item_id": 3683,
+      "quantity": 1,
+      "price": 24047,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Becoming Class 2 Shield",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 58,
+      "item_id": 3661,
+      "quantity": 1,
+      "price": 9671,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "More Adorable Class 3 Shield",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 59,
+      "item_id": 3640,
+      "quantity": 1,
+      "price": 3550,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Adorable Class 3 Shield",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 60,
+      "item_id": 3780,
+      "quantity": 1,
+      "price": 958288,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "More Comely Class 1 Shield",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 61,
+      "item_id": 3805,
+      "quantity": 1,
+      "price": 2585360,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Most Comely Class 1 Shield",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 62,
+      "item_id": 3786,
+      "quantity": 1,
+      "price": 819024,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X6 \"Doberman\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 63,
+      "item_id": 3806,
+      "quantity": 1,
+      "price": 2355576,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X6 \"Doberman\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 64,
+      "item_id": 3785,
+      "quantity": 1,
+      "price": 835674,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X3 \"Greyhound\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 65,
+      "item_id": 3807,
+      "quantity": 1,
+      "price": 2383047,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X3 \"Greyhound\" Mk. IX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 66,
+      "item_id": 3687,
+      "quantity": 1,
+      "price": 24047,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X5 \"Husky\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 67,
+      "item_id": 3686,
+      "quantity": 1,
+      "price": 25791,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X2 \"Shepherd\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 68,
+      "item_id": 3663,
+      "quantity": 1,
+      "price": 7990,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X4 \"Akita\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 69,
+      "item_id": 3642,
+      "quantity": 1,
+      "price": 3298,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X4 \"Akita\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 70,
+      "item_id": 3662,
+      "quantity": 1,
+      "price": 7134,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X1 \"Terrier\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 71,
+      "item_id": 3641,
+      "quantity": 1,
+      "price": 2779,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "SH-X1 \"Terrier\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 72,
+      "item_id": 1837,
+      "quantity": 1,
+      "price": 3401,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "DV-WP-X1 \"Roadrunner Plus\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 73,
+      "item_id": 6385,
+      "quantity": 1,
+      "price": 1323,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Badger's Claw L1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 74,
+      "item_id": 6392,
+      "quantity": 1,
+      "price": 1080948,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Badger's Claw L8",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 75,
+      "item_id": 6393,
+      "quantity": 1,
+      "price": 3174849,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Badger's Claw L9",
+      "name_source": "Verified survey client item object"
+    }
+  ],
+  "purchase_sent": false,
+  "source": "C:\\MACROS\\acmacro\\diagnostics\\earth_other_vendor_catalogs_20261020.jsonl"
+}

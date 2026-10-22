@@ -6,12 +6,13 @@ from pathlib import Path
 import re
 import threading
 import time
+import win32event
 
 import pythoncom
 import wmi
 
 from config import CHAT_LOG_PATH
-from chat_reply import ReplyGenerator
+from chat_reply import ReplyGenerator, PrivateMessage
 from util import log, log_every, log_event
 
 _lock = threading.Lock()
@@ -23,7 +24,13 @@ _last_line = None
 _pending = deque()
 _self_name = ""
 _responder = ReplyGenerator()
-_private = re.compile(r"(?P<sender>[^\s:()]+)\s+\(private\):\s*(?P<message>.*)$", re.IGNORECASE)
+# The sender is the first word after the channel/timestamp. Any badge or
+# title between that name and (private) is irrelevant to the recipient.
+_private = re.compile(
+    r"^\s*\(\d+\):\s*\d+:\s*\d+:\s*\d+\s+"
+    r"(?P<sender>[^\s\[\]]+)\s+.*?\(private\):\s*(?P<message>.*)$",
+    re.IGNORECASE,
+)
 
 
 def require_admin():
@@ -57,21 +64,44 @@ def _read_snapshot(path):
             service._classes_map.clear()
 
 
-def read_chat_log(path=CHAT_LOG_PATH):
+def configure_chat_path(path):
+    """Switch installations without replaying the new installation's history."""
+    global CHAT_LOG_PATH, _next_line, _last_line
+    target = Path(path).resolve()
+    with _lock:
+        if target == CHAT_LOG_PATH:
+            return
+        lines = _complete_lines(read_chat_log(target)) if target.exists() else []
+        CHAT_LOG_PATH = target
+        _next_line = len(lines)
+        _last_line = lines[-1] if lines else None
+        # Already queued genuine PMs and their conversations survive relogin.
+
+
+def read_chat_log(path=None):
     """Read the whole text file into memory and remove the temporary snapshot."""
     require_admin()
     with _snapshot_lock:
-        pythoncom.CoInitialize()
+        # VSS create/delete must also be serialized across macro processes.
+        snapshot_mutex = win32event.CreateMutex(None, False, "Local\\acmacro-vss-v1")
+        result = win32event.WaitForSingleObject(snapshot_mutex, 30000)
+        if result not in (win32event.WAIT_OBJECT_0, win32event.WAIT_ABANDONED):
+            snapshot_mutex.Close()
+            raise OSError("Timed out waiting for another macro's chat snapshot")
         text, error = None, None
         try:
-            text = _read_snapshot(Path(path).resolve())
-        except Exception as exc:
-            error = OSError(str(exc))
+            pythoncom.CoInitialize()
+            try:
+                text = _read_snapshot(Path(CHAT_LOG_PATH if path is None else path).resolve())
+            except Exception as exc:
+                error = OSError(str(exc))
+            finally:
+                # Release WMI cycles on their creating thread, before COM shutdown.
+                gc.collect()
+                pythoncom.CoUninitialize()
         finally:
-            # The except block has exited: its traceback no longer retains WMI
-            # frames. Release any remaining cycles before uninitializing COM.
-            gc.collect()
-            pythoncom.CoUninitialize()
+            win32event.ReleaseMutex(snapshot_mutex)
+            snapshot_mutex.Close()
     if error:
         raise error
     return text
@@ -161,7 +191,7 @@ def read_chat_internal():
         if _next_line and (len(lines) < _next_line or lines[_next_line - 1] != _last_line):
             _next_line = 0
         for line in lines[_next_line:]:
-            match = _private.search(line.rstrip())
+            match = _private.match(line.rstrip())
             if not match:
                 continue
             sender, message = match.group("sender", "message")
@@ -169,7 +199,10 @@ def read_chat_internal():
                 if _marker and message == _marker:
                     _ready = True
                 continue
+            is_gm = bool(re.search(r'\[GM\]', line[:match.start('message')], re.IGNORECASE))
+            if not is_gm and re.fullmatch(r'hello_[0-9]{16,20}', message):
+                continue
             log_event(f"Private message from {sender}: {message}")
-            _pending.append((sender, message))
+            _pending.append(PrivateMessage(sender, message, is_gm=is_gm))
         _next_line = len(lines)
         _last_line = lines[-1] if lines else None

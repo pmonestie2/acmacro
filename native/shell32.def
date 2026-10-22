@@ -1,0 +1,5 @@
+LIBRARY shell32.dll
+EXPORTS
+IsUserAnAdmin
+ShellExecuteW
+Shell_NotifyIconW

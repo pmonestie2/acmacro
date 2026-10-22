@@ -1,8 +1,25 @@
 # Client command trace and replay constraints
 
+## October 9: stale executable-address reuse on the ARM64 VM
+
+Reused stub address `0x02f50000` returned the old failure marker without writing
+any new execution-stage markers, despite exact remote byte readback and
+`FlushInstructionCache`. The same command at fresh address `0x51010000` returned
+success, wrote the handler-completed marker and advanced the sender sequence
+1026 -> 1027. Capture confirmed the intended `0x009b` packet to `0x187b6`.
+This is evidence of stale translated-code execution on this VM, rather than
+proof of a general Windows emulation defect.
+
+The injector now allocates fresh 4 KiB code pages from per-proxy reserved arenas.
+Allocation cursors persist across macro restarts and are protected by a named
+mutex. Completed pages are decommitted, leaving their addresses reserved until
+proxy exit. Timed-out calls retain their committed code and data as before.
+
 ## Update: native injection tested successfully
 
-`inject_navigation.py` now supports one-shot `0x009b` submission on this exact proxy build. At 16:38:52 on 2026-09-22, it submitted the saved seven-waypoint frame through native handler `0x402820`. The native thread returned the completion marker; the sender sequence advanced from 1690 to 1691. The packet capture contains exactly one distinct outgoing `0x009b` datagram with sequence 1690 and a body identical to the saved command. This is verified transmission, not merely an API success code.
+`proxy_commands.py` is the shared native command sender for navigation, NPC/vendor, jobs, vault transfers, equipment, and manufacturing. Its typed `submit(pid, frame, report, *, send=True, before_submit=None)` API takes packet bytes directly; callers own acknowledgments and uncertain-result handling. The historical `AcMacroNavigation_` mutex and `navigation_arenas` directory remain shared with older running macros to preserve serialization and prevent address reuse.
+
+It supports one-shot `0x009b` submission on this exact proxy build. At 16:38:52 on 2026-09-22, it submitted the saved seven-waypoint frame through native handler `0x402820`. The native thread returned the completion marker; the sender sequence advanced from 1690 to 1691. The packet capture contains exactly one distinct outgoing `0x009b` datagram with sequence 1690 and a body identical to the saved command. This is verified transmission, not merely an API success code.
 
 There were 23 subsequent outgoing position updates, from approximately `(91886.56, -35418.27, -404.38)` to `(47805.46, -19878.11, -1515.55)` during the remaining capture. An incoming `0x009c` frame with body `01 00 00 00` followed about ten seconds later; its status semantics are not established. The game and proxy remained responsive. Destination arrival was not verified.
 
@@ -14,9 +31,9 @@ Example for this session (elevated shell; recheck PID and route for a new sessio
 
 ```powershell
 # Validate only:
-C:\PYTHON\python.exe protocol\inject_navigation.py --pid 12020 --frame protocol\captures\navigation_client_frame.bin --report protocol\captures\inject_preflight.json
+C:\PYTHON\python.exe -m protocol.proxy_commands --pid 12020 --frame protocol\captures\navigation_client_frame.bin --report protocol\captures\inject_preflight.json
 # Submit once:
-C:\PYTHON\python.exe protocol\inject_navigation.py --pid 12020 --frame protocol\captures\navigation_client_frame.bin --send --report protocol\captures\inject_result.json
+C:\PYTHON\python.exe -m protocol.proxy_commands --pid 12020 --frame protocol\captures\navigation_client_frame.bin --send --report protocol\captures\inject_result.json
 ```
 
 Evidence: `captures/inject_result.json`, `captures/20260922_163832.pcapng`, and `captures/decoded_injection.jsonl`. All 19 protocol tests pass. The earlier trace-only findings below describe the investigation before the injector was implemented.

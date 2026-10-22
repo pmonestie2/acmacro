@@ -1,0 +1,842 @@
+{
+  "npc_id": 32,
+  "inventory_count": 81,
+  "all_item_ids_match_initial_reference_list": true,
+  "inventory_record_offset": 80,
+  "application_fragment_reassembly": "2016 payload and adjacent-sequence 201a continuation; exact declared frame length matched",
+  "body_hex": "000000001c0701c20000a20300000000000000000000004200030c0000000000004200470c0000000000004200c2120000000000004200aa13000000000000f2ffffffffffffffffff1f000000000000520082030000354800000000000052006f030000634400000000000052003e0300000b210000000000005200320300004c22000000000000520033030000972200000000000052003f030000862400000000000052002e030000171b00000000000052002f030000d91b00000000000052003a030000d91b000000000000520012030000e20c000000000000520013030000a00c00000000000052000f030000840800000000000052006e0300005a5b00000000000052008f030000bd6d000000000000520043030000382f000000000000520019030000520c00000000000052008c030000565a0000000000005200410300007623000000000000520018030000270d00000000000052007e030000c84c000000000000520089030000c948000000000000520088030000225300000000000052007b03000022530000000000005200780300005a52000000000000520035030000151e00000000000052007a0300006344000000000000520036030000d91b0000000000005200760400009ee111000000000052007d040000463311000000000052007e040000b14210000000000072037704000001000000f1111300000000000000803f0000803f7203070c000001000000f3520000000000000000803f0000803f7203f30b000001000000721e0000000000000000803f0000803f7203f50b000001000000b91e0000000000000000803f0000803f7203e30b000001000000870c0000000000000000803f0000803f7203390200000100000001000000000000000000803f0000803f7203380200000100000001000000000000000000803f0000803f7203080200000100000001000000000000000000803f0000803f7203100200000100000001000000000000000000803f0000803f7203e40b000001000000440e0000000000000000803f0000803f7203f60b00000100000092270000000000000000803f0000803f7203080c000001000000ac480000000000000000803f0000803f7203430200000100000002000000000000000000803f0000803f7203f40b000001000000721e0000000000000000803f0000803f7203420200000100000002000000000000000000803f0000803f72030c0f00000100000082ba1200000000000000803f0000803f72039e0200000100000003000000000000000000803f0000803f72039d0200000100000003000000000000000000803f0000803f720353020000010000000e000000000000000000803f0000803f7203370200000100000006000000000000000000803f0000803f7203fb0a0000010000009ee20c00000000000000803f0000803f7203980200000100000019000000000000000000803f0000803f7203970200000100000019000000000000000000803f0000803f7203fd0a000001000000ded40c00000000000000803f0000803f7203940a000001000000494a0000000000000000803f0000803f7203960200000100000012000000000000000000803f0000803f7203910a000001000000a44d0000000000000000803f0000803f72037c0a00000100000076210000000000000000803f0000803f72036d0a000001000000a00c0000000000000000803f0000803f72037f0a000001000000ad300000000000000000803f0000803f72036e0a000001000000330d0000000000000000803f0000803f72037e0a000001000000fb1d0000000000000000803f0000803f7203060200000100000003000000000000000000803f0000803f7203050200000100000002000000000000000000803f0000803f72030d0200000100000003000000000000000000803f0000803f7203451400000100000003000000000000000000803f0000803f7203680a00000100000081100000000000000000803f0000803f7203670a000001000000ca110000000000000000803f0000803f72038d0a00000100000061670000000000000000803f0000803f720356020000010000000e000000000000000000803f0000803f72038c0a0000010000004d560000000000000000803f0000803f7203b70200000100000038000000000000000000803f0000803f7203b50200000100000040000000000000000000803f0000803f7203b30200000100000040000000000000000000803f0000803f7203b20200000100000038000000000000000000803f0000803f7203b90200000100000040000000000000000000803f0000803f7203f30a000001000000b5330e00000000000000803f0000803f7203f50a000001000000b5330e00000000000000803f0000803f72030d0b00000100000088213300000000000000803f0000803f72030b0b00000100000088213300000000000000803f0000803f72038c140000010000000e000000000000000000803f0000803f",
+  "items": [
+    {
+      "slot": 0,
+      "item_id": 898,
+      "price": 18485,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Coyote",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 1,
+      "item_id": 879,
+      "price": 17507,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Cheetah",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 2,
+      "item_id": 830,
+      "price": 8459,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Stinging EMP Beam XZ",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 3,
+      "item_id": 818,
+      "price": 8780,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "More Sultry Class E Laser",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 4,
+      "item_id": 819,
+      "price": 8855,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "More Fetching Laser Line A3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 5,
+      "item_id": 831,
+      "price": 9350,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Miffing EMP Beam 1A",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 6,
+      "item_id": 814,
+      "price": 6935,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Spitting Bobcat",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 7,
+      "item_id": 815,
+      "price": 7129,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Sleeping Cheetah",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 8,
+      "item_id": 826,
+      "price": 7129,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Dingo L3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 9,
+      "item_id": 786,
+      "price": 3298,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Sultry Class E Laser",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 10,
+      "item_id": 787,
+      "price": 3232,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Fetching Laser Line A3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 11,
+      "item_id": 783,
+      "price": 2180,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Bobcat",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 12,
+      "item_id": 878,
+      "price": 23386,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Clawing Bobcat",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 13,
+      "item_id": 911,
+      "price": 28093,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X1 \"Cottonmouth\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 14,
+      "item_id": 835,
+      "price": 12088,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X1 \"Cottonmouth\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 15,
+      "item_id": 793,
+      "price": 3154,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X1 \"Cottonmouth\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 16,
+      "item_id": 908,
+      "price": 23126,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X4 \"Copperhead\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 17,
+      "item_id": 833,
+      "price": 9078,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X4 \"Copperhead\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 18,
+      "item_id": 792,
+      "price": 3367,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "EB-X4 \"Copperhead\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 19,
+      "item_id": 894,
+      "price": 19656,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Foxy Class F Laser",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 20,
+      "item_id": 905,
+      "price": 18633,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Clawing EMP Beam XY",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 21,
+      "item_id": 904,
+      "price": 21282,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Grating EMP Beam 2B",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 22,
+      "item_id": 891,
+      "price": 21282,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Torrid Laser Line B2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 23,
+      "item_id": 888,
+      "price": 21082,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "MP-X4 \"Barracuda\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 24,
+      "item_id": 821,
+      "price": 7701,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "MP-X4 \"Barracuda\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 25,
+      "item_id": 890,
+      "price": 17507,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "MP-X1 \"Pike\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 26,
+      "item_id": 822,
+      "price": 7129,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "MP-X1 \"Pike\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 27,
+      "item_id": 1142,
+      "price": 1171870,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Most Sexy Class G Laser",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 28,
+      "item_id": 1149,
+      "price": 1127238,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Most Nipping EMP Beam XX",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 29,
+      "item_id": 1150,
+      "price": 1065649,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Most Irking EMP Beam 3C",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 30,
+      "item_id": 1143,
+      "quantity": 1,
+      "price": 1249777,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Most Luscious Laser Line C1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 31,
+      "item_id": 3079,
+      "quantity": 1,
+      "price": 21235,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X2 \"Hatchet\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 32,
+      "item_id": 3059,
+      "quantity": 1,
+      "price": 7794,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X2 \"Hatchet\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 33,
+      "item_id": 3061,
+      "quantity": 1,
+      "price": 7865,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X1 \"Switchblade\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 34,
+      "item_id": 3043,
+      "quantity": 1,
+      "price": 3207,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X1 \"Switchblade\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 35,
+      "item_id": 569,
+      "quantity": 1,
+      "price": 1,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X2 Impact Round",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 36,
+      "item_id": 568,
+      "quantity": 1,
+      "price": 1,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X2 Chemical Round",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 37,
+      "item_id": 520,
+      "quantity": 1,
+      "price": 1,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "PL-X1 Impact Round",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 38,
+      "item_id": 528,
+      "quantity": 1,
+      "price": 1,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Startle Impact Bullet",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 39,
+      "item_id": 3044,
+      "quantity": 1,
+      "price": 3652,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Startle Genre PL 3G",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 40,
+      "item_id": 3062,
+      "quantity": 1,
+      "price": 10130,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Most Startle Genre PL 3G",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 41,
+      "item_id": 3080,
+      "quantity": 1,
+      "price": 18604,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Panic Genre PL 2F",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 42,
+      "item_id": 579,
+      "quantity": 1,
+      "price": 2,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Panic Impact Bullet",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 43,
+      "item_id": 3060,
+      "quantity": 1,
+      "price": 7794,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Panic Genre PL 2F",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 44,
+      "item_id": 578,
+      "quantity": 1,
+      "price": 2,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Panic Chemical Bullet",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 45,
+      "item_id": 3852,
+      "quantity": 1,
+      "price": 1227394,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Most Menace Genre PL 1E",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 46,
+      "item_id": 670,
+      "quantity": 1,
+      "price": 3,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Menace Impact Bullet",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 47,
+      "item_id": 669,
+      "quantity": 1,
+      "price": 3,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Menace Chemical Bullet",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 48,
+      "item_id": 595,
+      "quantity": 1,
+      "price": 14,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X5 Explosive Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 49,
+      "item_id": 567,
+      "quantity": 1,
+      "price": 6,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X2 Plasma Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 50,
+      "item_id": 2811,
+      "quantity": 1,
+      "price": 844446,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X6 \"Wolf\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 51,
+      "item_id": 664,
+      "quantity": 1,
+      "price": 25,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X6 Explosive Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 52,
+      "item_id": 663,
+      "quantity": 1,
+      "price": 25,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X6 Chemical Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 53,
+      "item_id": 2813,
+      "quantity": 1,
+      "price": 840926,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X3 \"Funnel Weaver\" Mk. VIII",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 54,
+      "item_id": 2708,
+      "quantity": 1,
+      "price": 19017,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X2 \"Huntsman\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 55,
+      "item_id": 662,
+      "quantity": 1,
+      "price": 18,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X3 Explosive Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 56,
+      "item_id": 2705,
+      "quantity": 1,
+      "price": 19876,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X4 \"Orb Weaver\" Mk. IV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 57,
+      "item_id": 2684,
+      "quantity": 1,
+      "price": 8566,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X4 \"Orb Weaver\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 58,
+      "item_id": 2669,
+      "quantity": 1,
+      "price": 3232,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X4 \"Orb Weaver\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 59,
+      "item_id": 2687,
+      "quantity": 1,
+      "price": 12461,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X1 \"Harvestman\" Mk.\u00a0III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 60,
+      "item_id": 2670,
+      "quantity": 1,
+      "price": 3379,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X1 \"Harvestman\" Mk. II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 61,
+      "item_id": 2686,
+      "quantity": 1,
+      "price": 7675,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X2 \"Huntsman\" Mk. III",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 62,
+      "item_id": 518,
+      "quantity": 1,
+      "price": 3,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X4 Explosive Missle",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 63,
+      "item_id": 517,
+      "quantity": 1,
+      "price": 2,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "ML-X1 Explosive Missile",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 64,
+      "item_id": 525,
+      "quantity": 1,
+      "price": 3,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Explosive Rocket Type X1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 65,
+      "item_id": 5189,
+      "quantity": 1,
+      "price": 3,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Explosive Rocket Type Z1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 66,
+      "item_id": 2664,
+      "quantity": 1,
+      "price": 4225,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Fine ML Class Z1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 67,
+      "item_id": 2663,
+      "quantity": 1,
+      "price": 4554,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Good ML Type X1",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 68,
+      "item_id": 2701,
+      "quantity": 1,
+      "price": 26465,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Nice ML Class Z2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 69,
+      "item_id": 598,
+      "quantity": 1,
+      "price": 14,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Chemical Rocket Type Z2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 70,
+      "item_id": 2700,
+      "quantity": 1,
+      "price": 22093,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Great ML Type X2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 71,
+      "item_id": 695,
+      "quantity": 1,
+      "price": 56,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Explosive Rocket Type X3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 72,
+      "item_id": 693,
+      "quantity": 1,
+      "price": 64,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "EMP Rocket Type Z3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 73,
+      "item_id": 691,
+      "quantity": 1,
+      "price": 64,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Chemical Rocket Type Z3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 74,
+      "item_id": 690,
+      "quantity": 1,
+      "price": 56,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Chemical Rocket Type X3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 75,
+      "item_id": 697,
+      "quantity": 1,
+      "price": 64,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Plasma Rocket Type Z3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 76,
+      "item_id": 2803,
+      "quantity": 1,
+      "price": 930741,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Super ML Type X3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 77,
+      "item_id": 2805,
+      "quantity": 1,
+      "price": 930741,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "More Terrific ML Class Z3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 78,
+      "item_id": 2829,
+      "quantity": 1,
+      "price": 3350920,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Most Terrific ML Class Z3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 79,
+      "item_id": 2827,
+      "quantity": 1,
+      "price": 3350920,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Most Super ML Type X3",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 80,
+      "item_id": 5260,
+      "quantity": 1,
+      "price": 14,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x372",
+      "name": "Plasma Rocket Type X2",
+      "name_source": "Verified survey client item object"
+    }
+  ],
+  "purchase_sent": false
+}

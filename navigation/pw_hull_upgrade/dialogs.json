@@ -1,0 +1,132 @@
+[
+  {
+    "time": 1791742923.5470383,
+    "epoch": 22,
+    "opcode": "0x004e",
+    "outgoing": true,
+    "body_hex": "09c203006929000001",
+    "player_id": "0x3c209",
+    "npc_id": 10601,
+    "action": 1
+  },
+  {
+    "time": 1791744940.424958,
+    "epoch": 29,
+    "opcode": "0x0054",
+    "outgoing": false,
+    "body_hex": "4861696c2057617272696f722e000001020000005369722100",
+    "text": "Hail Warrior.",
+    "replies": [
+      {
+        "selection": 2,
+        "text": "Sir!"
+      }
+    ]
+  },
+  {
+    "time": 1791744972.187294,
+    "epoch": 29,
+    "opcode": "0x0055",
+    "outgoing": true,
+    "body_hex": "09c2030002",
+    "player_id": "0x3c209",
+    "selection": 2
+  },
+  {
+    "time": 1791744972.189147,
+    "epoch": 29,
+    "opcode": "0x0056",
+    "outgoing": false,
+    "body_hex": "06000000"
+  },
+  {
+    "time": 1791744972.189147,
+    "epoch": 29,
+    "opcode": "0x0054",
+    "outgoing": false,
+    "body_hex": "5468697320697320796f7572204d61737465722050726f6d6f74696f6e204d697373696f6e2e0d0a49742073686f756c64206175746f6d61746963616c6c7920646973706c617920776865726520746f20676f2061742065616368206c6576656c20616e6420757064617465206163636f7264696e676c7920666f7220796f75722068756c6c2075706772616465732e000000",
+    "text": "This is your Master Promotion Mission.\r\nIt should automatically display where to go at each level and update accordingly for your hull upgrades.",
+    "replies": []
+  },
+  {
+    "time": 1791745056.396502,
+    "epoch": 29,
+    "opcode": "0x0055",
+    "outgoing": true,
+    "body_hex": "09c2030000",
+    "player_id": "0x3c209",
+    "selection": 0
+  },
+  {
+    "time": 1791745056.5047007,
+    "epoch": 29,
+    "opcode": "0x0056",
+    "outgoing": false,
+    "body_hex": "e0ffffff"
+  },
+  {
+    "time": 1791745056.5371993,
+    "epoch": 29,
+    "opcode": "0x0055",
+    "outgoing": true,
+    "body_hex": "09c20300e6",
+    "player_id": "0x3c209",
+    "selection": 230
+  },
+  {
+    "time": 1791745056.7185462,
+    "epoch": 29,
+    "opcode": "0x0056",
+    "outgoing": false,
+    "body_hex": "e0ffffff"
+  },
+  {
+    "time": 1791745705.8853917,
+    "epoch": 29,
+    "opcode": "0x004e",
+    "outgoing": true,
+    "body_hex": "09c203006000000004",
+    "player_id": "0x3c209",
+    "npc_id": 96,
+    "action": 4
+  },
+  {
+    "time": 1791745706.0670102,
+    "epoch": 29,
+    "opcode": "0x0054",
+    "outgoing": false,
+    "body_hex": "4772656574696e6773204c6567696f6e616972652e2049742773206d7920706c65617375726520746f2077656c636f6d6520796f75206865726520746f2041727820466f726775732e0d0a4920616d205375622d436f6d6d616e64657220546173686120547261736b2c20616e64204920616d206865726520746f20736565207468617420796f75206265636f6d650d0a612066756c6c2d666c65646765642043656e747572696174612057617272696f722e000001020000004920616d204d6163626f7970772c204c6567696f6e61697265206f66207468652043656e747572696174612e00",
+    "text": "Greetings Legionaire. It's my pleasure to welcome you here to Arx Forgus.\r\nI am Sub-Commander Tasha Trask, and I am here to see that you become\r\na full-fledged Centuriata Warrior.",
+    "replies": [
+      {
+        "selection": 2,
+        "text": "I am Macboypw, Legionaire of the Centuriata."
+      }
+    ]
+  },
+  {
+    "time": 1791745762.6175115,
+    "epoch": 29,
+    "opcode": "0x0055",
+    "outgoing": true,
+    "body_hex": "09c2030002",
+    "player_id": "0x3c209",
+    "selection": 2
+  },
+  {
+    "time": 1791745762.7441034,
+    "epoch": 29,
+    "opcode": "0x0056",
+    "outgoing": false,
+    "body_hex": "06000000"
+  },
+  {
+    "time": 1791745762.7441034,
+    "epoch": 29,
+    "opcode": "0x0054",
+    "outgoing": false,
+    "body_hex": "4c657473206765742073746172746564207468656e2e2047726176697479204c696e6b20616c6c6f777320796f7520746f20736c6f7720796f757220656e656d792066726f6d206573636170652e0d0a5465737420796f7572206e657720736b696c6c206f6e206120666577204d6572637572792044726f6e6573206174204e6176204d65726375727920547261696e696e672067726f756e642e000000",
+    "text": "Lets get started then. Gravity Link allows you to slow your enemy from escape.\r\nTest your new skill on a few Mercury Drones at Nav Mercury Training ground.",
+    "replies": []
+  }
+]

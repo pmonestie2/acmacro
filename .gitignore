@@ -2,7 +2,12 @@
 __pycache__/
 .venv/
 *.log
-/config_player.txt
-/config_player_*.txt
+/focus_*.jsonl
+/config_player*.txt
+!/config_player.example.txt
+!/config_player.second.example.txt
 /protocol/captures/
 /diagnostics/
+*.conf
+/navigation/pw_hull_upgrade/evidence/
+/navigation/pw_hull_upgrade/actions.jsonl

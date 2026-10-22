@@ -18,6 +18,7 @@ def log_interaction(player, request, decision, *, response_sent, game_closed=Non
         "response": decision.response,
         "action": decision.action,
         "response_sent": response_sent,
+        "sender_is_gm": bool(getattr(request, 'is_gm', False)),
     }
     if game_closed is not None:
         record["game_closed"] = game_closed

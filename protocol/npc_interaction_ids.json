@@ -1,0 +1,63 @@
+{
+  "notes": [
+    "Station NPC IDs and space-object database IDs are different namespaces.",
+    "Space-object live target IDs are observations tied to a proxy session and sector; resolve them again before reuse."
+  ],
+  "station_npcs": {
+    "100": {
+      "name": "Proconsul Dionysius Kerr",
+      "source": "sigseg1v/enb-emulator db/mysql/net7.sql",
+      "live_observed": true,
+      "open_opcode": "0x004e",
+      "action": 4,
+      "manual_open_body_hex": "09c203006400000004"
+    },
+    "269": {
+      "name": "Lancearate Fortunatis",
+      "source": "sigseg1v/enb-emulator db/mysql/net7.sql",
+      "live_observed": true,
+      "open_opcode": "0x004e",
+      "action": 4
+    },
+    "204": {
+      "name": "Doctor Sacha Ileiko",
+      "source": "sigseg1v/enb-emulator db/mysql/net7.sql",
+      "live_observed": true,
+      "open_opcode": "0x004e",
+      "action": 4
+    },
+    "832": {
+      "name": "Dr. B\u2019nzen H\u2019neydoo",
+      "live_observed": true,
+      "evidence": "diagnostics/je_neydoo_open_result.json",
+      "open_opcode": "0x004e",
+      "action": 4
+    }
+  },
+  "space_objects": {
+    "4880": {
+      "name": "Tiberius Shipyards",
+      "database_id": 4880,
+      "sector": "Primus",
+      "sector_id": 3515,
+      "database_source": "sigseg1v/enb-emulator db/mysql/net7.sql",
+      "observed_live_target": 100036,
+      "observed_live_target_hex": "0x186c4",
+      "observed_proxy_pid": 11768,
+      "observed_proxy_born": "2026-10-20 23:48:12.685000+00:00",
+      "open_opcode": "0x002c",
+      "action": 2,
+      "optional_var": 0,
+      "captured_open_body_hex": "09c2034002000000c486010000000000",
+      "live_observed": true,
+      "visible_dialogue_verified": true,
+      "response": "Checking your records.",
+      "reply_choices": [
+        {
+          "selection": 2,
+          "text": "And?"
+        }
+      ]
+    }
+  }
+}

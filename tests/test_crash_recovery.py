@@ -66,7 +66,7 @@ class CrashRecoveryTests(unittest.TestCase):
         controller.relogin.assert_called_once_with(initial=False)
         self.assertEqual(route.call_count, 2)
         suspend.assert_called_once()
-        reset.assert_not_called()
+        reset.assert_called_once()  # Initial cursor only; recovery preserves pending PMs.
 
     def test_crashes_during_cold_login_exhaust_relogin_budget(self):
         controller = self.controller()
@@ -134,7 +134,7 @@ class CrashRecoveryTests(unittest.TestCase):
         self.assertEqual(controller.relogin_attempts, 3)
         self.assertTrue(controller._terminated)
         timer.assert_called_once()
-        reset.assert_not_called()
+        reset.assert_called_once()  # Initial cursor only; recovery preserves pending PMs.
         route.assert_not_called()
 
 

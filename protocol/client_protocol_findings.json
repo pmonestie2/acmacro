@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-09",
+  "client_sha256": "249f852496f341c00361be95b66e7c0becc2c39e7cba026f9227e38b602651c4",
+  "scope": "Read-only static client analysis correlated with existing captures; no commands sent",
+  "transport": {
+    "client_to_proxy": "Legacy framed TCP with continuous RC4 states; details in README.md",
+    "proxy_to_server": "Observed plaintext UDP commands and enveloped server frames",
+    "caveat": "Login/TLS paths and complete packet dictionary are not decoded"
+  },
+  "relationship_packet": {
+    "opcode": "0x0089",
+    "client_class": "PlayerObjectRelationshipPacket",
+    "body_bytes": 9,
+    "fields": [
+      {"offset": 0, "bytes": 4, "encoding": "uint32 big-endian", "name": "object_id"},
+      {"offset": 4, "bytes": 4, "encoding": "uint32 little-endian", "name": "reaction"},
+      {"offset": 8, "bytes": 1, "encoding": "byte", "name": "is_attacking"}
+    ],
+    "reaction_enum": {"0": "Attack", "1": "Shun", "2": "Friendly", "3": "Adoration"},
+    "static_evidence": {
+      "process_handler": "0x007398e0",
+      "deserialize_constructor": "0x00873c30",
+      "serialize_function": "0x00873d10",
+      "body_size_function": "0x00873df0",
+      "reaction_string_function": "0x00835890",
+      "reaction_string_table": "0x00ba9614",
+      "object_id_read_and_byte_order_conversion": "0x0086edf0"
+    },
+    "capture_evidence": {
+      "sample_count": 1029,
+      "all_observed_body_lengths": [9],
+      "vrix_scout_reaction": "Attack",
+      "guardian_turret_reaction": "Adoration",
+      "details": "../diagnostics/relationship_packet_evidence.txt"
+    },
+    "limitations": [
+      "Reaction is relative to this player; do not reuse another character's classification",
+      "Object IDs must remain scoped to proxy lifetime and sector epoch",
+      "An Attack reaction can arrive with is_attacking=0; aggression and current combat are different",
+      "Shun behavior and exact UI colors have not been independently validated"
+    ]
+  },
+  "further_named_handlers": [
+    "PlayerObjectReactionUpdatePacket", "PlayerObjectIsAttackingUpdatePacket",
+    "IncapacitanceDetailsPacket", "IncapacitanceRescueConfirmationPacket",
+    "NavigationPacketClass", "StarbaseTowPacketClass", "JobListPacketClass",
+    "JobAcceptReplyPacketClass", "ClientChatEventPacketClass"
+  ],
+  "remaining": [
+    "Decode incremental reaction and attacking updates",
+    "Decode application-level fragmented messages",
+    "Map remaining command opcodes and packet field layouts"
+  ]
+}

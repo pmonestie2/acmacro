@@ -1,0 +1,391 @@
+{
+  "npc_id": 36,
+  "role": "Level II components",
+  "inventory_count": 40,
+  "slot_records_in_update": 55,
+  "captured_at": 1792498832.5369723,
+  "items": [
+    {
+      "slot": 0,
+      "item_id": 1317,
+      "price": 751,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex SpotLite Actuator",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 1,
+      "item_id": 1316,
+      "price": 844,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Silicon Rectifier",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 2,
+      "item_id": 1315,
+      "price": 863,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Shield Ultra Casing",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 3,
+      "item_id": 1314,
+      "price": 798,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Iris Y50",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 4,
+      "item_id": 1313,
+      "price": 131,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex GraphFlite Plus",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 5,
+      "item_id": 1312,
+      "price": 92,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Aluminum Shell Casing",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 6,
+      "item_id": 1311,
+      "price": 110,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Alloy Slugs",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 7,
+      "item_id": 1310,
+      "price": 110,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Alloy Rails",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 8,
+      "item_id": 1309,
+      "price": 1030,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Vortex Alloy Barrel",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 9,
+      "item_id": 1308,
+      "price": 798,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra Repeler Pro",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 10,
+      "item_id": 1307,
+      "price": 798,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra MLS Ejector ADV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 11,
+      "item_id": 1306,
+      "price": 110,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra Impact Slugs",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 12,
+      "item_id": 1305,
+      "price": 816,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra Crossfire",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 13,
+      "item_id": 1304,
+      "price": 110,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra Boost Plus",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 14,
+      "item_id": 1303,
+      "price": 798,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra Basic Mounts",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 15,
+      "item_id": 1302,
+      "price": 909,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Ultra ActuPlus LS",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 16,
+      "item_id": 1301,
+      "price": 863,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 PowerTwist Pro",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 17,
+      "item_id": 1300,
+      "price": 639,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Neutron Switch",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 18,
+      "item_id": 1299,
+      "price": 74,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Methane Blast",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 19,
+      "item_id": 1298,
+      "price": 621,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 LiteUp Pro",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 20,
+      "item_id": 1297,
+      "price": 649,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Focalpoint",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 21,
+      "item_id": 1295,
+      "price": 816,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Core Keeper ADV",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 22,
+      "item_id": 1294,
+      "price": 798,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Converter II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 23,
+      "item_id": 1293,
+      "price": 110,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Turbo2 Boom Master",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 24,
+      "item_id": 1292,
+      "price": 770,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Sunburst Starshell",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 25,
+      "item_id": 1290,
+      "price": 770,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Proton Shell Elite",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 26,
+      "item_id": 1289,
+      "price": 74,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Proton Delta Warhead",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 27,
+      "item_id": 1287,
+      "price": 612,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Nova JumpCore XS",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 28,
+      "item_id": 1286,
+      "price": 770,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Nebula ML Conduit",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 29,
+      "item_id": 1285,
+      "price": 545,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "K3 PowerBox",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 30,
+      "item_id": 1284,
+      "quantity": 1,
+      "price": 871,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Focus 450 Fission Core",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 31,
+      "item_id": 1283,
+      "quantity": 1,
+      "price": 891,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Evolver GenR8 Pro",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 32,
+      "item_id": 1282,
+      "quantity": 1,
+      "price": 816,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Evolver FlexiBoard",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 33,
+      "item_id": 1281,
+      "quantity": 1,
+      "price": 1067,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Electro Nucleus Shell XT",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 34,
+      "item_id": 1280,
+      "quantity": 1,
+      "price": 909,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Electro Microminiature Connector",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 35,
+      "item_id": 1279,
+      "quantity": 1,
+      "price": 798,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Electro Glutton II",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 36,
+      "item_id": 1278,
+      "quantity": 1,
+      "price": 612,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Electro Force 10K",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 37,
+      "item_id": 1277,
+      "quantity": 1,
+      "price": 1002,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Electro Conjunction Core",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 38,
+      "item_id": 1296,
+      "quantity": 1,
+      "price": 612,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Turbo2 Engine Hulk Pro",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 39,
+      "item_id": 1288,
+      "quantity": 1,
+      "price": 751,
+      "quality": 1.0,
+      "structure": 1.0,
+      "record_mask": "0x52",
+      "name": "Plasma Convert Pro",
+      "name_source": "Verified survey client item object"
+    }
+  ],
+  "purchase_sent": false,
+  "source": "C:\\MACROS\\acmacro\\diagnostics\\earth_other_vendor_catalogs_20261020.jsonl"
+}

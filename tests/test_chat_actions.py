@@ -16,6 +16,60 @@ import watchdog
 
 
 class ChatActionTests(unittest.TestCase):
+    def test_stop_reply_transmits_before_sender_peer_and_local_game_close(self):
+        controller = self.controller()
+        controller.focus = Mock(depth=0, waiting=False)
+        controller.focus.broadcast_logoff.return_value = [("Macboyje", None)]
+        controller._chat_stop = (("Macboytt", "so u doing it?"),
+                                 ChatDecision("STOP", "I'm logging off now."))
+        events = Mock()
+        events.attach_mock(controller.say, "say")
+        events.attach_mock(controller.focus.broadcast_logoff, "broadcast")
+        events.attach_mock(controller.killenb, "close")
+        with patch("ac.stop_chat"), patch("ac.chat_ready", return_value=True), \
+             patch("ac.reply_sent"), patch("ac.log_interaction"), \
+             patch("ac.find_window_exact", return_value=None), patch("ac.time.sleep") as settle:
+            events.attach_mock(settle, "settle")
+            with self.assertRaises(watchdog.StopMacro):
+                controller._stop_for_chat()
+        self.assertEqual([c[0] for c in events.mock_calls],
+                         ["say", "settle", "broadcast", "close"])
+        settle.assert_called_once_with(1.0)
+
+    def test_stop_reply_failure_still_broadcasts_and_closes_without_waiting(self):
+        controller = self.controller()
+        controller.focus = Mock(depth=0, waiting=False)
+        controller.focus.broadcast_logoff.return_value = [("Peer", None)]
+        controller.say.side_effect = RuntimeError("send failed")
+        controller._chat_stop = (("Macboytt", "stop"), ChatDecision("STOP", "ok"))
+        with patch("ac.stop_chat"), patch("ac.chat_ready", return_value=True), \
+             patch("ac.log_interaction") as audit, patch("ac.find_window_exact", return_value=None), \
+             patch("ac.time.sleep") as settle:
+            with self.assertRaises(watchdog.StopMacro):
+                controller._stop_for_chat()
+        settle.assert_not_called()
+        controller.focus.broadcast_logoff.assert_called_once()
+        controller.killenb.assert_called_once()
+        self.assertFalse(audit.call_args.kwargs["response_sent"])
+
+    def test_gm_stop_broadcasts_before_local_close_even_if_delivery_fails(self):
+        for fail in (False, True):
+            with self.subTest(fail=fail):
+                controller = self.controller()
+                controller.focus = Mock(depth=0, waiting=False)
+                controller.focus.broadcast_logoff.return_value = [("Peer", None)]
+                if fail:
+                    controller.focus.broadcast_logoff.side_effect = OSError("offline")
+                controller._logging_in = True
+                controller._chat_stop = (("GMTest", "stop"), ChatDecision("STOP", ""))
+                events = Mock()
+                events.attach_mock(controller.focus.broadcast_logoff, "broadcast")
+                events.attach_mock(controller.killenb, "close")
+                with patch("ac.stop_chat"), patch("ac.log_interaction"), patch("ac.find_window_exact", return_value=None):
+                    with self.assertRaises(watchdog.StopMacro):
+                        controller._stop_for_chat()
+                self.assertEqual([c[0] for c in events.mock_calls], ["broadcast", "close"])
+
     def controller(self):
         with patch.object(ac.AcController, "init_window"):
             controller = ac.AcController("test")

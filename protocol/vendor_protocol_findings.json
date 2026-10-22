@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-20",
+  "status": "Earth/Charon packet purchases and Earth packet-only sales verified",
+  "application_header": {"encoding": "little-endian uint16 length including header, uint16 opcode", "bytes": 4},
+  "commands": {
+    "talk": {
+      "opcode": "0x004e", "frame_bytes": 13,
+      "body_encoding": "<IIB",
+      "fields": ["player_id_low24", "npc_id", "action"],
+      "observed_action": 4
+    },
+    "dialog_choice": {
+      "opcode": "0x0055", "frame_bytes": 9,
+      "body_encoding": "<IB",
+      "fields": ["player_id_low24", "choice"],
+      "observed_choices": {"trade": 2, "close_sequence": [0, 230]},
+      "scope": "Observed Lenorn dialogue; do not assume all NPCs use choice 2"
+    },
+    "inventory_transfer": {
+      "opcode": "0x0027", "frame_bytes": 28,
+      "body_encoding": ">6I",
+      "fields": ["full_player_game_id", "source_inventory", "source_slot", "destination_inventory", "destination_slot", "quantity"],
+      "observed_purchase": {"source_inventory": 4, "source_slot": 23, "destination_inventory": 1, "destination_slot": 4294967295, "quantity": 1},
+      "price_field_present": false,
+      "observed_sale": {"source_inventory": 1, "source_slot": "verified occupied cargo slot", "destination_inventory": 4, "destination_slot": 0, "quantity": 1, "unit_proceeds_at_earth": 1923, "packet_only_sales_confirmed": 902, "confirmation_note": "One sale reconciled through read-only client credit screenshot during capture outage; remaining confirmations from captured credit/cargo replies"},
+      "scope": "Source slot is from the active vendor catalog, not a globally stable item identifier"
+    }
+  },
+  "responses": {
+    "dialog": {"opcode": "0x0054", "verified": "Lenorn name and trade dialogue text", "complete_layout_decoded": false},
+    "trade_state": {"opcode": "0x0056", "encoding": "little-endian int32", "observed_open_value": 3, "observed_closed_value": -32, "all_values_understood": false},
+    "inventory_and_credits": {"opcode": "0x001b", "verified": "Player AUX vendor catalog and credits; ship AUX cargo delta", "unchanged_catalog_may_be_omitted": true, "complete_inventory_layout_decoded": false}
+  },
+  "vendors": [
+    {
+      "name": "Lenorn Listor", "station": "EarthCorps Earth Station", "npc_id": 31,
+      "observed_slot": 23, "observed_unit_cost": 73,
+      "item_name": null,
+      "successful_purchase_locations": ["Earth station lobby/corridor", "Earth sector undocked", "Asteroid Belt Alpha sector", "Akeron's Gate near Pluto/Charon accelerator (pre-submission screenshot)"],
+      "confirmation": "Fresh server credit decrement and ship cargo update after exactly one purchase submission"
+    },
+    {
+      "name": "Harabolos Aikmene", "station": "Charon Cloister", "npc_id": 536,
+      "observed_slot": 0, "observed_unit_cost": 993,
+      "item_name": null,
+      "observed_trade_choice": 2,
+      "observed_purchase_fields": [1073988105, 4, 0, 1, 4294967295, 1],
+      "credits_before": 7159357, "credits_after": 7158364,
+      "confirmation": "Manual one-unit purchase; fresh server credit decrement and ship cargo update",
+      "remote_replay_verified": true,
+      "replay_credits_before": 7158364, "replay_credits_after": 7157371,
+      "earth_purchase_after_charon": {"credits_before": 7157371, "credits_after": 7157298, "cost": 73},
+      "evidence": "protocol/vendor_charon_capture_sample.json"
+    },
+    {
+      "name": null, "role": "Weapons vendor", "station": "EarthCorps Earth Station", "npc_id": 32,
+      "observed_trade_choice": 2, "inventory_slots": 81,
+      "inventory_item_ids_and_prices_recovered": 81,
+      "inventory_evidence": "protocol/vendor32_inventory_sample.json",
+      "purchase_replay_verified": false,
+      "notes": "Catalog required application fragment reassembly. Thirty records retain cached quantity/quality; item names have not been decoded."
+    }
+  ],
+  "limits": [
+    "NPC ID namespace and persistence across reconnects are not established",
+    "Two captured vendors have been replayed, one item slot from each",
+    "Vendor catalog records can use shorter partial updates; whole-message equality is insufficient and a complete delta decoder remains unimplemented",
+    "Bulk purchases of 20/22 and packet-only Earth sales are verified. Insufficient cargo space was observed. Insufficient funds and reconnect behavior remain unverified.",
+    "Remote success does not establish access to arbitrary vendors",
+    "Earlier catalog mismatches were initially misidentified as Earth inventory; inspection confirmed Charon slot-0 item/price in a shorter partial update. Buying Charon again after an Earth sale succeeded.",
+    "Do not retry a purchase with an uncertain result",
+    "Current native sender permits captured NPCs 31 and 536, single-unit vendor slots 0 or 23, quantity 20 or 22 for slot 0, and single-unit cargo-to-vendor sales from cargo slots 0-31; callers must verify inventory state"
+  ],
+  "pending_capture": {
+    "station": "Charon Cloister, Pluto and Charon sector",
+    "file": "diagnostics/pw_pluto_vendor_capture_20261020.jsonl",
+    "mode": "Passive capture continues. Contains a separately authorized automated Earth purchase before the manual Charon interaction."
+  }
+}

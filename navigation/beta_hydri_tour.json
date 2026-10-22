@@ -1,0 +1,21 @@
+{
+  "proxy_session": "7932_2026-10-11T14:53:45.1917877Z",
+  "toon": "Macboypw",
+  "started": 1791735411.7410834,
+  "sectors": {
+    "Glenn": "captured safe navs explored",
+    "Carpenter": "captured safe navs explored",
+    "Slayton": "pending",
+    "Glory's Orbit": "pending",
+    "Shepard": "partial; killed at Nav Shepard 4; exploration stopped",
+    "Grissom": "pending",
+    "Grissom Meteorological Site": "pending",
+    "Cooper": "pending"
+  },
+  "excluded_areas": [
+    "Glenn GP-X88 pirate field"
+  ],
+  "coverage": "Observed per-client discovery state; remote hidden navs may remain unknown",
+  "updated": 1791736223.4242249,
+  "current_sector": "Shepard"
+}

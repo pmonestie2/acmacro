@@ -18,6 +18,15 @@ def ok(text):
 
 
 class ReplyTests(unittest.TestCase):
+    def test_gm_badge_reaches_generator_and_survives_in_history(self):
+        generate = Mock(return_value=ok('Hello'))
+        responder = chat_reply.ReplyGenerator(generate)
+        request = chat_reply.PrivateMessage('JeffTS', 'Hi', is_gm=True)
+        self.ready(responder, request)
+        self.assertEqual(generate.call_args.kwargs, {'is_gm': True})
+        responder.sent(request, 'Hello')
+        self.assertTrue(responder._history['jeffts'][0]['sender_is_gm'])
+
     def ready(self, responder, request):
         self.assertIsNone(responder.next_decision(request))
         responder._worker.join(2)
@@ -74,19 +83,32 @@ class ReplyTests(unittest.TestCase):
         self.assertIsNone(responder.next_decision(request))
         self.assertIsNone(responder._decision)
 
-    def test_failure_stays_pending_and_retries_after_delay(self):
-        now = [0]
-        generate = Mock(side_effect=[TimeoutError("test timeout"), ok("Recovered")])
-        responder = chat_reply.ReplyGenerator(generate, clock=lambda: now[0])
-        request = ("Alice", "hi")
-        self.assertIsNone(self.ready(responder, request))
-        now[0] = chat_reply.CHAT_RETRY_SECONDS - 1
-        self.assertIsNone(responder.next_decision(request))
-        generate.assert_called_once()
-        self.assertEqual(responder._history, {})
-        now[0] += 1
-        self.assertEqual(self.ready(responder, request), ok("Recovered"))
-        self.assertEqual(generate.call_count, 2)
+    def test_any_generation_failure_returns_stop_without_retry(self):
+        for error in (TimeoutError('timeout'), FileNotFoundError('codex missing'),
+                      RuntimeError('Codex exited with code 1'), OSError('offline'),
+                      ValueError('invalid reply')):
+            with self.subTest(error=type(error).__name__):
+                generate = Mock(side_effect=error)
+                responder = chat_reply.ReplyGenerator(generate)
+                request = ('Alice', 'hi')
+                with patch('chat_reply.log_event') as log:
+                    self.assertEqual(self.ready(responder, request), chat_reply.ChatDecision('STOP', ''))
+                    self.assertEqual(responder.next_decision(request), chat_reply.ChatDecision('STOP', ''))
+                generate.assert_called_once()
+                self.assertEqual(responder._history, {})
+                self.assertIn('action=STOP', log.call_args.args[0])
+
+    def test_malformed_generated_result_returns_stop(self):
+        responder = chat_reply.ReplyGenerator(Mock(return_value='not json'))
+        with patch('chat_reply.log_event'):
+            self.assertEqual(self.ready(responder, ('Alice', 'hi')), chat_reply.ChatDecision('STOP', ''))
+
+    def test_failure_to_start_generation_thread_returns_stop(self):
+        responder = chat_reply.ReplyGenerator(Mock())
+        with patch('chat_reply.threading.Thread.start', side_effect=RuntimeError('cannot start thread')), \
+             patch('chat_reply.log_event'):
+            self.assertEqual(responder.next_decision(('Alice', 'hi')), chat_reply.ChatDecision('STOP', ''))
+        responder.close()
 
     def test_identical_messages_get_independent_replies(self):
         generate = Mock(side_effect=[ok("one"), ok("two")])

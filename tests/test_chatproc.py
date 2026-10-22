@@ -40,9 +40,57 @@ class ChatTests(unittest.TestCase):
         chatproc.reply_sent(reply, "Hi")
         self.assertIsNone(self.poll(text))
 
+    def test_other_toons_internal_markers_never_become_reply_requests(self):
+        markers = ''.join(f'(3):18:50:00 Lightbulb (private): hello_{value}\n'
+                          for value in (1791118134694353300, 1791144575652905200))
+        self.assertEqual(self.poll(self.echo + markers + self.message), ('Friend', 'hey noob'))
+        chatproc.reply_sent(chatproc.next_reply(), 'Hi')
+        self.assertIsNone(chatproc.next_reply())
+
+    def test_marker_like_normal_text_and_gm_messages_are_retained(self):
+        self.assertEqual(self.poll(self.echo + '(3):18:50:00 Friend (private): hello_123 how are you?\n'),
+                         ('Friend', 'hello_123 how are you?'))
+        chatproc.reply_sent(chatproc.next_reply(), 'Hi')
+        reply = self.poll(self.echo + '(3):18:50:00 JeffTS [GM] (private): hello_123\n')
+        self.assertEqual(reply, ('JeffTS', 'hello_123'))
+        self.assertTrue(reply.is_gm)
+
+    def test_installation_switch_skips_history_but_keeps_queued_real_pm(self):
+        reply = self.poll(self.echo + self.message)
+        target = Path('different-installation/chat.log').resolve()
+        with patch.object(chatproc, 'CHAT_LOG_PATH', Path('original/chat.log').resolve()), \
+                patch.object(Path, 'exists', return_value=True), \
+                patch('chatproc.read_chat_log', return_value='(3):18:00:00 OldFriend (private): old history\n'):
+            chatproc.configure_chat_path(target)
+            self.assertIs(chatproc.next_reply(), reply)
+            chatproc.reply_sent(reply, 'Hi')
+            self.assertEqual(self.poll('(3):18:00:00 OldFriend (private): old history\n' + self.message),
+                             ('Friend', 'hey noob'))
+
     def test_partial_line_waits_for_completion(self):
         self.assertIsNone(self.poll(self.echo + self.message.rstrip("\n")))
         self.assertEqual(self.poll(self.echo + self.message), ("Friend", "hey noob"))
+
+    def test_gm_badge_is_not_the_reply_recipient(self):
+        message = "Hi, do you have a moment to chat?"
+        line = f"  (3):18: 9:52  JeffTS [GM] (private): {message}\n"
+        reply = self.poll(self.echo + line)
+        self.assertEqual(reply, ("JeffTS", message))
+        self.assertTrue(reply.is_gm)
+        chatproc.reply_sent(reply, "Yes")
+        self.assertIsNone(self.poll(self.echo + line))
+
+    def test_gm_tag_is_case_insensitive_and_bare_badge_is_not_a_sender(self):
+        line = "(3):18:10:00 JeffTS [gm] (PRIVATE): hello\n"
+        self.assertEqual(self.poll(self.echo + line), ("JeffTS", "hello"))
+        chatproc.reply_sent(chatproc.next_reply(), "Hi")
+        self.assertIsNone(self.poll(self.echo + line + "(3):18:10:01 [GM] (private): invalid\n"))
+
+    def test_first_word_after_padded_time_is_sender_regardless_of_title(self):
+        line = "  (3): 5: 8: 2  JeffTS [Other title] (private): hello (private): again\n"
+        reply = self.poll(self.echo + line)
+        self.assertEqual(reply, ("JeffTS", "hello (private): again"))
+        self.assertFalse(reply.is_gm)
 
     def test_failed_read_retries_without_losing_messages(self):
         self.poll(self.echo)

@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "status": "in_progress",
+  "character_class": "Progen Warrior",
+  "upgrades": [
+    10,
+    30
+  ],
+  "focus": "Use the same SharedFocus mutex as the other macro; release during travel and waits.",
+  "departure": {
+    "require": "Verify the equipped Kraken hotkey for the current character; do not assume another PW has identical slots.",
+    "verified_macboypw_keys": [
+      "`",
+      "4"
+    ],
+    "activation_evidence": "Game chat: Active buff from Kraken L3 activated; warp engine glows.",
+    "ordering": "Self target, activate Kraken, then submit navigation under the same short focus ownership.",
+    "native_navigation": "0x009b toggles warp off if already warping. Submit only when idle."
+  },
+  "known_route_to_trask": [
+    {
+      "sector": "Earth",
+      "target": "Sector Gate to Asteroid Belt Alpha",
+      "id": "0x186a4"
+    },
+    {
+      "sector": "Asteroid Belt Alpha",
+      "target": "Sector Gate to Saturn",
+      "id": "0x186ae"
+    },
+    {
+      "sector": "Saturn",
+      "target": "Sector Gate to Asteroid Belt Gamma",
+      "id": "0x186a1"
+    },
+    {
+      "sector": "Asteroid Belt Gamma",
+      "target": "Sector Gate to Mars",
+      "id": "0x186b5",
+      "via": [
+        "0x186a1",
+        "0x186a2",
+        "0x186a3",
+        "0x186a4",
+        "0x186a5",
+        "0x186a6",
+        "0x186a7",
+        "0x186a8"
+      ],
+      "warning": "Direct gate-to-gate travel crosses a gravity well. Follow Saturn Gamma Navway, Saturn Beta Junction and Beta Gamma Beltway 6."
+    },
+    {
+      "sector": "Mars",
+      "target": "Gate to Mars Alpha",
+      "id": "0x186b2"
+    },
+    {
+      "sector": "Mars Alpha",
+      "target": "Arx Forgus",
+      "id": "0x186ba"
+    }
+  ],
+  "arrival": {
+    "authority": "Verify the active Gate/Dock control in the current game view before clicking; confirm the next sector or station afterward.",
+    "logical_control_xy": [
+      1237,
+      515
+    ],
+    "station_distance": "Arx Forgus is huge: the HUD reaches 1.04 km while packet distance to its origin is about 21 km. Do not use center distance alone as docking range."
+  },
+  "verified_dialogs": [
+    {
+      "location": "Arx Forgus approach, Mars Alpha",
+      "trigger": "Flashing yellow Message tab",
+      "text": "Hail Warrior.",
+      "reply": "Sir!",
+      "next": "This is your Master Promotion Mission.",
+      "finish": "Done",
+      "evidence": "evidence/master_promotion_message.png"
+    }
+  ],
+  "station_navigation": {
+    "method": "Use /starbase reset; find the destination room door and record reset orientation and any movement per station and source room.",
+    "routes": [
+      {
+        "station": "Arx Forgus",
+        "from": "Docking Bay",
+        "to": "Main Deck",
+        "reset_orientation": 0,
+        "keys": [
+          {
+            "key": "a",
+            "duration": 4
+          }
+        ],
+        "verified": true,
+        "verified_at": 1791745229.9205492,
+        "arrival": "Sub-Commander Trask visible on left"
+      },
+      {
+        "station": "Arx Forgus",
+        "from": "Main Deck",
+        "to": "Vendor Room",
+        "reset_orientation": 250000,
+        "keys": [
+          {
+            "key": "a",
+            "duration": 4
+          }
+        ],
+        "verified": true,
+        "verified_at": 1791747781.9289484,
+        "arrival": "Vendor counters visible; user confirmed vendor room ($ sign)",
+        "evidence": "evidence/1791747750371319100.png"
+      }
+    ]
+  },
+  "controls": {
+    "continuous_forward": "]",
+    "continuous_reverse": "["
+  },
+  "sources": [
+    "https://net7wiki.bmsite.net/index.php?title=Your_First_Hull_Upgrade",
+    "https://net7wiki.bmsite.net/index.php?title=Guide_to_A_Warriors_Promotion_(Version_FINAL.W)",
+    "https://net7wiki.bmsite.net/index.php?title=Progen_Hull_Upgrade_Missions"
+  ],
+  "completed_upgrades": []
+}

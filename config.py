@@ -16,6 +16,8 @@ CHAT_LOG_PATH = Path(os.environ.get(
     str(Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"))
         / "EA GAMES/Earth & Beyond/release/chat.log"),
 ))
+GAME_CLIENTS = (GAME_CLIENT.resolve(),
+    Path(r"C:\Program Files (x86)\EA GAMES\EnB-client-2\release\client.exe").resolve())
 # Edit chat_prompt.txt while Pluto runs; it is reloaded for each generation.
 CHAT_PROMPT_PATH = PROJECT_DIR / "chat_prompt.txt"
 CHAT_INTERACTION_LOG = PROJECT_DIR / "chat_interactions.log"
@@ -24,7 +26,6 @@ CHAT_MAX_REPLY_CHARS = 180
 # Empty means Codex's default model. Override without changing the login.
 CHAT_CODEX_MODEL = os.environ.get("ENB_CHAT_MODEL", "")
 CHAT_CODEX_TIMEOUT = 90
-CHAT_RETRY_SECONDS = 60
 
 
 def net7_proxy() -> Path:

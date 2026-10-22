@@ -1,0 +1,39 @@
+{
+  "npc_id": 50,
+  "inventory_count": 3,
+  "slot_records_in_update": 81,
+  "captured_at": 1792509893.1673994,
+  "source": "diagnostics\\npc50_restarted_capture_20261020.jsonl",
+  "purchase_sent": false,
+  "items": [
+    {
+      "slot": 0,
+      "item_id": 2517,
+      "price": 2968,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Kestrel L2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 1,
+      "item_id": 1830,
+      "price": 2167,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Shark Fin L2",
+      "name_source": "Verified survey client item object"
+    },
+    {
+      "slot": 2,
+      "item_id": 3194,
+      "price": 3525,
+      "record_mask": "0x52",
+      "quantity_source": "unchanged cached value, omitted in this delta",
+      "name": "Sleeping Kelpie",
+      "name_source": "Verified survey client item object"
+    }
+  ],
+  "npc_name": null,
+  "npc_location": null
+}

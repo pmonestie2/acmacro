@@ -9,3 +9,17 @@ password = REPLACE_ME
 mission_count = 6
 low_job = false
 avoid_pit = false
+job_pickup = packet
+job_destinations = auto
+job_min_level = 0
+job_max_level = 0
+
+# vendor.py: one character per process, same installation for up to four copies.
+# Routes: raw-data (126->636), chocolate (636->126), charon-earth (536->31).
+# Zero cycles runs continuously. Quantity: 1-40, capped by free cargo slots.
+# vendor.py --slots N overrides vendor_quantity for that run.
+vendor_route = raw-data
+vendor_cycles = 0
+vendor_quantity = 22
+# Fixed corners: macboyje TL, macboypw TR, macboytt BL, macboyte BR.
+# Other character names may use window_x/window_y overrides.

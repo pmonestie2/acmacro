@@ -12,7 +12,7 @@ import time
 
 from config import (
     CHAT_PROMPT_PATH, CHAT_HISTORY_TURNS, CHAT_MAX_REPLY_CHARS,
-    CHAT_CODEX_MODEL, CHAT_CODEX_TIMEOUT, CHAT_RETRY_SECONDS,
+    CHAT_CODEX_MODEL, CHAT_CODEX_TIMEOUT,
 )
 from util import log_event
 
@@ -21,6 +21,14 @@ from util import log_event
 class ChatDecision:
     action: str
     response: str
+
+
+class PrivateMessage(tuple):
+    """Keep recipient/body tuple compatibility while retaining the GM badge."""
+    def __new__(cls, sender, message, is_gm=False):
+        request = super().__new__(cls, (sender, message))
+        request.is_gm = is_gm
+        return request
 
 
 REPLY_SCHEMA = {
@@ -82,7 +90,7 @@ def clean_reply(text, sender):
     return text[:limit].rstrip()
 
 
-def generate_reply(sender, message, history, cancelled):
+def generate_reply(sender, message, history, cancelled, is_gm=False):
     instructions = CHAT_PROMPT_PATH.read_text(encoding="utf-8-sig").strip()
     if not instructions:
         raise ValueError("chat_prompt.txt is empty")
@@ -96,7 +104,8 @@ def generate_reply(sender, message, history, cancelled):
         "Only choose STOP according to the editable reply instructions. "
         f"The response field must be one line of at most {CHAT_MAX_REPLY_CHARS} ASCII characters.\n\n"
         f"Reply instructions:\n{instructions}\n\nConversation JSON:\n"
-        + json.dumps({"sender": sender, "history": history, "current_message": message}, ensure_ascii=True)
+        + json.dumps({"sender": sender, "sender_is_gm": is_gm or any(turn.get('sender_is_gm') for turn in history),
+                      "history": history, "current_message": message}, ensure_ascii=True)
     )
     # Use an empty working directory, not the macro repository or its account settings.
     # Authentication stays with Codex; this code never reads or copies login tokens.
@@ -162,7 +171,6 @@ class ReplyGenerator:
         self._request = None
         self._decision = None
         self._busy = False
-        self._retry_at = 0
         self._worker = None
 
     def close(self):
@@ -180,7 +188,7 @@ class ReplyGenerator:
                 return None
             if self._request is request and self._decision is not None:
                 return self._decision
-            if self._busy or self._clock() < self._retry_at:
+            if self._busy:
                 return None
             self._request = request
             self._decision = None
@@ -189,18 +197,27 @@ class ReplyGenerator:
             self._worker = threading.Thread(
                 target=self._run, args=(request, history), name="chat-codex", daemon=True,
             )
-            self._worker.start()
+            try:
+                self._worker.start()
+            except Exception as exc:
+                self._worker = None
+                self._busy = False
+                self._decision = ChatDecision('STOP', '')
+                log_event(f'Chat generation failed; action=STOP: {type(exc).__name__}: {exc}')
+                return self._decision
             return None
 
     def _run(self, request, history):
         try:
-            decision = parse_decision(self._generate(*request, history, self._cancelled), request[0])
+            metadata = {'is_gm': True} if getattr(request, 'is_gm', False) else {}
+            decision = parse_decision(self._generate(*request, history, self._cancelled, **metadata), request[0])
         except Exception as exc:
             with self._lock:
                 self._busy = False
-                self._retry_at = self._clock() + CHAT_RETRY_SECONDS
+                if not self._cancelled.is_set():
+                    self._decision = ChatDecision('STOP', '')
             if not self._cancelled.is_set():
-                log_event(f"Codex reply pending; retry in {CHAT_RETRY_SECONDS}s: {exc}")
+                log_event(f'Chat generation failed; action=STOP: {type(exc).__name__}: {exc}')
         else:
             with self._lock:
                 self._busy = False
@@ -211,6 +228,8 @@ class ReplyGenerator:
         with self._lock:
             sender, message = request
             history = self._history.setdefault(sender.casefold(), deque(maxlen=CHAT_HISTORY_TURNS * 2))
-            history.extend(({"role": "user", "content": message}, {"role": "assistant", "content": text}))
+            user_turn = {"role": "user", "content": message}
+            if getattr(request, 'is_gm', False):
+                user_turn['sender_is_gm'] = True
+            history.extend((user_turn, {"role": "assistant", "content": text}))
             self._request, self._decision = None, None
-            self._retry_at = 0

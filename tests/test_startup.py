@@ -10,13 +10,51 @@ from player import PlayerSettings
 
 
 class StartupTests(unittest.TestCase):
+    def test_startup_presses_space_then_follows_main_window(self):
+        controller = ac.AcController.__new__(ac.AcController)
+        controller.instance = Mock(popup=True)
+        controller.window = 10
+        def refresh():
+            if controller.key_press.called:
+                controller.instance.popup = False
+                controller.window = 20
+        controller.init_window = Mock(side_effect=refresh)
+        controller.key_press = Mock()
+        controller._yield = Mock()
+        controller.complete_startup()
+        self.assertEqual(controller.key_press.call_args_list, [call("space", 0.2)] * 2)
+        self.assertEqual(controller._yield.call_args_list, [call(10), call(1)])
+        self.assertEqual(controller.window, 20)
+
+    def test_main_window_intro_does_not_skip_startup_spaces(self):
+        controller = ac.AcController.__new__(ac.AcController)
+        controller.instance = Mock(popup=False)
+        controller.window = 20
+        controller.init_window = Mock()
+        controller.key_press = Mock()
+        controller._yield = Mock()
+        controller.complete_startup()
+        self.assertEqual(controller.key_press.call_args_list, [call("space", 0.2)] * 2)
+        controller._yield.assert_any_call(10)
+
+    def test_stuck_popup_has_bounded_space_attempts(self):
+        controller = ac.AcController.__new__(ac.AcController)
+        controller.instance = Mock(popup=True)
+        controller.window = 10
+        controller.init_window = Mock()
+        controller.key_press = Mock()
+        controller._yield = Mock()
+        with self.assertRaisesRegex(ac.GameUnresponsive, "three Space attempts"):
+            controller.complete_startup()
+        self.assertEqual(controller.key_press.call_count, 3)
+
     def test_launch_passes_installed_client_path(self):
         client = Path(r"C:\Program Files (x86)\EA GAMES\Earth & Beyond\release\client.exe")
         proxy = Path(r"C:\Program Files (x86)\Net-7\bin\net7proxy.exe")
         with patch("ac.GAME_CLIENT", client), patch.object(Path, "is_file", return_value=True), patch("ac.net7_proxy", return_value=proxy), patch("ac.subprocess.Popen") as launch:
             ac.AcController.__new__(ac.AcController).launchEnb()
         launch.assert_called_once_with(
-            [str(proxy), f"/ADDRESS:{ac.SERVER_IP}", f"/CLIENT:{client}", "/SSL:443", "/POPT"],
+            [str(proxy), f"/ADDRESS:{ac.SERVER_IP}", f"/CLIENT:{client}", "/SSL:443", "/POPT", "/DML"],
             cwd=proxy.parent,
         )
 
@@ -30,7 +68,7 @@ class StartupTests(unittest.TestCase):
                 events.attach_mock(controller.init_read_chat, "chat")
                 runner = pluto.PlutoRunner()
                 runner.chat_event = None
-                with patch("pluto.AcController", return_value=controller), patch("pluto.run_every"), patch.object(runner, "find_dir"), patch.object(pluto.PLAYER, "set_pos"), patch.object(runner, "route", side_effect=KeyboardInterrupt):
+                with patch("pluto.AcController", return_value=controller), patch("pluto.reset_chat"), patch("pluto.run_every"), patch.object(runner, "find_dir"), patch.object(pluto.PLAYER, "set_pos"), patch.object(runner, "route", side_effect=KeyboardInterrupt):
                     with self.assertRaises(KeyboardInterrupt):
                         runner._run_loop()
                 names = [item[0] for item in events.mock_calls]
@@ -55,7 +93,8 @@ class StartupTests(unittest.TestCase):
     def test_restart_keeps_controller_and_chat_timer(self):
         controller = Mock(window=123)
         runner = pluto.PlutoRunner()
-        with patch("pluto.AcController", return_value=controller) as factory, patch("pluto.run_every") as timer, patch.object(runner, "find_dir"), patch.object(pluto.PLAYER, "set_pos"), patch.object(runner, "route", side_effect=[pluto.RestartException("relogin"), KeyboardInterrupt]):
+        with patch("pluto.AcController", return_value=controller) as factory, patch("pluto.reset_chat") as reset, patch("pluto.run_every") as timer, patch.object(runner, "find_dir"), patch.object(pluto.PLAYER, "set_pos"), patch.object(runner, "route", side_effect=[pluto.RestartException("relogin"), KeyboardInterrupt]):
+            reset.side_effect = lambda *args: self.assertTrue(factory.called)
             with self.assertRaises(KeyboardInterrupt):
                 runner._run_loop()
         factory.assert_called_once()

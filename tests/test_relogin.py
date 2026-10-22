@@ -87,6 +87,18 @@ class ReloginTests(unittest.TestCase):
         player.set_pos("new-checkpoint")
         self.assertEqual(player.progress_version, 1)
 
+    def test_sector_watchdog_allows_both_slow_gate_phases(self):
+        controller = self.controller()
+        controller.player.set_time = 1000
+        controller.player.relogin_time = 0
+        with patch("ac.find_window_exact", return_value=123), patch("ac.request_interrupt") as enqueue:
+            with patch("ac.time.time", return_value=1000 + 2 * ac.GATE_APPROACH_TIMEOUT):
+                controller.check_game_progress()
+            enqueue.assert_not_called()
+            with patch("ac.time.time", return_value=1000 + ac.POS_CHANGE_TIME + 1):
+                controller.check_game_progress()
+            enqueue.assert_called_once()
+
     def test_only_one_restart_and_stale_request_is_discarded(self):
         controller = self.controller()
         controller.player.set_time = controller.player.relogin_time = 0
