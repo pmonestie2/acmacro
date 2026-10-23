@@ -169,10 +169,10 @@ def validate_command(frame: bytes) -> tuple[int, int, tuple[int, ...]]:
         is_vault_deposit = (source == 1 and 0 <= slot < 40 and destination == 3 and
                             0 <= destination_slot < 96 and 1 <= quantity <= 0x7fffffff)
         is_vault_withdrawal = (source == 3 and 0 <= slot < 96 and destination == 1 and
-                               0 <= destination_slot < 40 and quantity == 1)
+                               0 <= destination_slot < 40 and 1 <= quantity <= 0x7fffffff)
         if game_id & 0xff000000 != 0x40000000 or not (
                 is_purchase or is_sale or is_vault_deposit or is_vault_withdrawal):
-            raise ValueError('Only bounded vendor transfers, cargo-to-vault stacks or single-unit vault withdrawals are supported')
+            raise ValueError('Only bounded vendor transfers, hull/vault stack transfers are supported')
         entity, targets = game_id & 0xffffff, ()
     elif opcode == 0x5d and len(frame) == 10:
         # Captured Kraken L3 activation: full little-endian player GameID,

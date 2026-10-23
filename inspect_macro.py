@@ -366,7 +366,10 @@ def main():
             x, y = request['fraction']
             if not (0 <= x < 1 and 0 <= y < 1):
                 raise ValueError('Invalid supervised coordinates')
-            pyautogui.click(origin[0] + int(x*size[0]), origin[1] + int(y*size[1]))
+            button = request.get('button', 'left')
+            if button not in ('left', 'right'):
+                raise ValueError('Invalid supervised mouse button')
+            pyautogui.click(origin[0] + int(x*size[0]), origin[1] + int(y*size[1]), button=button)
             RESULT.write_text(json.dumps({'state':'clicked', 'size':size, 'origin':origin, 'time':time.time()}))
         finally:
             record_view(window)

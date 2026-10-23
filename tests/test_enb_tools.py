@@ -74,6 +74,12 @@ class DispatcherTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.command('vault', 'macboyje', *options)
 
+    def test_vault_stack_option_is_forwarded_and_requires_withdrawal(self) -> None:
+        self.assertEqual(self.command('vault', 'macboyje', '--withdraw', '775', '--stack')[3:],
+                         ['--withdraw', '775', '--stack'])
+        with self.assertRaisesRegex(ValueError, '--stack requires --withdraw'):
+            self.command('vault', 'macboyje', '--list', '--stack')
+
     def test_dispatch_propagates_exit_code(self) -> None:
         with patch('enb.subprocess.run', return_value=Mock(returncode=7)) as run:
             self.assertEqual(enb.main(['find', 'Julie']), 7)

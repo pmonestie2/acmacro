@@ -95,17 +95,25 @@ enb vault macboyje --grep 775
 enb vault macboyje --withdraw 3302
 enb vault macboyje --withdraw 3302 --quantity 2
 enb vault macboyje --withdraw 3302 --quantity 2 --dry-run
+enb vault macboyje --withdraw 2838 --stack
 enb vault macboyje --all --dry-run
 ```
 
-Withdrawal defaults to one unit. The command finds the item ID in the current
-vault, checks the requested quantity and empty hull slots before starting, then
-moves one unit per confirmed packet into an empty hull slot. Each unit currently
-requires its own empty slot; withdrawals do not merge with existing hull stacks.
+Withdrawal defaults to one unit. `--stack` moves the entire first matching vault
+stack into one empty hull slot; `--quantity N` moves N units using one packet per
+whole or partial source stack. These options cannot be combined. The command
+checks the requested quantity and enough empty hull slots for the selected
+source stacks before starting. It does not merge with existing hull stacks.
+Before a deposit or withdrawal, the macro locally replays the item's cached
+definition from the owned Net7Proxy to its client, once per item ID per run.
+This receive-side `0x2025` handler emits a full `0x25` item definition so moved
+items can display their names and stats without entering a station. It does not
+request the item from the server. A missing cache entry or uncertain replay
+stops before the inventory transfer; listing and previews do not replay anything.
 The vault source and hull destination are checked before each submission and
 both inventory changes must confirm before continuing. Single-unit withdrawal
-in space was previously verified live; the new quantity-based command is unit
-tested. Listing never submits packets or opens a packet capture.
+in space was previously verified live; bulk withdrawals are unit-tested and
+have not yet been verified live. Listing never submits packets or opens a packet capture.
 
 The command moves whole cargo stacks into verified empty vault slots. It checks
 source item ID/quantity and destination again immediately before each submission,
@@ -1000,3 +1008,13 @@ stop without retry or selling a partial batch. Pause/resume and the
 log; batch state goes to `diagnostics/manufacture_<character>.json`. Ctrl+C stops
 the command and leaves the game open. This implementation supports the observed
 Callipus M2 recipe and NPC 36 only.
+
+## Internal web client
+
+The separate [web application](enb-web/README.md) and
+[shared game protocol library](enb-protocol/README.md) live in this repository.
+Install with `C:\PYTHON\python.exe -m pip install -r requirements.txt`, then run
+`web.cmd` and open `http://192.168.47.128:8765`. The browser asks for account
+credentials and character selection. It displays the live sector map and ship
+position and offers warp/gate controls for selected map objects. See the web
+README for legacy certificate pinning and verification limits.

@@ -184,11 +184,12 @@ class ProxyCommandTests(unittest.TestCase):
             with self.subTest(fields=(source, slot, destination, target, quantity)), self.assertRaises(ValueError):
                 validate_command(bad)
 
-    def test_vault_withdrawal_requires_explicit_slots_and_one_item(self) -> None:
+    def test_vault_withdrawal_requires_explicit_slots_and_bounded_quantity(self) -> None:
         frame = struct.pack('<HH', 28, 0x27) + struct.pack('>6I', 0x4003c204, 3, 26, 1, 0, 1)
         self.assertEqual(validate_command(frame), (0x27, 246276, ()))
+        self.assertEqual(validate_command(frame[:-4] + struct.pack('>I', 700)), (0x27, 246276, ()))
         for source, target, quantity in ((96, 0, 1), (26, 40, 1), (26, 0xffffffff, 1),
-                                          (26, 0, 0), (26, 0, 2)):
+                                          (26, 0, 0), (26, 0, 0x80000000)):
             bad = struct.pack('<HH', 28, 0x27) + struct.pack('>6I', 0x4003c204, 3, source, 1, target, quantity)
             with self.subTest(fields=(source, target, quantity)), self.assertRaises(ValueError):
                 validate_command(bad)

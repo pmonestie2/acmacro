@@ -3,28 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import struct
-
-
-class RC4:
-    def __init__(self, key):
-        if not 1 <= len(key) <= 256:
-            raise ValueError("RC4 key must contain 1 to 256 bytes")
-        self.s = list(range(256))
-        j = 0
-        for i in range(256):
-            j = (j + self.s[i] + key[i % len(key)]) & 255
-            self.s[i], self.s[j] = self.s[j], self.s[i]
-        self.i = self.j = 0
-
-    def transform(self, data):
-        output = bytearray()
-        s = self.s
-        for value in data:
-            self.i = (self.i + 1) & 255
-            self.j = (self.j + s[self.i]) & 255
-            s[self.i], s[self.j] = s[self.j], s[self.i]
-            output.append(value ^ s[(s[self.i] + s[self.j]) & 255])
-        return bytes(output)
+from enb_protocol.connection import RC4
 
 
 class FrameDecoder:

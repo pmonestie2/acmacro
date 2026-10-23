@@ -16,6 +16,7 @@ from player import PLAYER, load_player_config
 from protocol import proxy_commands
 from protocol.client_cargo import ClientCargo
 from protocol.client_vault import ClientVault
+from protocol.item_definitions import replay_item_definition
 from protocol.vendor_cargo import CargoItem
 from protocol.vendor_trading import ROUTES, VendorCapture, VendorSession
 from util import configure_event_log, log_event
@@ -29,6 +30,14 @@ class VaultEntry:
     item_id: int
     quantity: int
     name: str
+
+
+@dataclass(frozen=True)
+class VaultWithdrawal:
+    source: int
+    target: int
+    item: CargoItem
+    quantity: int
 
 
 class ItemNameCache(TypedDict):
@@ -67,9 +76,10 @@ class VaultController:
         self.capture = VendorCapture(session)
         self.capture_active: bool = False
         self.pending: tuple[int, int, CargoItem] | None = None
-        self.pending_withdrawal: tuple[int, int, CargoItem] | None = None
+        self.pending_withdrawal: VaultWithdrawal | None = None
         self.moved: int = 0
         self.skipped: int = 0
+        self.loaded_definitions: set[int] = set()
 
     def checkpoint(self) -> None:
         if self.capture_active:
@@ -84,6 +94,15 @@ class VaultController:
 
     def vault_snapshot(self) -> dict[int, CargoItem]:
         return self.vault.snapshot(self.checkpoint, self.controller.active_time)
+
+    def ensure_item_definition(self, item_id: int) -> None:
+        if item_id in self.loaded_definitions:
+            return
+        self.checkpoint()
+        log_event(f'Vault item-definition replay started: item={item_id}; local proxy-to-client')
+        replay_item_definition(self.session, item_id, before_submit=self.checkpoint)
+        self.loaded_definitions.add(item_id)
+        log_event(f'Vault item-definition replay completed: item={item_id}; local handler returned')
 
     def before_submit(self) -> None:
         self.checkpoint()
@@ -106,6 +125,7 @@ class VaultController:
                                                        1, source, 3, target, item.quantity)
         try:
             self.before_submit()
+            self.ensure_item_definition(item.item_id)
             proxy_commands.submit(self.session.proxy_pid, report=report,
                                   frame=frame, before_submit=self.before_submit)
         finally:
@@ -151,68 +171,88 @@ class VaultController:
         self.checkpoint()
         if self.pending_withdrawal is None:
             raise RuntimeError('No pending vault withdrawal')
-        source, target, item = self.pending_withdrawal
+        source, target, item = (self.pending_withdrawal.source, self.pending_withdrawal.target,
+                                self.pending_withdrawal.item)
+        if item.quantity is None or not 1 <= self.pending_withdrawal.quantity <= item.quantity:
+            raise RuntimeError('Withdrawal quantity exceeds the verified source stack; no transfer sent')
         if self.vault_snapshot().get(source) != item:
             raise RuntimeError('Vault source changed; no withdrawal sent')
         if self.cargo_snapshot().get(target) != CargoItem(0xffffffff, 0):
             raise RuntimeError('Cargo destination is no longer empty; no withdrawal sent')
 
-    def withdraw_one(self, source: int, target: int, item: CargoItem) -> None:
+    def withdraw_stack(self, source: int, target: int, item: CargoItem, quantity: int) -> None:
         if item.item_id is None or item.quantity is None or item.quantity <= 0:
             raise ValueError('Withdrawal requires a known item and positive source quantity')
+        if not 1 <= quantity <= min(item.quantity, 0x7fffffff):
+            raise ValueError('Withdrawal quantity must be positive and no larger than its source stack')
         self.capture.read()
-        self.pending_withdrawal = source, target, item
+        self.pending_withdrawal = VaultWithdrawal(source, target, item, quantity)
         report: dict[str, object] = {}
-        frame = struct.pack('<HH', 28, 0x27) + struct.pack('>6I', self.session.game_id, 3, source, 1, target, 1)
+        frame = struct.pack('<HH', 28, 0x27) + struct.pack('>6I', self.session.game_id, 3, source, 1, target, quantity)
         try:
             self.before_withdraw()
+            self.ensure_item_definition(item.item_id)
             proxy_commands.submit(self.session.proxy_pid, report=report,
                                   frame=frame, before_submit=self.before_withdraw)
         finally:
             self.pending_withdrawal = None
         if report.get('state') != 'handler_returned':
             raise RuntimeError(f'Uncertain withdrawal submission: {report.get("state")}; no retry')
-        expected = CargoItem(item.item_id, item.quantity - 1) if item.quantity > 1 else CargoItem(0xffffffff, 0)
+        expected = (CargoItem(item.item_id, item.quantity - quantity)
+                    if item.quantity > quantity else CargoItem(0xffffffff, 0))
         deadline = self.controller.active_time() + 10
         while True:
             self.checkpoint()
             self.capture.read(.05)
-            if (self.cargo_snapshot().get(target) == CargoItem(item.item_id, 1)
+            if (self.cargo_snapshot().get(target) == CargoItem(item.item_id, quantity)
                     and self.vault_snapshot().get(source) == expected):
-                self.moved += 1
-                log_event(f'Vault withdrawal confirmed: item={item.item_id}, quantity=1, '
+                self.moved += quantity
+                log_event(f'Vault withdrawal confirmed: item={item.item_id}, quantity={quantity}, '
                           f'vault_slot={source}, cargo_slot={target}, moved_items={self.moved}')
                 return
             if self.controller.active_time() >= deadline:
                 raise TimeoutError(f'Vault withdrawal unconfirmed: item={item.item_id}, '
                                    f'vault_slot={source}, cargo_slot={target}; no retry')
 
-    def withdraw(self, item_id: int, quantity: int, *, dry_run: bool = False) -> None:
-        if not 0 < item_id < 0xfffffffe or quantity < 1:
-            raise ValueError('Withdrawal item ID and quantity must be positive')
-        available = sum(item.quantity or 0 for item in self.vault_snapshot().values() if item.item_id == item_id)
-        capacity = self.cargo.capacity()
-        empty = [slot for slot, item in self.cargo_snapshot().items()
-                 if slot < capacity and item == CargoItem(0xffffffff, 0)]
+    def withdraw(self, item_id: int, quantity: int, *, dry_run: bool = False,
+                 whole_stack: bool = False) -> None:
+        if not 0 < item_id < 0xfffffffe or not 1 <= quantity <= 0x7fffffff:
+            raise ValueError('Withdrawal item ID and quantity must be positive and bounded')
+        candidates = [(slot, item) for slot, item in sorted(self.vault_snapshot().items())
+                      if item.item_id == item_id and (item.quantity or 0) > 0]
+        available = sum(item.quantity or 0 for _, item in candidates)
+        if whole_stack and candidates:
+            quantity = candidates[0][1].quantity or 0
         if available < quantity:
             raise ValueError(f'Vault has {available} of item {item_id}; requested {quantity}; no transfers sent')
-        if len(empty) < quantity:
-            raise ValueError(f'Need {quantity} empty cargo slots; found {len(empty)}; no transfers sent')
+        # Preserve source stacks: each packet moves a whole or partial stack to one empty slot.
+        chunks: list[tuple[int, CargoItem, int]] = []
+        remaining = quantity
+        for source, item in candidates:
+            count = min(remaining, item.quantity or 0)
+            chunks.append((source, item, count))
+            remaining -= count
+            if not remaining:
+                break
+        capacity = self.cargo.capacity()
+        empty = sorted(slot for slot, item in self.cargo_snapshot().items()
+                       if slot < capacity and item == CargoItem(0xffffffff, 0))
+        if len(empty) < len(chunks):
+            raise ValueError(f'Need {len(chunks)} empty cargo slots; found {len(empty)}; no transfers sent')
         if dry_run:
-            log_event(f'Vault withdrawal preview: item={item_id}, quantity={quantity}, available={available}')
+            log_event(f'Vault withdrawal preview: item={item_id}, quantity={quantity}, '
+                      f'stacks={len(chunks)}, available={available}')
             return
-        for target in sorted(empty)[:quantity]:
-            candidates = [(slot, value) for slot, value in sorted(self.vault_snapshot().items())
-                          if value.item_id == item_id and (value.quantity or 0) > 0]
-            if not candidates:
-                raise RuntimeError('Vault contents changed; no further withdrawal sent')
-            source, item = candidates[0]
-            self.withdraw_one(source, target, item)
+        for target, (source, item, count) in zip(empty, chunks):
+            self.withdraw_stack(source, target, item, count)
 
     def run(self, *, list_only: bool = False, withdraw_item: int | None = None,
-            quantity: int = 1, dry_run: bool = False, grep: str | None = None) -> None:
+            quantity: int = 1, dry_run: bool = False, grep: str | None = None,
+            whole_stack: bool = False) -> None:
         if quantity < 1 or (withdraw_item is not None and not 0 < withdraw_item < 0xfffffffe):
             raise ValueError('Withdrawal item ID and quantity must be positive')
+        if whole_stack and withdraw_item is None:
+            raise ValueError('--stack requires --withdraw')
         if grep is not None and not normalize(grep):
             raise ValueError('--grep needs a nonempty item name or item ID')
         if grep is not None and withdraw_item is not None:
@@ -236,7 +276,7 @@ class VaultController:
             if self.controller.focus:
                 self.controller.focus.release(reason='packet vault unloading')
             if withdraw_item is not None:
-                self.withdraw(withdraw_item, quantity, dry_run=dry_run)
+                self.withdraw(withdraw_item, quantity, dry_run=dry_run, whole_stack=whole_stack)
                 return
             initial = self.cargo_snapshot()
             names = item_names(Path(__file__).resolve().parent) if grep is not None else {}
@@ -282,16 +322,32 @@ class VaultController:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('player_config', type=Path)
+    parser = argparse.ArgumentParser(
+        description='List vault contents or move items between hull and vault on an already logged-in '
+                    'character, including in space.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='Examples:\n'
+               '  vault .\\mbboyje.conf --list\n'
+               '  vault .\\mbboyje.conf --list --grep unicorn\n'
+               '  vault .\\mbboyje.conf --grep "white dragon" --dry-run\n'
+               '  vault .\\mbboyje.conf --grep "white dragon"\n'
+               '  vault .\\mbboyje.conf --withdraw 3302 --quantity 2\n'
+               '  vault .\\mbboyje.conf --withdraw 2838 --stack\n'
+               '  vault .\\mbboyje.conf --all\n\n'
+               'Choose one operation: --list, --withdraw, --grep (deposit), or --all.')
+    parser.add_argument('player_config', type=Path, help='Player config path, e.g. .\\mbboyje.conf; character must already be logged in')
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument('--list', action='store_true', help='List vault item IDs, quantities, names and slots; no transfers')
-    mode.add_argument('--withdraw', type=int, metavar='ITEM_ID', help='Move this item ID from vault to hull')
-    mode.add_argument('--all', action='store_true', help='Explicitly deposit all eligible hull cargo')
-    parser.add_argument('--grep', metavar='TEXT', help='Lenient item-name or exact item-ID filter for deposits/listing')
-    parser.add_argument('--quantity', type=int, help='Units to withdraw; default 1, one empty hull slot per unit')
+    mode.add_argument('--list', action='store_true', help='Show vault slot, item ID, quantity and name; moves nothing. Add --grep to filter')
+    mode.add_argument('--withdraw', type=int, metavar='ITEM_ID', help='Move an item from vault to hull by numeric ID; default 1 unit. Find IDs with --list')
+    mode.add_argument('--all', action='store_true', help='Deposit all eligible hull stacks; excludes known route trade goods. Cannot combine with --grep')
+    parser.add_argument('--grep', metavar='TEXT', help='Deposit matching hull stacks, or filter --list. Matches approximate names or an exact numeric ID; quote multiword names')
+    amounts = parser.add_mutually_exclusive_group()
+    amounts.add_argument('--quantity', type=int, metavar='N', help='Units to withdraw (default: 1); transfers whole or partial source stacks into empty hull slots')
+    amounts.add_argument('--stack', action='store_true', help='Withdraw the entire first matching vault stack into one empty hull slot; requires --withdraw')
     parser.add_argument('--dry-run', action='store_true', help='Preview deposits or withdrawals without transferring')
     args = parser.parse_args(argv)
+    if args.stack and args.withdraw is None:
+        parser.error('--stack requires --withdraw')
     if args.quantity is not None and (args.withdraw is None or args.quantity < 1):
         parser.error('--quantity requires --withdraw and must be positive')
     if args.grep is not None and (args.all or args.withdraw is not None or not normalize(args.grep)):
@@ -309,7 +365,7 @@ def main(argv: list[str] | None = None) -> int:
             raise RuntimeError('Log this character into the game before unloading hull cargo')
         session = VendorSession.from_instance(controller.instance)
         VaultController(controller, session).run(list_only=args.list, withdraw_item=args.withdraw,
-                                                 quantity=args.quantity or 1, dry_run=args.dry_run, grep=args.grep)
+                                                 quantity=args.quantity or 1, dry_run=args.dry_run, grep=args.grep, whole_stack=args.stack)
         return 0
     except (KeyboardInterrupt, InterruptedError, StopMacro) as error:
         log_event(f'Vault operation stopped: {error}; no retry')

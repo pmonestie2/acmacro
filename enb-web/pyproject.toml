@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enb-web"
+version = "0.1.0"
+description = "Internal Earth and Beyond web client"
+requires-python = ">=3.11"
+dependencies = ["enb-protocol>=0.1.0,<0.2"]
+
+[project.scripts]
+enb-web = "enb_web.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["enb_web*"]
+
+[tool.setuptools.package-data]
+enb_web = ["static/*"]

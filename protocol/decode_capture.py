@@ -5,6 +5,33 @@ import json
 from pathlib import Path
 import socket
 import struct
+from typing import TypedDict
+
+from enb_protocol.wire import decode_batch, decode_frame
+
+
+class ChatFields(TypedDict):
+    event: int
+    unknown_u32: int
+    name_1: str
+    name_2: str
+    string_3: str
+    channel: str
+    message: str
+    trailer_hex: str
+
+
+class DecodedFrame(TypedDict, total=False):
+    length: int
+    opcode: str
+    body_hex: str
+    chat: ChatFields
+
+
+class DecodedDatagram(DecodedFrame, total=False):
+    session_or_token: str
+    sequence: int
+    frames: list[DecodedFrame]
 
 
 def packets(path):
@@ -56,7 +83,7 @@ def udp(packet):
             'payload': ip[header_size+8:header_size+length]}
 
 
-def chat_fields(body):
+def chat_fields(body: bytes) -> ChatFields:
     if len(body) < 8:
         raise ValueError('Truncated 0x00a5 prefix')
     event, unknown = struct.unpack_from('<II', body)
@@ -78,35 +105,23 @@ def chat_fields(body):
             'channel': fields[3], 'message': fields[4], 'trailer_hex': body[offset:].hex()}
 
 
-def decode_datagram(payload):
-    if len(payload) < 4:
-        raise ValueError('Truncated outer header')
-    length, opcode = struct.unpack_from('<HH', payload)
-    if length != len(payload):
-        raise ValueError('Outer length does not match datagram')
-    result = {'length': length, 'opcode': f'0x{opcode:04x}'}
-    if opcode != 0x2016:
-        result['body_hex'] = payload[4:].hex()
+def decode_datagram(payload: bytes) -> DecodedDatagram:
+    outer = decode_frame(payload)
+    result: DecodedDatagram = {'length': len(payload), 'opcode': f'0x{outer.opcode:04x}'}
+    if outer.opcode != 0x2016:
+        result['body_hex'] = outer.body.hex()
         return result
-    if len(payload) < 12:
-        raise ValueError('Truncated 0x2016 header')
-    session, sequence = struct.unpack_from('<II', payload, 4)
-    result.update(session_or_token=f'0x{session:08x}', sequence=sequence, frames=[])
-    offset = 12
-    while offset < length:
-        if offset + 4 > length:
-            raise ValueError('Truncated inner header')
-        size, inner_opcode = struct.unpack_from('<HH', payload, offset)
-        if size < 4 or offset + size > length:
-            raise ValueError('Invalid inner length')
-        body = payload[offset+4:offset+size]
-        frame = {'length': size, 'opcode': f'0x{inner_opcode:04x}'}
-        if inner_opcode == 0xa5:
-            frame['chat'] = chat_fields(body)
+    batch = decode_batch(payload)
+    result['session_or_token'] = f'0x{batch.player_id:08x}'
+    result['sequence'] = batch.sequence
+    result['frames'] = []
+    for inner in batch.frames:
+        frame: DecodedFrame = {'length': len(inner.body) + 4, 'opcode': f'0x{inner.opcode:04x}'}
+        if inner.opcode == 0xa5:
+            frame['chat'] = chat_fields(inner.body)
         else:
-            frame['body_hex'] = body.hex()
+            frame['body_hex'] = inner.body.hex()
         result['frames'].append(frame)
-        offset += size
     return result
 
 

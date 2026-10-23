@@ -2,3 +2,5 @@ PyAutoGUI==0.9.54
 Pillow==12.3.0
 WMI==1.5.1; sys_platform == "win32"
 pywin32==312; sys_platform == "win32"
+-e ./enb-protocol
+-e ./enb-web

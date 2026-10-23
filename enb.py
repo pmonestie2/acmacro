@@ -45,15 +45,37 @@ def parser() -> argparse.ArgumentParser:
     drag = commands.add_parser('drag', help='Start or stop the native Alt+drag helper')
     drag.add_argument('action', choices=['start', 'stop'], nargs='?', default='start')
     drag.add_argument('--elevated', action='store_true', help=argparse.SUPPRESS)
-    vault = commands.add_parser('vault', help='List vault item IDs, withdraw by ID, or unload hull cargo')
-    vault.add_argument('name', help='Character, ENB_<character>, or player config path')
+    vault = commands.add_parser('vault', help='List vault contents or move items between hull and vault',
+        description='Use an already logged-in character to list vault contents, deposit selected hull '
+                    'items, or withdraw by item ID. Listing and transfers also work in space.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='Examples:\n'
+               '  enb vault .\\mbboyje.conf --list\n'
+               '  enb vault .\\mbboyje.conf --list --grep unicorn\n'
+               '  enb vault .\\mbboyje.conf --grep "white dragon" --dry-run\n'
+               '  enb vault .\\mbboyje.conf --grep "white dragon"\n'
+               '  enb vault .\\mbboyje.conf --withdraw 3302 --quantity 2\n'
+               '  enb vault .\\mbboyje.conf --withdraw 2838 --stack\n'
+               '  enb vault .\\mbboyje.conf --all\n\n'
+               'Choose one operation: --list, --withdraw, --grep (deposit), or --all.\n'
+               'Names resolve to config_player_<name>.txt; pass a path for other config filenames.')
+    vault.add_argument('name', help='Character name, ENB_<name>, or config path such as .\\mbboyje.conf')
     vault_mode = vault.add_mutually_exclusive_group()
-    vault_mode.add_argument('--list', action='store_true', help='List vault contents and item IDs')
-    vault_mode.add_argument('--withdraw', type=int, metavar='ITEM_ID')
-    vault_mode.add_argument('--all', action='store_true', help='Deposit all eligible hull cargo')
-    vault.add_argument('--grep', metavar='TEXT', help='Filter deposits or vault listings by item name or ID')
-    vault.add_argument('--quantity', type=int)
-    vault.add_argument('--dry-run', action='store_true')
+    vault_mode.add_argument('--list', action='store_true',
+                           help='Show vault slot, item ID, quantity and name; moves nothing. Add --grep to filter')
+    vault_mode.add_argument('--withdraw', type=int, metavar='ITEM_ID',
+                           help='Move an item from vault to hull by numeric ID; default 1 unit. Find IDs with --list')
+    vault_mode.add_argument('--all', action='store_true',
+                           help='Deposit all eligible hull stacks; excludes known route trade goods. Cannot combine with --grep')
+    vault.add_argument('--grep', metavar='TEXT',
+                       help='Deposit matching hull stacks, or filter --list. Matches approximate names or an exact numeric ID; quote multiword names')
+    amounts = vault.add_mutually_exclusive_group()
+    amounts.add_argument('--quantity', type=int, metavar='N',
+                         help='Units to withdraw (default: 1); moves source stacks into empty hull slots')
+    amounts.add_argument('--stack', action='store_true',
+                         help='Withdraw the entire first matching vault stack into one empty hull slot; requires --withdraw')
+    vault.add_argument('--dry-run', action='store_true',
+                       help='Preview selected deposits or withdrawals without moving items')
     manufacture = commands.add_parser('manufacture', help='Fill hull with Callipus M2, then sell only those to NPC 36')
     manufacture.add_argument('window', help='Exact character window title; matching player config required')
     manufacture.add_argument('--batches', type=int, default=1, help='Default 1; 0 repeats until stopped')
@@ -146,6 +168,10 @@ def command_line(args: argparse.Namespace) -> list[str]:
             if not 0 < args.withdraw < 0xfffffffe:
                 raise ValueError('--withdraw requires a positive item ID')
             options += ['--withdraw', str(args.withdraw)]
+        if args.stack:
+            if args.withdraw is None:
+                raise ValueError('--stack requires --withdraw')
+            options.append('--stack')
         if args.quantity is not None:
             if args.withdraw is None or args.quantity < 1:
                 raise ValueError('--quantity requires --withdraw and must be positive')

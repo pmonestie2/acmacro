@@ -41,6 +41,9 @@ class VaultTests(unittest.TestCase):
         names = patch('vault.item_names', return_value={775: 'White Dragon Laser M2'})
         names.start()
         self.addCleanup(names.stop)
+        definitions = patch('vault.replay_item_definition')
+        self.replay_definition = definitions.start()
+        self.addCleanup(definitions.stop)
 
     def submit(self, args: object, report: dict[str, object], *, frame: bytes,
                before_submit: Callable[[], None]) -> None:
@@ -125,11 +128,11 @@ class VaultTests(unittest.TestCase):
                         before_submit: Callable[[], None]) -> None:
         before_submit()
         game, source_inv, source, target_inv, target, quantity = struct.unpack('>6I', frame[4:])
-        self.assertEqual((game, source_inv, target_inv, quantity), (SESSION.game_id, 3, 1, 1))
+        self.assertEqual((game, source_inv, target_inv), (SESSION.game_id, 3, 1))
         previous = self.secure[source]
         self.assertEqual(self.hull[target], EMPTY)
-        self.hull[target] = CargoItem(previous.item_id, 1)
-        self.secure[source] = CargoItem(previous.item_id, previous.quantity - 1) if previous.quantity > 1 else EMPTY
+        self.hull[target] = CargoItem(previous.item_id, quantity)
+        self.secure[source] = CargoItem(previous.item_id, previous.quantity - quantity) if previous.quantity > quantity else EMPTY
         report['state'] = 'handler_returned'
 
     def test_withdraws_requested_units_by_id_and_confirms_both_inventories(self) -> None:
@@ -137,18 +140,90 @@ class VaultTests(unittest.TestCase):
         self.secure[0] = CargoItem(775, 3)
         with patch('vault.proxy_commands.submit', side_effect=self.submit_withdraw) as send:
             self.worker.run(withdraw_item=775, quantity=2)
-        self.assertEqual(send.call_count, 2)
+        self.assertEqual(send.call_count, 1)
         self.assertEqual(self.worker.moved, 2)
         self.assertEqual(self.secure[0], CargoItem(775, 1))
-        self.assertEqual(self.hull[0], CargoItem(775, 1))
+        self.assertEqual(self.hull[0], CargoItem(775, 2))
         self.assertEqual(self.hull[1], CargoItem(6549, 1))
         self.assertIsNone(self.worker.pending_withdrawal)
+        self.replay_definition.assert_called_once_with(SESSION, 775, before_submit=self.worker.checkpoint)
+
+    def test_definition_failure_stops_before_inventory_transfer(self) -> None:
+        self.hull[0] = EMPTY
+        self.replay_definition.side_effect = TimeoutError('definition unconfirmed; no retry')
+        with patch('vault.proxy_commands.submit') as send:
+            with self.assertRaisesRegex(TimeoutError, 'definition unconfirmed'):
+                self.worker.run(withdraw_item=775)
+        send.assert_not_called()
+        self.assertEqual(self.worker.moved, 0)
+        self.assertEqual(self.worker.loaded_definitions, set())
+        self.assertIsNone(self.worker.pending_withdrawal)
+        self.worker.capture.close.assert_called_once()
+
+    def test_definition_replay_precedes_deposit(self) -> None:
+        events: list[str] = []
+        self.replay_definition.side_effect = lambda *args, **kwargs: events.append('definition')
+        def transfer(*args: object, **kwargs: object) -> None:
+            events.append('transfer')
+            self.submit(*args, **kwargs)
+        with patch('vault.proxy_commands.submit', side_effect=transfer):
+            self.worker.deposit(0, 1, self.hull[0])
+        self.assertEqual(events, ['definition', 'transfer'])
 
     def test_withdrawal_preview_sends_nothing(self) -> None:
         self.hull[0] = EMPTY
         with patch('vault.proxy_commands.submit') as send:
             self.worker.run(withdraw_item=775, dry_run=True)
         send.assert_not_called()
+        self.replay_definition.assert_not_called()
+
+    def test_whole_stack_uses_one_packet_and_one_empty_hull_slot(self) -> None:
+        self.hull[0] = EMPTY
+        self.secure[0] = CargoItem(775, 700)
+        self.secure[2] = CargoItem(775, 3)
+        with patch('vault.proxy_commands.submit', side_effect=self.submit_withdraw) as send:
+            self.worker.run(withdraw_item=775, whole_stack=True)
+        self.assertEqual(send.call_count, 1)
+        self.assertEqual(self.hull[0], CargoItem(775, 700))
+        self.assertEqual(self.secure[0], EMPTY)
+        self.assertEqual(self.secure[2], CargoItem(775, 3))
+        self.assertEqual(self.worker.moved, 700)
+
+    def test_requested_quantity_spans_source_stacks_without_splitting_units(self) -> None:
+        self.hull[0] = self.hull[2] = EMPTY
+        self.secure[0], self.secure[2] = CargoItem(775, 3), CargoItem(775, 4)
+        with patch('vault.proxy_commands.submit', side_effect=self.submit_withdraw) as send:
+            self.worker.run(withdraw_item=775, quantity=5)
+        self.assertEqual(send.call_count, 2)
+        self.assertEqual(self.hull[0], CargoItem(775, 3))
+        self.assertEqual(self.hull[2], CargoItem(775, 2))
+        self.assertEqual(self.secure[2], CargoItem(775, 2))
+        self.assertEqual(self.worker.moved, 5)
+
+    def test_insufficient_slots_for_source_stacks_prevents_all_transfers(self) -> None:
+        self.hull[0] = EMPTY
+        self.secure[0], self.secure[2] = CargoItem(775, 3), CargoItem(775, 4)
+        with patch('vault.proxy_commands.submit') as send:
+            with self.assertRaisesRegex(ValueError, 'Need 2 empty cargo slots'):
+                self.worker.run(withdraw_item=775, quantity=5)
+        send.assert_not_called()
+        self.replay_definition.assert_not_called()
+
+    def test_stack_preview_does_not_replay_or_move_cargo(self) -> None:
+        self.hull[0] = EMPTY
+        self.secure[0] = CargoItem(775, 700)
+        with patch('vault.proxy_commands.submit') as send:
+            self.worker.run(withdraw_item=775, whole_stack=True, dry_run=True)
+        send.assert_not_called()
+        self.replay_definition.assert_not_called()
+        self.assertEqual(self.secure[0], CargoItem(775, 700))
+
+    def test_overlarge_quantity_is_rejected_before_replay_or_submission(self) -> None:
+        with patch('vault.proxy_commands.submit') as send:
+            with self.assertRaisesRegex(ValueError, 'source stack'):
+                self.worker.withdraw_stack(0, 0, CargoItem(775, 3), 4)
+        send.assert_not_called()
+        self.replay_definition.assert_not_called()
 
     def test_missing_item_or_cargo_space_stops_before_transfers(self) -> None:
         with patch('vault.proxy_commands.submit') as send:
@@ -161,7 +236,7 @@ class VaultTests(unittest.TestCase):
     def test_withdrawal_changed_destination_blocks_submission(self) -> None:
         with patch('vault.proxy_commands.submit') as send:
             with self.assertRaisesRegex(RuntimeError, 'no longer empty'):
-                self.worker.withdraw_one(0, 0, self.secure[0])
+                self.worker.withdraw_stack(0, 0, self.secure[0], 1)
         send.assert_not_called()
 
     def test_withdrawal_timeout_never_retries(self) -> None:
