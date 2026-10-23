@@ -90,6 +90,43 @@ class SectorGraph:
             atomic_json(self.path, {'updated': time.time(), 'directed': False,
                 'coverage': 'Confirmed crossings; reverse gates inferred under the user-selected undirected model.',
                 'sectors': {s: [asdict(g) for g in gates.values()] for s, gates in self.sectors.items()}})
+            self.write_markdown()
+
+    def markdown(self) -> str:
+        """Render a derived report; routing always reads the JSON graph."""
+        count = sum(len(gates) for gates in self.sectors.values())
+        lines = ['# Sector gate graph', '',
+                 f'Generated from `{self.path.name}`. JSON is the source of truth; do not edit this report.', '',
+                 f'{len(self.sectors)} sectors; {count} sector-local gate records.', '',
+                 'Confirmed means crossed; inferred means an observed return gate paired with a confirmed crossing.',
+                 'Unexplored gates have no established destination. Unavailable gates are excluded from routing.', '']
+        for sector, gates in sorted(self.sectors.items()):
+            lines.extend([f'## {self.markdown_cell(sector)}', '',
+                          '| Destination | Gate | Local ID | Status | Notes |',
+                          '|---|---|---:|---|---|'])
+            for gate in sorted(gates.values(), key=lambda entry: (entry.destination or '', entry.name, entry.item_id)):
+                status = ('Unavailable' if gate.unavailable_reason else 'Confirmed' if gate.confirmed_at is not None
+                          else 'Inferred return' if gate.inferred_reverse else 'Unexplored')
+                cells = [gate.destination or 'Unknown', gate.name,
+                         f'{gate.item_id} (`{gate.item_id:#x}`)', status, gate.unavailable_reason or '']
+                lines.append('| ' + ' | '.join(self.markdown_cell(cell) for cell in cells) + ' |')
+            if not gates:
+                lines.append('| — | No observed gates | — | — | |')
+            lines.append('')
+        return '\n'.join(lines)
+
+    @staticmethod
+    def markdown_cell(value: str) -> str:
+        return value.replace('|', '\\|').replace('\r', ' ').replace('\n', ' ')
+
+    def write_markdown(self) -> None:
+        report = self.path.with_suffix('.md')
+        content = self.markdown()
+        if report.exists() and report.read_text(encoding='utf-8') == content:
+            return
+        temporary = report.with_suffix('.md.tmp')
+        temporary.write_text(content, encoding='utf-8')
+        temporary.replace(report)
 
     def gate(self, sector: str, item_id: int, name: str) -> Gate:
         gates = self.sectors.setdefault(sector, {})

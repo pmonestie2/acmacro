@@ -10,6 +10,30 @@ from protocol.world_tracker import WorldTracker
 
 
 class SectorGraphTests(unittest.TestCase):
+    def test_markdown_is_a_generated_view_and_cannot_change_routes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'sector_graph.json'
+            graph = SectorGraph(path)
+            graph.gate('A', 1, 'Gate to B')
+            graph.confirm('A', 1, 'B', 1.)
+            graph.gate('B', 2, 'Gate to A')
+            blocked = graph.gate('B', 3, 'Gate | closed')
+            blocked.unavailable_reason = 'Closed\nby server'
+            graph.save()
+            report = path.with_suffix('.md')
+            text = report.read_text(encoding='utf-8')
+            self.assertIn('JSON is the source of truth', text)
+            self.assertIn('Inferred return', text)
+            self.assertIn('Gate \\| closed', text)
+            self.assertIn('Closed by server', text)
+            before = path.read_bytes()
+            report.write_text('User-edited report; no routing authority')
+            restored = SectorGraph(path)
+            self.assertEqual(restored.sectors['A'][1].destination, 'B')
+            restored.write_markdown()
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(report.read_text(encoding='utf-8'), text)
+
     def test_shared_graph_save_merges_independent_writers(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'sector_graph.json'
