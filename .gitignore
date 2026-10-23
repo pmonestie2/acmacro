@@ -11,3 +11,7 @@ __pycache__/
 *.conf
 /navigation/pw_hull_upgrade/evidence/
 /navigation/pw_hull_upgrade/actions.jsonl
+/navigation/station_catalog_lock/
+/navigation/sector_graph_lock/
+/navigation/sector_graph_*.json
+/navigation/exploration_plan.json

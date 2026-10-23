@@ -23,8 +23,14 @@ GUARD_NAMES = ('root', 'connection', 'sender', 'connection vtable', 'connection 
 ARENA_FOLDER = Path(__file__).resolve().parent / 'captures' / 'navigation_arenas'
 CODE_PAGE = 4096
 SUPPORTED_VENDOR_NPC_IDS = frozenset((*range(1, 601), 636, 832))
-FORWARDED_OPCODES = frozenset((0x4e, 0x55, 0x27, 0x7b, 0x7e))
+FORWARDED_OPCODES = frozenset((0x17, 0x4e, 0x55, 0x27, 0x7b, 0x7e))
 ARENA_SIZE = 16 * 1024 * 1024
+_COMMAND_HEADER = struct.Struct('<HH')
+
+
+def pack_command(opcode: int, body: bytes) -> bytes:
+    """Frame a command, deriving its total size from the header and body."""
+    return _COMMAND_HEADER.pack(_COMMAND_HEADER.size + len(body), opcode) + body
 
 
 class CodeArena(TypedDict):
@@ -121,11 +127,14 @@ def validate_command(frame: bytes) -> tuple[int, int, tuple[int, ...]]:
         entity &= 0xffffff
         targets = (target,)
     elif opcode == 0x17 and len(frame) == 12:
-        raise ValueError('Selection injection disabled: live wire output did not match the intended command; investigate before retrying')
+        game_id, target = struct.unpack_from('<II', frame, 4)
+        if game_id & 0xff000000 != 0x40000000:
+            raise ValueError('Target selection requires the full player GameID')
+        entity, targets = game_id & 0xffffff, (target,)
     elif opcode == 0x2c and len(frame) == 20:
         game_id, action, target, optional = struct.unpack_from('<4I', frame, 4)
-        if game_id & 0xff000000 != 0x40000000 or action != 2 or optional != 0:
-            raise ValueError('Only captured space-object dialogue action 2 is supported')
+        if game_id & 0xff000000 != 0x40000000 or action not in (2, 7, 8, 18, 28) or optional != 0:
+            raise ValueError('Only dialogue 2, docking completion 7, landing 8, gate activation 18, and docking start 28 are supported')
         entity = game_id & 0xffffff
         targets = (target,)
     elif opcode == 0x4e and len(frame) == 13:

@@ -15,7 +15,10 @@ import subprocess
 import sys
 import threading
 import time
-from typing import Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+
+if TYPE_CHECKING:
+    from pluto_navigation import PlutoPacketNavigator
 
 from gui import bring_to_front_exact, find_window_exact, key_press, client_geometry, focus_window, release_input
 from focus import SharedFocus, focused, process_identity
@@ -80,6 +83,8 @@ class AcController:
         self._exclusive_error = GameUnresponsive
         self._exclusive_budget = 45
         self._packet_monitor = None
+        self.packet_route_enabled: bool = False
+        self._active_packet_navigator: PlutoPacketNavigator | None = None
         self._gate_close_active = False
         self._prepared_gate = None
         self.departure_stops = set()
@@ -437,6 +442,7 @@ class AcController:
                 self.focus.depth -= 1
 
     def close(self):
+        self.close_packet_navigation()
         if getattr(self, '_pause_control', None):
             self._pause_control.close()
         if self._packet_monitor:
@@ -930,6 +936,8 @@ class AcController:
             on_found=selected, yield_fn=self.selection_repair(x, y))
 
     def prepare_departure(self, current):
+        if self.packet_route_enabled:
+            return
         if current in getattr(self, "departure_stops", ()):
             return
         path = self.shortest_path(current, self.player.current_dest)
@@ -1184,6 +1192,9 @@ class AcController:
         return None
 
     def travel_one(self, current: str, target: str) -> None:
+        if self.packet_route_enabled:
+            self.travel_packet_route(current, target)
+            return
         log(f"travel from {current} to {target}")
         if current not in GATES:
             raise ValueError(f"No exits known for sector {current}")
@@ -1199,6 +1210,35 @@ class AcController:
         actual = self._confirmed_arrival or self.get_current_position()
         if actual != target:
             raise GameUnresponsive(f"Gate {current}->{target} arrived in {actual or 'an unrecognized sector'}")
+
+    def close_packet_navigation(self) -> None:
+        navigator = getattr(self, '_active_packet_navigator', None)
+        self._active_packet_navigator = None
+        if navigator is not None:
+            navigator.close()
+
+    def travel_packet_route(self, current: str, target: str) -> None:
+        from pluto_navigation import PlutoPacketNavigator
+        if self._active_packet_navigator is not None:
+            raise StopMacro('Another Pluto packet route is already active')
+        navigator = PlutoPacketNavigator(self)
+        self._active_packet_navigator = navigator
+        reason = 'destination reached'
+        log_event(f'Pluto packet navigation started: from={current}, target={target}')
+        try:
+            if self.focus and self.focus.depth:
+                raise StopMacro('Packet navigation cannot start inside a UI input operation')
+            if self.focus:
+                self.focus.release(reason='packet destination navigation')
+            navigator.travel(current, target)
+        except BaseException as error:
+            reason = f'{type(error).__name__}: {error}'
+            if isinstance(error, (OSError, ValueError, RuntimeError)) and not isinstance(error, (GameWindowLost, GameUnresponsive)):
+                raise StopMacro(f'Pluto packet navigation failed: {error}; no click fallback or retry') from error
+            raise
+        finally:
+            self.close_packet_navigation()
+            log_event(f'Pluto packet navigation stopped: from={current}, target={target}, transitions={navigator.jumps}, reason={reason}')
 
     def travel_all(self, src: str, dest: str) -> None:
         log(f"travel_all from {src} to {dest}")
@@ -1571,6 +1611,7 @@ class AcController:
         self._yield(1)
 
     def killenb(self):
+        self.close_packet_navigation()
         self._skip_next_travel_setup = False
         log_event(f"Closing owned game and proxy for {self.player.toon_name}.")
         if not self.instance:
@@ -1874,6 +1915,7 @@ class AcController:
         self.schedule_event = run_every(30, self.check_game_progress)
 
     def terminate(self) -> None:
+        self.close_packet_navigation()
         with _CHECK_PROGRESS_LOCK:
             self._terminated = True
             self._progress_generation += 1

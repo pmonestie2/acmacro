@@ -4,13 +4,20 @@ import json
 import math
 from pathlib import Path
 import time
+from typing import TypedDict, cast
 
 ROOT = Path(__file__).resolve().parent
 CAPTURE = ROOT / 'protocol/captures/multi_world/catalogs.json'
 STORE = ROOT / 'navigation/navpoints.json'
 
 
-def refresh(source=CAPTURE, destination=STORE):
+class NavCatalogData(TypedDict):
+    sectors: dict[str, dict[str, object]]
+    hazards: dict[str, dict[str, object]]
+    updated: float
+
+
+def refresh(source: str | Path = CAPTURE, destination: str | Path = STORE) -> NavCatalogData:
     worlds = json.loads(Path(source).read_text())
     destination = Path(destination)
     saved = json.loads(destination.read_text()) if destination.exists() else {'sectors': {}}
@@ -29,7 +36,7 @@ def refresh(source=CAPTURE, destination=STORE):
                     key = obj['name'] + ':' + ','.join(str(round(v/5000)) for v in xyz)
                     zones.setdefault(key, {'name':obj['name'], 'raw_xyz':xyz,
                         'source':'observed hostile species; possible respawn area',
-                        'proxy_session':session, 'observed':obj.get('position_seen',obj['last_seen'])})
+                        'observed':obj.get('position_seen',obj['last_seen'])})
                 if obj.get('kind') != 'map_object' or not obj.get('sector') or 'raw_xyz' not in obj:
                     continue
                 name = obj.get('name', '').strip()
@@ -43,7 +50,12 @@ def refresh(source=CAPTURE, destination=STORE):
                 sector[key] = {'id': obj['id'], 'name': name,
                                'raw_xyz': obj['raw_xyz'], 'map_xyz': [v / 1000 for v in obj['raw_xyz']],
                                'observed': obj.get('position_seen', obj['last_seen']),
-                               'proxy_session': session, 'epoch': epoch, 'source': 'captured game map object'}
+                               'source': 'captured game map object'}
+    for collection in (saved['sectors'], hazards):
+        for points in collection.values():
+            for obj in points.values():
+                obj.pop('proxy_session', None)
+                obj.pop('epoch', None)
     saved['updated'] = time.time()
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix('.tmp')
@@ -51,11 +63,11 @@ def refresh(source=CAPTURE, destination=STORE):
     temporary.replace(destination)
     with destination.with_suffix('.csv').open('w', newline='') as stream:
         writer = csv.writer(stream)
-        writer.writerow(['sector', 'name', 'id', 'x', 'y', 'z', 'observed', 'proxy_session'])
+        writer.writerow(['sector', 'name', 'id', 'x', 'y', 'z', 'observed'])
         for sector, points in saved['sectors'].items():
             for obj in points.values():
-                writer.writerow([sector, obj['name'], obj['id'], *obj['map_xyz'], obj['observed'], obj['proxy_session']])
-    return saved
+                writer.writerow([sector, obj['name'], obj['id'], *obj['map_xyz'], obj['observed']])
+    return cast(NavCatalogData, saved)
 
 
 def nearby_contacts(point, objects, now=None, radius=15000, max_age=30, nonaggressive_names=(), nonaggressive_ids=()):

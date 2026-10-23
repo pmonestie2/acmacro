@@ -48,13 +48,24 @@ class ProxyCommandTests(unittest.TestCase):
                     submit.assert_called_once_with(123, b'captured frame', unittest.mock.ANY, send=send)
                     self.assertEqual(json.loads(report.read_text())['send_requested'], send)
 
-    def test_space_dialogue_accepts_captured_frame_and_rejects_other_actions(self) -> None:
+    def test_space_dialogue_and_gate_activation_require_known_actions(self) -> None:
         body = bytes.fromhex('09c2034002000000c486010000000000')
         self.assertEqual(validate_command(struct.pack('<HH', 20, 0x2c) + body),
                          (0x2c, 246281, (100036,)))
+        gate = struct.pack('<HH4I', 20, 0x2c, 0x4003c204, 18, 100000, 0)
+        self.assertEqual(validate_command(gate), (0x2c, 246276, (100000,)))
+        landing = struct.pack('<HH4I', 20, 0x2c, 0x4003c204, 8, 100000, 0)
+        self.assertEqual(validate_command(landing), (0x2c, 246276, (100000,)))
+        for action in (7, 28):
+            docking = injector.pack_command(0x2c, struct.pack('<4I', 0x4003c204, action, 100001, 0))
+            self.assertEqual(validate_command(docking), (0x2c, 246276, (100001,)))
         for game_id, action, target, optional in (
                 (0x4003c209, 9, 100036, 0), (0x4003c209, 2, 100036, 1),
-                (246281, 2, 100036, 0), (0x4003c209, 2, 0, 0)):
+                (246281, 2, 100036, 0), (0x4003c209, 2, 0, 0),
+                (0x4003c209, 18, 0, 0), (0x4003c209, 18, 100000, 1),
+                (0x4003c209, 8, 0, 0), (0x4003c209, 8, 100000, 1),
+                (0x4003c209, 7, 0, 0), (0x4003c209, 28, 100001, 1),
+                (0x4003c209, 19, 100000, 0)):
             with self.assertRaises(ValueError):
                 validate_command(struct.pack('<HH4I', 20, 0x2c, game_id, action, target, optional))
 
@@ -101,6 +112,14 @@ class ProxyCommandTests(unittest.TestCase):
     def test_selection_does_not_clear_navigation_flag(self):
         stub = build_stub(0x1000000, 0x2000000, 0x3000000, 0x4000000, 8, 123, 0x17)
         self.assertNotIn(b'\xc6\x05' + struct.pack('<I', 0x2000232), stub)
+
+    def test_target_selection_validates_full_game_id_and_uses_forwarder(self) -> None:
+        self.assertEqual(validate_command(struct.pack('<HHII', 12, 0x17, 0x4003c204, 100023)),
+                         (0x17, 246276, (100023,)))
+        for player, target in ((246276, 100023), (0x4003c204, 0), (0x4003c204, 0xffffffff)):
+            with self.assertRaises(ValueError):
+                validate_command(struct.pack('<HHII', 12, 0x17, player, target))
+        self.assertIn(0x17, injector.FORWARDED_OPCODES)
 
     def test_vendor_experiment_restricts_npc_choices_and_single_purchase(self):
         player = 246281

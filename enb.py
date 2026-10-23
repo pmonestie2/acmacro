@@ -29,6 +29,15 @@ def parser() -> argparse.ArgumentParser:
     trade.add_argument('window')
     trade.add_argument('npc_id', type=int)
     trade.add_argument('--dialogue', action='store_true')
+    navigate = commands.add_parser('navigate', help='Navigate a logged-in character to a recorded sector')
+    navigate.add_argument('name', help='Character, ENB_<name>, or player config')
+    navigate.add_argument('destination', help='Destination sector; quote names containing spaces')
+    navigate.add_argument('--from-sector', help='Override automatic live-client sector detection with a manually verified sector')
+    navigate.add_argument('--seed', type=Path, help='Optional current-session packet history; current location comes from the live client')
+    navigate.add_argument('--graph', type=Path, action='append', help='Additional graph input; repeat to merge into the shared graph')
+    navigate.add_argument('--transfers', type=Path, help='Confirmed planet transfer catalog')
+    navigate.add_argument('--plan', action='store_true', help='Print route without sending game commands')
+    navigate.add_argument('--dock', action='store_true', help='Dock at the first recorded station in the destination sector')
     layout = commands.add_parser('layout', help='Arrange all game windows for their current count')
     layout.add_argument('--fixed', action='store_true', help='Use the fixed character positions')
     layout.add_argument('--list', action='store_true', help='Preview adaptive layout')
@@ -80,6 +89,24 @@ def command_line(args: argparse.Namespace) -> list[str]:
     if command == 'trade':
         return python_command('npc_trade.py', args.window, '--id', str(args.npc_id),
                               *(['--dialogue'] if args.dialogue else []))
+    if command == 'navigate':
+        navigation_name: str = args.name
+        if Path(navigation_name).is_file() or '/' in navigation_name or '\\' in navigation_name:
+            navigation_name = str(Path(navigation_name).resolve())
+        options = [navigation_name, args.destination]
+        if args.from_sector is not None:
+            options += ['--from-sector', args.from_sector]
+        for flag in ('seed', 'transfers'):
+            navigation_path: Path | None = getattr(args, flag)
+            if navigation_path is not None:
+                options += [f'--{flag}', str(navigation_path.resolve())]
+        for graph_path in args.graph or []:
+            options += ['--graph', str(graph_path.resolve())]
+        if args.plan:
+            options.append('--plan')
+        if args.dock:
+            options.append('--dock')
+        return python_command('navigate_destination.py', *options)
     if command == 'kill':
         name = args.name
         # Preserve relative config paths before changing to the repository directory.

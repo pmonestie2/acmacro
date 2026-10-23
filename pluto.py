@@ -464,6 +464,9 @@ class PlutoRunner:
     def _run_loop(self):
         self.controller = AcController(WINDOW_TITLE, settings=self.player_settings, singleton=self.singleton)
         self.controller.station_lock = self.station_lock
+        self.controller.packet_route_enabled = getattr(self.player_settings, 'gate_navigation', 'packet') == 'packet'
+        log_event('Pluto travel: packet destination navigation and docking' if self.controller.packet_route_enabled
+                  else 'Pluto travel: legacy click navigation')
         self.controller.start_packet_capture()
         if self.uranus_jobs:
             self.controller.departure_stops.add("uranus")

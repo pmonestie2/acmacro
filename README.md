@@ -36,6 +36,43 @@ are restored. Use `.\relayout.cmd --list` to preview positions and names.
 This command chooses an adaptive layout; the macros' fixed character layout
 still applies when they start or repair their own window positions.
 
+## Explore sector gates
+
+`explore_gates.py` selects gates with opcode `0x17`, activates them with `0x2c`
+action 18, and records an edge only when the server reports arrival in another
+sector. It waits for the arriving map catalog, including gates advertised as
+navigation type 1 or 2. A breadth-first search routes to remaining untraversed
+gates. Confirmed crossings imply a reverse connection for planning; reverse gate
+records carry `inferred_reverse=true` until actually traversed. Gate IDs remain
+scoped to their sector. Only packet objects of stargate type 11 are candidates;
+ordinary navigation markers named "Gateway" are excluded. The map gate list must
+settle for 350 ms before choosing, so its first return gate cannot hide later exits.
+
+Run one process and one passive `protocol/capture_jobs.py --all-packets` recorder
+per character. Supply the pinned client/proxy PIDs, character name, capture path,
+and a JSON seed packet list (an empty `[]` is valid). Parallel explorers merge
+progress into the shared graph under a file lock. `--initial-sector` may bootstrap from saved navigation
+data after independently verifying the current sector in that client; otherwise
+the capture must contain its sector/map packets. `--max-jumps 0` explores all
+observed reachable gates. This records an undirected planning graph with explicit
+crossing evidence, not a complete galaxy census. Pass `--peer-graph PATH` to read
+another explorer's completed work. A shared process-identity-pinned branch claim
+prevents concurrent explorers from choosing the same unexplored destination.
+
+Pause with `enb pause macboyje` / `enb resume macboyje`. Creating
+`explore_macboyje.stop` stops that explorer; remove it before a later run.
+All characters share `navigation/sector_graph.json`, with events in each
+character's macro log. An uncertain selection or transition stops without resubmitting it.
+When a server target-cancellation message is followed by closure of that same
+attempted gate, the explorer marks it unavailable and continues elsewhere.
+Peer explorers inherit that status. A closure for another gate or a stale
+cancellation does not authorize continuing an uncertain attempt.
+
+For a fixed trip, `--route FILE` reads a JSON list of `source`, `gate_name`
+(an unambiguous name substring), and `destination` records. It checks every
+arrival and stops at the final destination. Startup drains the existing capture
+and finishes any already-submitted transition before issuing another command.
+
 ## List, deposit and withdraw vault items
 
 From an administrator terminal in the game desktop session, run
@@ -307,21 +344,24 @@ After entering a gate or undocking, arrival is confirmed by recognizing the
 expected sector/station on the map within 60 seconds. Chat pixel patterns and
 class-dependent inventory icons are not transition evidence. Cooperative
 transition retries yield for 8 seconds; singleton retries use 3 seconds.
-Optional `[player]` setting `gate_navigation = packet` uses native Net-7
-navigation for recorded sector gate approaches. Map clicks still select the
-client's gate target/panel; already active gates enter without injection. Packet navigation is
-the default; use `gate_navigation = click` to override it and restart the macro
-after changing it. Recorded routes currently
-cover Pluto/Charon to Akeron, Akeron to Pluto/Charon or Saturn, Jupiter to Saturn,
-Saturn to Akeron or Asteroid Belt Alpha, and Asteroid Belt Alpha to Saturn or
-Earth. Other gates and stations retain
-map clicks. IDs belong to their source sector, not to map coordinates.
-Gate approach screenshots and entry remain unchanged. Injected routes skip
-the subsequent `q` keypress: it can issue a duplicate route and toggle warp off.
-Click navigation retains that keypress.
-This experimental transport requires the fingerprinted proxy build and process
-access permissions. Pre-submission failures fall back to clicks and are logged;
-failure or timeout after submission stops the macro without a duplicate route.
+Pluto's default `[player]` setting `gate_navigation = packet` uses the same
+destination engine as `enb.cmd navigate`: live client sector detection, shared
+sector-scoped gate IDs, server-confirmed selection and arrival, and packet
+docking at Earth Station and Charon Cloister. Each travel plan and stop reason
+is written to the player's macro log. An unavailable route or uncertain packet
+submission stops without a click fallback or automatic retry.
+
+Pluto keeps its existing route milestones: Uranus deliveries finish before
+Charon, and Pluto satellite/Monster Pit handling finishes before docking.
+Login, undocking, station rooms, vendors and job delivery interactions retain
+their existing behavior. The packet engine borrows Pluto's pause, chat and focus
+controller; its capture closes before relogin or client shutdown. It does not
+start another macro, job worker or focus owner.
+
+Use `gate_navigation = click` to retain the legacy map approach and docking
+behavior described above. Restart Pluto after changing this setting or updating
+the code. Packet mode requires the fingerprinted client/proxy build and process
+access permissions.
 On this ARM64 VM, reused x86 executable stub addresses produced stale execution
 despite matching byte readback and an instruction-cache flush. The injector now
 uses a new address for each submission, with allocation state tied to proxy PID
@@ -797,6 +837,73 @@ that the game rendered the trade window. Run in the desktop session containing
 the game; a competing macro for that character must be stopped first. The script
 does not launch, relog, or close a game. It honors macro pause/stop controls and
 writes opening outcomes to the character's macro log.
+
+### Navigate to a recorded sector
+
+`enb.cmd navigate macboytt "Blackbeard's Wake"` attaches to that logged-in
+character's existing `ENB_macboytt` window. An exact window title or player config
+path is also accepted; a name/window needs no login credentials. Stop another
+macro controlling the same character first. Run from the game's administrator
+desktop session. This command neither starts a game nor restarts a failed one.
+
+Add `--dock` to dock at the first recorded station in the destination sector:
+`enb.cmd navigate macboyje "Antares Frontier" --dock`. If multiple stations are
+recorded, the lowest local station ID is selected. A station name can also be
+used directly, for example `enb.cmd navigate macboyje "Earth Station"`.
+Stations are stored with their sector and packet evidence in
+`navigation/stations.json`; navigation records newly observed station objects
+automatically. Docking selects the sector's own station ID, waits for selection
+acknowledgment, submits one action-7 completion, and confirms a fresh station
+arrival from the server. It stops without retry on an uncertain or different
+arrival. No recorded station produces a clear error before travel begins.
+
+The command uses the shared `navigation/sector_graph.json` and finds the shortest route
+through confirmed crossings and inferred return gates. IDs remain scoped to the
+source sector and can be reused by another character without rediscovery. It
+also pairs a uniquely observed named return gate, such as `Vishao's Gate`, with
+a confirmed incoming crossing bearing the same name; the return uses its own
+locally observed ID and remains marked as inferred until crossed. It
+selects each recorded gate through the native proxy handler, correlates its
+outgoing selection with the server's target acknowledgment, sends one gate
+activation, and waits for the server's actual sector
+arrival before continuing. Access restrictions still apply. Unknown routes,
+rejected gates, changed identities and uncertain submissions stop without retry;
+the command does not explore missing connections automatically.
+The client target cache may retain its previous value for an undiscovered gate;
+the fresh server acknowledgment permits that case. A newer target selection,
+changed client target, sector or owned ship identity still cancels submission.
+If an identical selection receives no target echo, one read-only verb request
+can establish the server's current selected object from a fresh matching reply.
+Selection and gate activation are never retried.
+
+Current location is read directly from the owned, fingerprinted game client's
+active player state; no separate recorder is required. The command starts its
+own packet capture before detecting the sector and planning the route.
+`--from-sector Inverness` overrides detection with a manually verified location.
+`--seed PATH` supplies optional current-session packet history; it does not
+override the live client's current sector.
+`--plan` prints the route without sending commands; `--graph PATH` can be
+repeated to select other graph inputs. Planet landing is available only when a
+verified action-8 entry exists in `navigation/sector_transfers.json`; gate graph
+labels alone never establish a planet transfer.
+Destination names accept punctuation differences, unique partial names and clear
+typos (for example `niffle cloud` or `magnesi`). Similar matches are listed as
+ambiguous. The printed route uses the resolved full sector names.
+For a recorded planet transfer, navigation sends one native approach to that
+planet ID, requests its live verb availability and waits for current land verb 2
+to be enabled before submitting one landing action. The default disabled verb
+group is distinct from the current group; it does not establish a range failure.
+Changed or stale availability cancels landing at native preflight. Arrival must
+still be confirmed by an actual server sector transition.
+
+Capture runs on the command's main thread, uses its own sockets and closes them
+on exit. Logs go to `macro_<name>.log`, packet records to
+`diagnostics/navigate_<name>_<timestamp>.jsonl`, and confirmed progress to
+`navigation/sector_graph.json`. `enb.cmd pause/resume <name>` also
+controls navigation; explicit pause time is excluded from deadlines. To stop
+from SSH, create `navigate_<name>.stop` in the repository, and remove it before
+starting again. Incoming private messages stop navigation before further
+submissions and leave the game running.
 
 ### Stop one character's game and proxy
 
