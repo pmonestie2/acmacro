@@ -172,7 +172,7 @@ namespace Enb.Client
                 if (!positioned && next.HasPosition) { renderedPosition = Convert(next.Position); positioned = true; }
             }
             if (!Ready) return;
-            if (bindings.Pressed(ControlAction.OpenChat) && !chatOpen && !hud.SettingsOpen)
+            if (bindings.Pressed(ControlAction.OpenChat) && !chatOpen && !hud.InputFocused && !hud.SettingsOpen)
             {
                 chatOpen = true;
                 chatOpenedFrame = Time.frameCount;
