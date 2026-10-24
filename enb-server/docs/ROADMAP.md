@@ -209,3 +209,19 @@ Mission runtime is deferred as requested. The completed public-content import
 preserves364 definitions/1430 stages, known XML repairs and unknown rule operands;
 see MISSION_CONTENT.md. Six focused importer tests and scoped type checks pass; the complete Python
 tool suite passes at39 tests.
+
+Combat sensors now use native class base scan/signature plus equipped engine,
+scan skill and supported modifiers. Player MOB visibility includes the3000m
+MOB signature and200m retention margin; target selection, weapon preparation,
+warp and follow use that same visibility. Per-MOB sensor contacts are separate
+from hate and persist by authentication epoch. Cloak detection uses3*NPCcombat
+level against caster overall level+5*trained Cloak; group recipients retain the
+caster value. A fresh login cannot inherit old contact hysteresis. NPCs that
+lose their targets return home using the existing prototype speed; full patrol
+behavior and faction-aware acquisition remain unfinished.
+
+The sensor integration passes219 Rust tests and Clippy with warnings denied.
+Coverage includes all nine class bases, live visibility publication/target loss,
+cloak variants/group inheritance, sensor hysteresis and checkpoint continuity.
+Sandbox track levels remain the advertised50/50/50 until XP progression owns
+levels. Disposable packet verification and local deployment follow this check.

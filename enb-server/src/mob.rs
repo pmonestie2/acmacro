@@ -2,6 +2,7 @@
 //! Archived level/weapon stats drive combat; faction matrices and group hate remain unfinished.
 use crate::mob_aggro::{MobAggro, PlayerThreat};
 use crate::mob_stats::{MobStats, MobWeapon};
+use crate::mob_targeting::{mob_detects_cloak, MobSensors};
 use crate::motion::Motion;
 use serde::{Deserialize, Serialize};
 #[path = "mob_motion.rs"]
@@ -92,6 +93,13 @@ pub enum MobState {
     Dead,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TargetingMode {
+    Direct,
+    Acquired,
+    Returning,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Mob {
     pub definition: MobDefinition,
@@ -124,6 +132,8 @@ pub struct Mob {
     provoked: bool,
     #[serde(default)]
     aggro: MobAggro,
+    #[serde(default)]
+    sensors: MobSensors,
     /// Unowned damage is retained for standalone scenarios/tests; an owned hit
     /// must never make a neutral MOB retaliate against an unrelated bystander.
     #[serde(default)]
@@ -174,6 +184,7 @@ impl Mob {
             respawn_remaining: 0.,
             provoked: false,
             aggro: MobAggro::default(),
+            sensors: MobSensors::default(),
             unowned_provoked: false,
         }
     }
@@ -186,6 +197,7 @@ impl Mob {
             return Ok(());
         }
         saved.aggro.validate()?;
+        saved.sensors.validate()?;
         saved.validate_motion()?;
         // Older simulation ticks let an elapsed respawn countdown run just
         // below zero before setting Idle. Those are valid expired timers, not
@@ -264,6 +276,7 @@ impl Mob {
             self.death_generation = self.death_generation.saturating_add(1);
             self.killer = None;
             self.aggro.clear();
+            self.sensors.clear();
             self.unowned_provoked = false;
         }
     }
@@ -321,27 +334,36 @@ impl Mob {
         self.provoked = false;
         self.unowned_provoked = false;
         self.aggro.clear();
+        self.sensors.clear();
     }
     /// LockTarget prefers positive attacker hate. The coordinator supplies only
     /// local player identities; invisible/cloaked ships lose hate. Ordinary
     /// temporary target loss retains hate, like native LostTarget.
     /// The existing scan/leash limits remain the acquisition boundaries.
     pub fn select_target(&mut self, players: &[PlayerThreat]) -> Option<usize> {
+        if self.state == MobState::Dead || self.disabled_seconds > 0. {
+            self.sensors.clear();
+            self.aggro.target(None);
+            return None;
+        }
+        for player in self
+            .sensors
+            .refresh(self.definition.level, self.position, players)
+        {
+            self.aggro.remove(player);
+        }
         let eligible = |player: &PlayerThreat| {
             player.id != 0
                 && player.visible
                 && player.position.iter().all(|value| value.is_finite())
+                && self.sensors.contains(player)
+                && mob_detects_cloak(self.definition.level, player.stealth)
         };
         self.aggro.retain(|id| {
-            !players.iter().any(|player| {
-                player.id == id
-                    && (!player.visible || player.position.iter().any(|value| !value.is_finite()))
-            })
+            !players
+                .iter()
+                .any(|player| player.id == id && !eligible(player))
         });
-        if self.state == MobState::Dead || self.disabled_seconds > 0. {
-            self.aggro.target(None);
-            return None;
-        }
         let hated = self.aggro.most_hated(|id| {
             players
                 .iter()
@@ -355,15 +377,11 @@ impl Mob {
                     .position(|player| player.id == id && eligible(player))
             })
             .or_else(|| {
-                let scan = 2500. + 150. * self.definition.level as f32;
                 players
                     .iter()
                     .enumerate()
                     .filter(|(_, player)| {
-                        eligible(player)
-                            && (self.unowned_provoked
-                                || self.definition.aggressive
-                                    && distance(player.position, self.position) <= scan)
+                        eligible(player) && (self.unowned_provoked || self.definition.aggressive)
                     })
                     .min_by(|(a_index, a), (b_index, b)| {
                         distance(a.position, self.position)
@@ -379,11 +397,13 @@ impl Mob {
     /// losing the current target is not sufficient to call this method.
     pub fn remove_player_hate(&mut self, player: u32) {
         self.aggro.remove(player);
+        self.sensors.remove(player);
     }
     /// Native FireWeapon decreases this victim's hate by truncated damage/10.
     /// Called on the authoritative simulation only, before the tick is saved.
     pub fn tick_target(&mut self, dt: f32, player: &PlayerThreat) -> f32 {
-        let damage = self.tick_visible(dt, player.position, player.visible);
+        let damage =
+            self.tick_observed(dt, player.position, player.visible, TargetingMode::Acquired);
         self.aggro.subtract(player.id, damage);
         damage
     }
@@ -404,9 +424,23 @@ impl Mob {
         self.tick_visible(dt, player, true)
     }
     pub fn tick_visible(&mut self, dt: f32, player: [f32; 3], visible: bool) -> f32 {
+        self.tick_observed(dt, player, visible, TargetingMode::Direct)
+    }
+    /// Keep the existing prototype return speed after target loss. Full native
+    /// patrol/drift behavior remains a separate future AI task.
+    pub fn tick_without_target(&mut self, dt: f32) -> f32 {
+        self.tick_observed(dt, self.definition.spawn, false, TargetingMode::Returning)
+    }
+    fn tick_observed(
+        &mut self,
+        dt: f32,
+        player: [f32; 3],
+        visible: bool,
+        mode: TargetingMode,
+    ) -> f32 {
         let before = self.position;
         let was_dead = self.state == MobState::Dead;
-        let damage = self.advance_state(dt, player, visible);
+        let damage = self.advance_state(dt, player, visible, mode);
         self.speed = if dt > 0. && !was_dead {
             distance(before, self.position) / dt
         } else {
@@ -415,7 +449,13 @@ impl Mob {
         self.synchronize_motion(before, player, visible, was_dead);
         damage
     }
-    fn advance_state(&mut self, dt: f32, player: [f32; 3], visible: bool) -> f32 {
+    fn advance_state(
+        &mut self,
+        dt: f32,
+        player: [f32; 3],
+        visible: bool,
+        mode: TargetingMode,
+    ) -> f32 {
         if self.state == MobState::Dead {
             self.respawn_remaining = (self.respawn_remaining - dt).max(0.);
             if self.respawn_remaining <= 0. {
@@ -425,26 +465,34 @@ impl Mob {
                 self.provoked = false;
                 self.unowned_provoked = false;
                 self.aggro.clear();
+                self.sensors.clear();
                 self.killer = None;
                 self.state = MobState::Idle;
             }
             return 0.;
         }
         if !visible || self.disabled_seconds > 0. {
+            let disabled = self.disabled_seconds > 0.;
             self.disabled_seconds = (self.disabled_seconds - dt).max(0.);
             self.state = MobState::Idle;
+            if !disabled && mode == TargetingMode::Returning {
+                move_towards(&mut self.position, self.definition.spawn, 100. * dt);
+            }
             return 0.;
         }
         self.cooldown = (self.cooldown - dt).max(0.);
         let separation = distance(self.position, player);
         let scan = 2500. + 150. * self.definition.level as f32;
-        if !(self.provoked || self.definition.aggressive && separation <= scan)
+        if !(mode == TargetingMode::Acquired
+            || self.provoked
+            || self.definition.aggressive && separation <= scan)
             || distance(player, self.definition.spawn) > 15000.
         {
             self.state = MobState::Idle;
             self.provoked = false;
             self.unowned_provoked = false;
             self.aggro.clear();
+            self.sensors.clear();
             move_towards(&mut self.position, self.definition.spawn, 100. * dt);
             return 0.;
         }
@@ -509,6 +557,8 @@ mod tests {
             session_epoch: 1,
             position: [x, 0., 0.],
             visible: true,
+            signature: 0.,
+            stealth: None,
         }
     }
 
@@ -559,11 +609,83 @@ mod tests {
         mob.position = [1000., 0., 0.];
         mob.damage_by(20., 2);
         let escaped = threat(2, 20_000.);
-        assert_eq!(mob.select_target(&[escaped]), Some(0));
-        assert_eq!(mob.tick_target(1., &escaped), 0.);
+        assert_eq!(mob.select_target(&[escaped]), None);
+        assert_eq!(mob.tick_without_target(1.), 0.);
         assert_eq!(mob.state, MobState::Idle);
         assert_eq!(mob.position, [900., 0., 0.]);
         assert_eq!(mob.select_target(&[threat(2, 500.)]), None);
+    }
+
+    #[test]
+    fn signature_extends_acquisition_and_acquired_tick_does_not_reapply_a_narrower_scan() {
+        let mut mob = Mob::new(definition());
+        let mut player = threat(1, 3100.);
+        player.signature = 500.; // CL1 scan2650 plus500 signature
+        assert_eq!(mob.select_target(&[player]), Some(0));
+        mob.tick_target(1., &player);
+        assert_eq!(mob.state, MobState::Chasing);
+        assert_eq!(mob.position, [150., 0., 0.]);
+    }
+
+    #[test]
+    fn sensor_hysteresis_persists_but_a_new_epoch_cannot_inherit_it_or_old_hate() {
+        let mut mob = Mob::new(definition());
+        let mut player = threat(1, 2649.);
+        assert_eq!(mob.select_target(&[player]), Some(0));
+        player.position[0] = 2850.;
+        assert_eq!(mob.select_target(&[player]), Some(0));
+        let snapshot: Mob = serde_json::from_slice(&serde_json::to_vec(&mob).unwrap()).unwrap();
+        let mut restored = Mob::new(definition());
+        restored.restore_from(snapshot).unwrap();
+        assert_eq!(restored.select_target(&[player]), Some(0));
+        player.session_epoch = 2;
+        assert_eq!(restored.select_target(&[player]), None);
+        player.position[0] = 2649.;
+        assert_eq!(restored.select_target(&[player]), Some(0));
+        player.position[0] = 2850.1;
+        assert_eq!(restored.select_target(&[player]), None);
+        player.position[0] = 2800.;
+        assert_eq!(restored.select_target(&[player]), None);
+        let mut neutral = definition();
+        neutral.aggressive = false;
+        let mut mob = Mob::new(neutral);
+        player = threat(1, 500.);
+        mob.damage_by(10., player.id);
+        assert_eq!(mob.select_target(&[player]), Some(0));
+        player.session_epoch = 2;
+        assert_eq!(mob.select_target(&[player]), None);
+    }
+
+    #[test]
+    fn cloak_detection_depends_on_each_mob_level_and_breaks_hate_only_when_undetectable() {
+        let mut definition = definition();
+        definition.level = 61;
+        let mut player = threat(1, 500.);
+        player.stealth = Some(185);
+        let mut low = Mob::new(definition.clone());
+        low.damage_by(10., player.id);
+        assert_eq!(low.select_target(&[player]), None);
+        player.stealth = None;
+        low.definition.aggressive = false;
+        assert_eq!(low.select_target(&[player]), None); // undetected attacker hate cleared
+        definition.level = 62;
+        let mut high = Mob::new(definition);
+        player.stealth = Some(185);
+        assert_eq!(high.select_target(&[player]), Some(0));
+        assert!(high.tick_target(1., &player) > 0.);
+    }
+
+    #[test]
+    fn legacy_sensors_default_empty_and_invalid_saved_membership_is_rejected() {
+        let mut value = serde_json::to_value(Mob::new(definition())).unwrap();
+        value.as_object_mut().unwrap().remove("sensors");
+        let mut mob = Mob::new(definition());
+        mob.restore_from(serde_json::from_value(value.clone()).unwrap())
+            .unwrap();
+        value["sensors"] = serde_json::json!({"players":{"0":1}});
+        assert!(mob
+            .restore_from(serde_json::from_value(value).unwrap())
+            .is_err());
     }
 
     #[test]

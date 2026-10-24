@@ -132,6 +132,8 @@ pub struct SkillState {
     #[serde(default)]
     pub cloak_source: Option<u32>,
     #[serde(default)]
+    pub cloak_stealth: Option<u32>,
+    #[serde(default)]
     pub temporary_effects: BTreeMap<u32, f32>,
 }
 
@@ -148,6 +150,7 @@ pub enum SupportAction {
     Cloak {
         enabled: bool,
         rank: u32,
+        stealth: u32,
     },
     Environment {
         target: u32,

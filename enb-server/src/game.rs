@@ -386,6 +386,7 @@ impl GameState {
             self.attach_session(*id)?;
         }
         self.synchronize_sector_hate()?;
+        self.expire_group_cloak()?;
         let mut hits = Vec::new();
         for (&sector, combat) in &self.combats {
             if let Some(world) = self.loot_worlds.get(&sector) {

@@ -13,11 +13,13 @@ impl PlayerSession {
         roll: &mut impl FnMut() -> u32,
     ) -> io::Result<Option<Inventory>> {
         let combat = lock_combat(&self.combat)?;
-        let Some(target) = self
-            .target
-            .checked_sub(MOB_ID)
-            .and_then(|index| combat.actors.get(index as usize))
-            .filter(|mob| mob.state != MobState::Dead)
+        let Some(index) = self.target.checked_sub(MOB_ID).map(|index| index as usize) else {
+            return Ok(None);
+        };
+        let Some(target) = combat
+            .actors
+            .get(index)
+            .filter(|mob| self.mob_visible_in_scan(index, mob))
         else {
             return Ok(None);
         };

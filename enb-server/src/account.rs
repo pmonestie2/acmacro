@@ -10,6 +10,9 @@ use std::{fs, io};
 
 const ROUNDS: u32 = 100_000;
 pub const FIRST_PLAYER_ID: u32 = 0x40000001;
+/// Current sandbox provisioning advertises50 in each of the three XP tracks.
+/// Until XP progression owns levels, combat detection uses the same total.
+pub const SANDBOX_TRACK_LEVEL: u32 = 50;
 fn first_player_id() -> u32 {
     FIRST_PLAYER_ID
 }
@@ -24,6 +27,9 @@ pub struct CharacterProfile {
 }
 
 impl CharacterProfile {
+    pub fn total_level(&self) -> u32 {
+        SANDBOX_TRACK_LEVEL * 3
+    }
     pub fn class(&self) -> crate::classes::CharacterClass {
         crate::classes::CharacterClass::from_profile(self.race, self.profession)
             .expect("validated character class")

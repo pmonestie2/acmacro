@@ -677,9 +677,9 @@ impl PlayerSession {
                 ));
                 let shared = Arc::clone(&self.combat);
                 let combat = lock_combat(&shared)?;
+                self.mob_visible.fill(false);
                 for (index, mob) in combat.actors.iter().enumerate() {
-                    self.mob_visible[index] = mob.state != MobState::Dead
-                        && distance(self.position, mob.position) <= 20_000.;
+                    self.mob_visible[index] = self.mob_visible_in_scan(index, mob);
                     if self.mob_visible[index] {
                         self.pending.extend(packets::mob_spawn(
                             MOB_ID + index as u32,
@@ -788,7 +788,7 @@ impl PlayerSession {
                     || self.visible_corpses.contains_key(&target)
                     || target == self.player_id()
                     || self.peer_ids.contains(&target)
-                    || (target >= MOB_ID && ((target - MOB_ID) as usize) < self.mob_states.len())
+                    || self.mob_target_in_scan(target)?
                 {
                     if self.target != target {
                         self.cancel_mining("Target changed.")?;
@@ -1175,9 +1175,11 @@ impl PlayerSession {
         }
         let combat = lock_combat(&self.combat)?;
         if let Some(index) = id.checked_sub(MOB_ID).map(|index| index as usize) {
-            if let Some(mob) = combat.actors.get(index).filter(|mob| {
-                mob.state != MobState::Dead && distance(self.position, mob.position) <= 20_000.
-            }) {
+            if let Some(mob) = combat
+                .actors
+                .get(index)
+                .filter(|mob| self.mob_visible_in_scan(index, mob))
+            {
                 return Ok(Waypoint {
                     id,
                     position: mob.position,

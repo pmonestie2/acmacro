@@ -8,8 +8,11 @@ pub struct PlayerThreat {
     pub id: u32,
     pub session_epoch: u64,
     pub position: [f32; 3],
-    /// The coordinator excludes incapacitated, cloaked and departing ships.
+    /// The coordinator excludes incapacitated and unavailable ships. Cloak is
+    /// evaluated separately for each MOB's actual detection capability.
     pub visible: bool,
+    pub signature: f32,
+    pub stealth: Option<u32>,
 }
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]

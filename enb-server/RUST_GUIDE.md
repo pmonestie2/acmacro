@@ -249,3 +249,9 @@ or has a different epoch. Source death and target cloak after launch do not
 cancel an otherwise valid impact. See [NPC_PROJECTILES.md](docs/NPC_PROJECTILES.md)
 for ownership, failure handling and verification boundaries. The integration
 passed 202 Rust tests and Clippy; native graphical playtesting remains pending.
+
+`mob_targeting.rs` contains the archived sensor and cloak formulas. MOB range
+contacts persist independently of hate, keyed by player and authentication
+epoch. Player-side visibility uses derived class/equipment scan and feeds
+targeting, weapons, following and warp consistently. `SkillState.cloak_stealth`
+freezes the caster's trained-skill strength for group propagation and recovery.

@@ -88,3 +88,19 @@ unowned `damage` API retains standalone scenario behavior separately from
 owned-player hate. No faction standings, group hate or new scan parameters are
 invented; attack-on-sight acquisition continues to use the imported aggressive
 flag and current scan range.
+
+`mob_targeting.rs` now applies the archived sensor boundaries. A player sees a
+MOB within equipped scan range plus the native 3,000 metre MOB signature. A MOB
+sees a player within 2,500 plus 150 times its combat level plus that player's
+equipped signature. Entry is strictly inside the boundary; existing contacts
+remain until more than 200 metres beyond it. NPC contacts persist with player
+authentication epochs, so a fresh login cannot inherit an old sensor contact.
+
+Cloak detection is evaluated independently for each NPC: its combat level times
+three must be at least the player's stealth. The archived NPC Scan skill remains
+zero; no additional skill value is inferred. Player stealth uses overall level
+plus five times trained Cloak skill, rather than the selected ability rank.
+Consequently a level 150 JE with Cloak 7 is hidden from CL61 but detectable by
+CL62. Lost targets use the existing 100 metre/second return-home fallback; full
+native patrol/drift and faction behavior remain pending. Shots already launched
+retain their frozen impact and are unaffected by subsequent cloak changes.

@@ -88,6 +88,8 @@ pub(super) struct Checkpoint {
     #[serde(default)]
     npc_interaction: Option<npc_services::NpcInteraction>,
     mobs: Vec<Mob>,
+    #[serde(default)]
+    mob_visible: Vec<bool>,
 }
 
 fn unix_ms() -> u64 {
@@ -157,6 +159,7 @@ impl PlayerSession {
                 .is_some_and(|gate| !gate.valid_for(&self.sector))
             || !self.sector.bounds.contains(saved.position)
             || saved.mobs.len() > 256
+            || saved.mob_visible.len() > 256
             || saved.replay.len() > 128
             || saved.inputs.len() > 256
             || !mob_damage::valid_receipts(&saved.mob_damage_receipts)
@@ -265,6 +268,8 @@ impl PlayerSession {
         loot.reconcile_combat(&mut combat, unix_ms());
         drop(loot);
         self.mob_states = combat.actors.iter().map(|mob| mob.state).collect();
+        self.mob_visible = saved.mob_visible;
+        self.mob_visible.resize(combat.actors.len(), false);
         self.tick_offset = saved.tick.wrapping_add(gap.unwrap() as u32);
         self.started = Instant::now();
         self.logged_in = self.handoff.is_none();
@@ -338,8 +343,7 @@ impl PlayerSession {
             ));
         }
         for (index, mob) in combat.actors.iter().enumerate() {
-            self.mob_visible[index] =
-                mob.state != MobState::Dead && distance(self.position, mob.position) <= 20_000.;
+            self.mob_visible[index] = self.mob_visible_in_scan(index, mob);
             if self.mob_visible[index] {
                 self.pending.extend(packets::mob_spawn(
                     MOB_ID + index as u32,
@@ -438,6 +442,7 @@ impl PlayerSession {
             resource_window: self.resource_window,
             npc_interaction: self.npc_interaction.clone(),
             mobs,
+            mob_visible: self.mob_visible.clone(),
         };
         Some(saved)
     }

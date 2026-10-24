@@ -2,6 +2,9 @@
 //! one shared sector-combat tick, so adding clients cannot multiply MOB speed,
 //! damage or respawn timers. The public advance helper is for standalone tests.
 use super::*;
+#[cfg(test)]
+#[path = "session_sensor_tests.rs"]
+mod sensor_tests;
 
 impl PlayerSession {
     pub fn advance(&mut self, dt: f32) -> io::Result<()> {
@@ -128,8 +131,29 @@ impl PlayerSession {
             id: self.player_id(),
             session_epoch: self.session_epoch,
             position: self.position,
-            visible: self.logged_in && self.hull > 0. && self.skills.cloak_rank == 0,
+            visible: self.logged_in && self.hull > 0.,
+            signature: self.equipment.ship.signature,
+            stealth: self.cloak_stealth(),
         }
+    }
+
+    pub(super) fn mob_visible_in_scan(&self, index: usize, mob: &Mob) -> bool {
+        mob.state != MobState::Dead
+            && crate::mob_targeting::player_sees_mob(
+                self.equipment.ship.scan_range,
+                distance(self.position, mob.position),
+                self.mob_visible.get(index).copied().unwrap_or(false),
+            )
+    }
+    pub(super) fn mob_target_in_scan(&self, target: u32) -> io::Result<bool> {
+        let Some(index) = target.checked_sub(MOB_ID).map(|index| index as usize) else {
+            return Ok(false);
+        };
+        let combat = lock_combat(&self.combat)?;
+        Ok(combat
+            .actors
+            .get(index)
+            .is_some_and(|mob| self.mob_visible_in_scan(index, mob)))
     }
 
     /// Test convenience for direct damage-rule checks; production always uses
@@ -181,8 +205,7 @@ impl PlayerSession {
                 }
                 self.mob_states[index] = mob.state;
             }
-            let visible =
-                mob.state != MobState::Dead && distance(self.position, mob.position) <= 20_000.;
+            let visible = self.mob_visible_in_scan(index, mob);
             if visible && !self.mob_visible[index] {
                 self.pending
                     .extend(packets::mob_spawn(MOB_ID + index as u32, mob, tick));
@@ -191,6 +214,13 @@ impl PlayerSession {
                     7,
                     (MOB_ID + index as u32).to_le_bytes().to_vec(),
                 ));
+                if self.target == MOB_ID + index as u32 {
+                    self.target = u32::MAX;
+                    self.stop_weapons();
+                    self.stop_following();
+                    self.pending
+                        .push(packets::ship_target(self.player_id(), u32::MAX));
+                }
             }
             self.mob_visible[index] = visible;
             if broadcast && visible {

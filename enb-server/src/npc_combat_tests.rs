@@ -43,6 +43,8 @@ fn player() -> PlayerThreat {
         session_epoch: 1,
         position: [1000., 0., 0.],
         visible: true,
+        signature: 0.,
+        stealth: None,
     }
 }
 

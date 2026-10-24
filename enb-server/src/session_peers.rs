@@ -179,6 +179,21 @@ impl PlayerSession {
     pub(crate) fn cloak_parent(&self) -> Option<u32> {
         self.skills.cloak_source
     }
+    pub(crate) fn cloak_stealth(&self) -> Option<u32> {
+        (self.skills.cloak_rank > 0).then(|| {
+            self.skills.cloak_stealth.unwrap_or_else(|| {
+                crate::mob_targeting::cloak_stealth(
+                    self.account.character.total_level(),
+                    self.skill_catalog.level(12),
+                )
+            })
+        })
+    }
+    pub(crate) fn inherit_cloak_stealth(&mut self, source: u32, stealth: u32) {
+        if self.skills.cloak_source == Some(source) {
+            self.skills.cloak_stealth = Some(stealth);
+        }
+    }
     pub(crate) fn message(&mut self, message: &str) {
         self.pending.push(packets::message(message));
     }
@@ -245,10 +260,12 @@ impl PlayerSession {
             SupportAction::Cloak {
                 enabled: true,
                 rank,
+                stealth,
             } => {
                 if self.skills.cloak_rank == 0 || self.skills.cloak_source.is_some() {
                     self.skills.cloak_rank = rank;
                     self.skills.cloak_source = Some(source);
+                    self.skills.cloak_stealth = Some(stealth);
                     self.stop_weapons();
                     self.pending.push(packets::cloak(self.player_id(), true));
                 }

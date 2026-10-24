@@ -152,6 +152,13 @@ impl EquipmentStats {
             deflects[index] = modifiers.apply_signed(name, 0.).min(50.);
         }
         let class = crate::classes::CharacterClass(skills.class_index);
+        let scan_skill =
+            (skills.level(49) as f32 + modifiers.apply_signed("STAT_SKILL_SCAN", 0.)).max(0.);
+        let scan_bonus = if scan_skill > 0. {
+            1000. + 250. * scan_skill
+        } else {
+            0.
+        };
         let ship = ShipStats {
             weapon_mounts: class.weapons(),
             device_mounts: class.devices(),
@@ -180,8 +187,8 @@ impl EquipmentStats {
             warp_drain: modifiers.apply("STAT_WARP_ENERGY", field(2, 34)?),
             warp_recovery: modifiers.apply("STAT_WARP_RECOVERY", 2.).max(0.1),
             acceleration: modifiers.apply("STAT_ACCELERATION", 100.),
-            scan_range: modifiers.apply("STAT_SCAN_RANGE", 1000. + 250. * skills.level(49) as f32),
-            signature: modifiers.apply("STAT_SIGNATURE", field(2, 29)?),
+            scan_range: modifiers.apply("STAT_SCAN_RANGE", class.base_scan_range() + scan_bonus),
+            signature: modifiers.apply("STAT_SIGNATURE", class.base_signature() + field(2, 29)?),
             turn_rate: modifiers.apply("STAT_TURN", 45.),
             prospect_bonus: modifiers.apply("STAT_SKILL_PROSPECT", 0.),
             tractor_speed: modifiers.apply("STAT_TRACTORBEAM", 200.).max(1.),
@@ -297,6 +304,46 @@ impl EquipmentStats {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn native_class_scan_and_signature_include_skill_and_engine_once() {
+        let catalog = ItemCatalog::load().unwrap();
+        let mut inventory = Inventory::starter(&catalog).unwrap();
+        let engine = inventory.equipped[2].take().unwrap();
+        for code in ["te", "tt", "ts", "jd", "js", "je", "pw", "pp", "ps"] {
+            let class = crate::classes::CharacterClass::parse(code).unwrap();
+            let mut profile =
+                crate::account::Account::create("sensor".into(), "pass", "Sensor".into())
+                    .unwrap()
+                    .character;
+            profile.race = class.race();
+            profile.profession = class.profession();
+            let mut skills = SkillCatalog::for_profile(&profile).unwrap();
+            let rank = skills.level(49);
+            let stats = EquipmentStats::derive(&inventory, &catalog, &skills).unwrap();
+            let bonus = if rank == 0 {
+                0.
+            } else {
+                1000. + rank as f32 * 250.
+            };
+            assert_eq!(stats.ship.scan_range, class.base_scan_range() + bonus);
+            assert_eq!(stats.ship.signature, class.base_signature());
+            if let Some(scan) = skills.skills.iter_mut().find(|skill| skill.id == 49) {
+                scan.level = 0;
+            }
+            let untrained = EquipmentStats::derive(&inventory, &catalog, &skills).unwrap();
+            assert_eq!(untrained.ship.scan_range, class.base_scan_range());
+        }
+        inventory.equipped[2] = Some(engine.clone());
+        let je = SkillCatalog::load().unwrap();
+        let stats = EquipmentStats::derive(&inventory, &catalog, &je).unwrap();
+        assert_eq!(
+            stats.ship.signature,
+            500. + catalog
+                .get(engine.template)
+                .unwrap()
+                .number_at_quality(29, engine.quality)
+        );
+    }
     #[test]
     fn chance_modifiers_keep_percent_operations_at_zero_base_and_strongest_effects() {
         let mut modifiers = EquippedModifiers::default();

@@ -112,7 +112,7 @@ impl PlayerSession {
                 .actors
                 .get(index as usize)
                 .ok_or_else(|| invalid("Select a hostile MOB first."))?;
-            if mob.state == MobState::Dead
+            if !self.mob_visible_in_scan(index as usize, mob)
                 || distance(self.position, mob.position) > ability.range as f32
             {
                 return Err(invalid("The target is dead or out of ability range."));
@@ -243,6 +243,11 @@ impl PlayerSession {
             AbilityKind::Cloak => {
                 self.skills.cloak_rank = ability.rank;
                 self.skills.cloak_source = None;
+                let stealth = crate::mob_targeting::cloak_stealth(
+                    self.account.character.total_level(),
+                    self.skill_catalog.level(12),
+                );
+                self.skills.cloak_stealth = Some(stealth);
                 self.stop_weapons();
                 let asset = match ability.rank {
                     1 => 180,
@@ -259,6 +264,7 @@ impl PlayerSession {
                     self.support_actions.push(SupportAction::Cloak {
                         enabled: true,
                         rank: ability.rank,
+                        stealth,
                     });
                 }
             }
@@ -413,6 +419,7 @@ impl PlayerSession {
         let inherited = self.skills.cloak_source.is_some();
         self.skills.cloak_rank = 0;
         self.skills.cloak_source = None;
+        self.skills.cloak_stealth = None;
         if let Some(effect) = self.skills.cloak_effect.take() {
             self.remove_effect(effect);
         }
@@ -424,6 +431,7 @@ impl PlayerSession {
             self.support_actions.push(SupportAction::Cloak {
                 enabled: false,
                 rank,
+                stealth: 0,
             });
         }
     }

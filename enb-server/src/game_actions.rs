@@ -402,6 +402,7 @@ impl GameState {
                         .find(|peer| peer.profile.game_id == *source)
                         .is_some_and(|leader| {
                             leader.cloaked
+                                && leader.hull > 0.
                                 && self.sessions[id].sector.id == leader.sector
                                 && distance(self.sessions[id].position, leader.position) <= 1000.
                         })
@@ -413,8 +414,26 @@ impl GameState {
                 &SupportAction::Cloak {
                     enabled: false,
                     rank: 0,
+                    stealth: 0,
                 },
             )?;
+        }
+        // Legacy checkpoints did not retain caster-derived group stealth.
+        // Refresh it before NPC targeting instead of using a recipient's own
+        // (possibly absent) trained Cloak skill.
+        let inherited: Vec<_> = self
+            .sessions
+            .iter()
+            .filter_map(|(id, session)| {
+                let source = session.cloak_parent()?;
+                Some((*id, source, self.sessions.get(&source)?.cloak_stealth()?))
+            })
+            .collect();
+        for (id, source, stealth) in inherited {
+            self.sessions
+                .get_mut(&id)
+                .unwrap()
+                .inherit_cloak_stealth(source, stealth);
         }
         Ok(())
     }

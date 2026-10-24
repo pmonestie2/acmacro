@@ -522,6 +522,8 @@ fn multiplayer_hate_targets_the_attacker_and_dev_jump_clears_the_departed_identi
         session_epoch: 1,
         position: [0.; 3],
         visible: true,
+        signature: 0.,
+        stealth: None,
     }];
     assert_eq!(
         lock_combat(&source).unwrap().actors[0].select_target(&query),

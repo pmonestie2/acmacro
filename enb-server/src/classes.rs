@@ -47,6 +47,16 @@ impl CharacterClass {
     pub fn devices(self) -> usize {
         [4, 5, 5, 4, 5, 6, 3, 4, 5][self.0]
     }
+    pub fn base_scan_range(self) -> f32 {
+        if self.profession() == 2 {
+            5000.
+        } else {
+            3500.
+        }
+    }
+    pub fn base_signature(self) -> f32 {
+        [3500., 2500., 2500., 500., 500., 500., 2500., 2500., 2500.][self.0]
+    }
     pub fn check_mount(self, slot: usize, item_type: u32) -> io::Result<()> {
         let valid = match item_type {
             2 => slot == 0,

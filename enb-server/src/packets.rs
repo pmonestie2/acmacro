@@ -50,7 +50,7 @@ pub fn characters(sector: &Sector, profile: &CharacterProfile) -> Frame {
     be32(&mut data, 20, profile.game_id & 0xffffff);
     be32(&mut data, 28, 1);
     for offset in [40, 44, 48] {
-        be32(&mut data, offset, 50);
+        be32(&mut data, offset, crate::account::SANDBOX_TRACK_LEVEL);
     }
     fixed_text(&mut data, 52, 81, &sector.name);
     data[133..374].copy_from_slice(&avatar(profile));
@@ -663,9 +663,18 @@ pub fn player_aux(
             (1, profile.profession.to_le_bytes().to_vec()),
             (2, skills),
             (3, abilities),
-            (7, 50u32.to_le_bytes().to_vec()),
-            (9, 50u32.to_le_bytes().to_vec()),
-            (11, 50u32.to_le_bytes().to_vec()),
+            (
+                7,
+                crate::account::SANDBOX_TRACK_LEVEL.to_le_bytes().to_vec(),
+            ),
+            (
+                9,
+                crate::account::SANDBOX_TRACK_LEVEL.to_le_bytes().to_vec(),
+            ),
+            (
+                11,
+                crate::account::SANDBOX_TRACK_LEVEL.to_le_bytes().to_vec(),
+            ),
             (12, 6u32.to_le_bytes().to_vec()),
             (15, u32::MAX.to_le_bytes().to_vec()),
         ]),

@@ -59,10 +59,7 @@ impl PlayerSession {
         Ok(combat
             .actors
             .get(index as usize)
-            .filter(|mob| {
-                mob.state != MobState::Dead
-                    && distance(self.position, mob.position) <= FOLLOW_VISIBILITY
-            })
+            .filter(|mob| self.mob_visible_in_scan(index as usize, mob))
             .map(|mob| FollowContact {
                 position: mob.position,
                 speed: mob.speed,
