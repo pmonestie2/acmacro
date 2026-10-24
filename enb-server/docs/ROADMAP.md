@@ -253,5 +253,8 @@ PDA rendering, field-guardian AI, kill faction awards or complete combat AI.
 After integrating the Unity agent's group-warp fix, all 240 Rust tests and
 Clippy pass. This includes the new six-case warning-shot suite and signed NPC
 follow regression. The Python server-tool suite passes all 43 tests. The new
-warning/follow changes are still awaiting deployment until the next coordinated
-restart; the packet smoke above ran against the preceding faction/roaming build.
+warning/follow changes and the group-warp fix are deployed locally. The same
+faction/takeover/restart packet smoke passes against the rebuilt binary as well.
+Native clients resumed across deployment and subsequent warp/cancel requests
+reached the server; graphical warning-shot and group-warp playtesting remain
+separate from these results.
