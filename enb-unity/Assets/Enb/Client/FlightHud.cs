@@ -23,6 +23,8 @@ namespace Enb.Client
         private Vector2 cargoScroll, mountScroll;
         public bool EquipmentOpen => equipmentOpen;
         public uint SelectedContactId => contactId;
+        /// <summary>Keep keyboard-selected contacts aligned with the tactical HUD.</summary>
+        public void SelectContact(uint id) { contactId = id; client.SelectContact(id); }
         /// <returns>Whether a visible ship was selected at an actual screen point.</returns>
         public bool SelectContactAtPointer(Snapshot snapshot, Vector2 pointer)
         {
@@ -35,7 +37,7 @@ namespace Enb.Client
                 if (distance < closest) { closest = distance; selectedContact = actor.Id; }
             }
             if (selectedContact == 0) return false;
-            contactId = selectedContact; client.SelectContact(selectedContact);
+            SelectContact(selectedContact);
             return true;
         }
         /// <returns>Whether a visible wreck was selected at an actual screen point.</returns>
@@ -185,7 +187,7 @@ namespace Enb.Client
             Panel(new Rect(24, CanvasHeight - 112, 330, 88)); GUI.Label(new Rect(38, CanvasHeight - 105, 300, 20), "IMPULSE / WARP VELOCITY", small);
             GUI.Label(new Rect(38, CanvasHeight - 83, 300, 30), $"{Math.Abs(snapshot?.Speed ?? 0):N0}  m/s", heading);
             GUI.Label(new Rect(38, CanvasHeight - 52, 300, 20), client.Status, small);
-            GUI.Label(new Rect(375, CanvasHeight - 46, CanvasWidth - 720, 40), "W / S thrust   ·   A / D turn   ·   ↑ ↓ pitch   ·   SPACE brake\nRMB orbit   ·   Wheel zoom   ·   C reset camera   ·   TAB chart", small);
+            GUI.Label(new Rect(375, CanvasHeight - 46, CanvasWidth - 720, 40), "W / S thrust   ·   A / D turn   ·   ↑ ↓ pitch   ·   SPACE brake\nT next hostile   ·   X weapons   ·   RMB orbit   ·   TAB chart", small);
             if (GUI.Button(new Rect(CanvasWidth - 160, 25, 136, 28), client.Chart ? "TAB  Flight view" : "TAB  Sector chart", button)) client.SetChart(!client.Chart);
             if (GUI.Button(new Rect(CanvasWidth - 300, 25, 130, 28), "Disconnect", button)) { client.Disconnect(); return; }
             if (snapshot == null) return;
@@ -614,7 +616,7 @@ namespace Enb.Client
                 string kind = actor.IsPlayer ? "PLAYER" : actor.Hostile ? "HOSTILE" : "NPC";
                 if (GUILayout.Button($"{actor.Name} · {kind}\n{actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
                     contactId == actor.Id ? selected : button))
-                { contactId = actor.Id; client.SelectContact(actor.Id); }
+                    SelectContact(actor.Id);
             }
             ShipActor contact = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(a => a.Id == contactId);
             if (contact != null)

@@ -86,6 +86,7 @@ loopback IPv4 addresses; it does not connect to the public game service.
 | Enter | Open chat and server command line |
 | Click a target-list entry or world label | Select a destination |
 | Click a ship in space or Contacts | Select that ship |
+| T | Select the next visible hostile ship |
 | Click a wreck in space or Wrecks | Select it, then open or tractor its loot |
 | F / Warp to target | Ask the server to warp to the target |
 | G / Activate gate | Activate a nearby selected gate |

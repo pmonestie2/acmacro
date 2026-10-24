@@ -194,6 +194,7 @@ namespace Enb.Client
                 if (snapshot.WeaponsFiring) StopWeapons();
                 else ToggleWeapons(hud.SelectedContactId);
             }
+            if (Input.GetKeyDown(KeyCode.T)) TargetNextHostile();
             if (Input.GetKeyDown(KeyCode.W)) Thrust(2);
             if (Input.GetKeyDown(KeyCode.S)) Thrust(3);
             if (Input.GetKeyDown(KeyCode.Space)) Thrust(4);
@@ -414,6 +415,16 @@ namespace Enb.Client
         {
             if (Ready && snapshot.Players.Concat(snapshot.Mobs).Any(actor => actor.Id == id))
                 worker.Submit(new ClientCommand(CommandKind.SelectTarget, id));
+        }
+
+        /// <summary>Cycle through server-visible hostile ships in distance order.</summary>
+        private void TargetNextHostile()
+        {
+            ShipActor[] hostiles = snapshot.Mobs.Where(actor => actor.Hostile && actor.HasPosition)
+                .OrderBy(actor => actor.Position.Distance(snapshot.Position)).ToArray();
+            if (hostiles.Length == 0) { status = "No hostile ships in sensor range"; return; }
+            int current = System.Array.FindIndex(hostiles, actor => actor.Id == hud.SelectedContactId);
+            hud.SelectContact(hostiles[(current + 1) % hostiles.Length].Id);
         }
 
         /// <summary>Stop weapons without requiring a surviving target.</summary>
