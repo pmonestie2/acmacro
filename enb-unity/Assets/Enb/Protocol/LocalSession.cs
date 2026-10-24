@@ -19,10 +19,10 @@ namespace Enb.Protocol
         private IPAddress address;
         private SectorStream stream;
         private uint sequence = 1;
-        private double receivedAt, keepaliveAt, resendAt, gateAt, enteredAt;
-        private uint gate, combatTarget, pendingLoot;
+        private double receivedAt, keepaliveAt, resendAt, gateAt, dockAt, enteredAt;
+        private uint gate, dock, combatTarget, pendingLoot;
         private double combatTargetAt, pendingLootAt;
-        private bool gateActivated, gateCamera, gateFinished, lootRequested, disposed, failed;
+        private bool gateActivated, gateCamera, gateFinished, dockRequested, lootRequested, disposed, failed;
         private byte[] handoff;
         public uint Player { get; private set; }
         public World World { get; private set; } = new World();
@@ -82,7 +82,6 @@ namespace Enb.Protocol
                 Write(network, 0x2002, Encoding.ASCII.GetBytes(ticket));
                 Frame characters = Read(tcp);
                 if (characters.Opcode != 0x70 || characters.Body.Length < 1874) throw new InvalidDataException("Character list rejected.");
-                if (Wire.U32(characters.Body, 4, true) >= 10000) throw new InvalidOperationException("This prototype needs a character in space. Launch from the station in the original client first.");
                 uint slotCount = Wire.U32(characters.Body, 8, true);
                 if (characterSlot < 0 || characterSlot >= slotCount || characterSlot >= 5)
                     throw new InvalidDataException("Choose an available character.");
@@ -160,7 +159,7 @@ namespace Enb.Protocol
         private void Enter(byte[] join)
         {
             uint owner = Wire.U32(join, 16, true), destination = Wire.U32(join, 20, true);
-            if (owner != Player || destination == 0 || destination >= 10000) throw new InvalidDataException("Invalid space handoff identity.");
+            if (owner != Player || destination == 0) throw new InvalidDataException("Invalid sector handoff identity.");
             sector.Connect(address, 3808);
             SendUdp(sector, 0x2008, Wire.Body(w => { w.Write(destination); w.Write((byte)1); }), Player, 0);
             byte[] reply = ReceiveUdp(sector, 15);
@@ -170,7 +169,7 @@ namespace Enb.Protocol
             if (port == 0) throw new InvalidDataException("Missing sector port.");
             sector.Connect(address, port);
             stream = new SectorStream(Player); World = new World(); sequence = 1; Ready = false;
-            gate = 0; handoff = null;
+            gate = dock = 0; handoff = null;
             byte[] body = Wire.Body(w =>
             {
                 w.Write(join); w.Write(unchecked((uint)Environment.TickCount)); w.Write(new byte[40]);
@@ -231,6 +230,105 @@ namespace Enb.Protocol
             Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
             Send(0x5a, Wire.Body(w => { Wire.Big(w, Player); Wire.Big(w, target); w.Write(1u); }));
             Status = "Selecting gate: " + item.Name;
+        }
+
+        /// <summary>Select a nearby station and wait for clearance before docking.</summary>
+        public void Dock(uint target)
+        {
+            if (!Ready || World.Station != null || gate != 0 || dock != 0 ||
+                !World.Objects.TryGetValue(target, out MapObject item) || item.Kind != 12 ||
+                !World.HasPosition || World.Position.Distance(item.Position) > 5000)
+                return;
+            dock = target; dockAt = clock.Elapsed.TotalSeconds; dockRequested = false;
+            Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
+            Status = "Requesting docking clearance: " + item.Name;
+        }
+
+        /// <summary>Leave the current station through its native launch request.</summary>
+        public void Launch()
+        {
+            if (!Ready || World.Station == null || gate != 0 || dock != 0) return;
+            Send(0x4e, Wire.Body(w => { w.Write(Player); w.Write(World.Station.Id); w.Write((byte)1); }));
+            Status = "Launching from " + World.Sector;
+        }
+
+        /// <summary>Open one NPC present in the authoritative station layout.</summary>
+        public void OpenNpc(uint npcId)
+        {
+            if (!Ready || World.Station == null || World.Dialogue != null ||
+                !World.Station.NpcIds.Contains(npcId)) return;
+            World.StartDialogue(npcId);
+            Send(0x4e, Wire.Body(w => { w.Write(Player); w.Write(npcId); w.Write((byte)4); }));
+            Status = "Talking to station contact";
+        }
+
+        /// <summary>Choose only a branch offered by the current NPC talk tree.</summary>
+        public void ChooseNpc(byte node)
+        {
+            if (!Ready || World.Station == null || World.Dialogue == null ||
+                node != 230 && !World.Dialogue.Choices.Any(choice => choice.Node == node)) return;
+            Send(0x55, Wire.Body(w => { w.Write(Player); w.Write(node); }));
+            Status = node == 0 || node == 230 ? "Conversation closed" : "Waiting for station contact";
+        }
+
+        /// <summary>Buy a bounded quantity from a server-listed vendor slot.</summary>
+        public void BuyVendor(int slot, uint quantity = 1)
+        {
+            if (!Ready || World.Station == null || World.Dialogue?.VendorOpen != true ||
+                slot < 0 || slot >= World.Vendor.Length || World.Vendor[slot]?.Present != true ||
+                quantity == 0 || quantity > 99) return;
+            Send(0x27, Wire.Body(w =>
+            {
+                Wire.Big(w, Player); Wire.Big(w, 4u); Wire.Big(w, (uint)slot);
+                Wire.Big(w, 1u); Wire.Big(w, uint.MaxValue); Wire.Big(w, quantity);
+            }));
+            Status = "Buying from station vendor";
+        }
+
+        /// <summary>Sell an owned cargo stack through the active vendor.</summary>
+        public void SellVendor(int slot, uint quantity = 1)
+        {
+            if (!Ready || World.Station == null || World.Dialogue?.VendorOpen != true ||
+                slot < 0 || slot >= World.Equipment.Cargo.Length ||
+                World.Equipment.Cargo[slot]?.Present != true || quantity == 0 ||
+                quantity > World.Equipment.Cargo[slot].Quantity) return;
+            Send(0x27, Wire.Body(w =>
+            {
+                Wire.Big(w, Player); Wire.Big(w, 1u); Wire.Big(w, (uint)slot);
+                Wire.Big(w, 4u); Wire.Big(w, 0u); Wire.Big(w, quantity);
+            }));
+            Status = "Selling cargo to station vendor";
+        }
+
+        /// <summary>Install owned cargo with the native inventory transfer packet.</summary>
+        public void EquipCargo(int cargoSlot, int mountSlot)
+        {
+            if (!Ready || gate != 0 || cargoSlot < 0 || cargoSlot >= World.Equipment.Cargo.Length ||
+                mountSlot < 0 || mountSlot >= World.Equipment.Mounted.Length ||
+                World.Equipment.Cargo[cargoSlot]?.Present != true) return;
+            SendInventoryTransfer(1, (uint)cargoSlot, 2, (uint)mountSlot, 1);
+            Status = "Installing ship equipment";
+        }
+
+        /// <summary>Move an installed item into the first empty cargo slot.</summary>
+        public void UnequipMount(int mountSlot)
+        {
+            if (!Ready || gate != 0 || mountSlot < 0 || mountSlot >= World.Equipment.Mounted.Length ||
+                World.Equipment.Mounted[mountSlot]?.Present != true) return;
+            int cargoSlot = Array.FindIndex(World.Equipment.Cargo, item => item?.Present != true);
+            if (cargoSlot < 0) { Status = "Cargo hold is full"; return; }
+            SendInventoryTransfer(2, (uint)mountSlot, 1, (uint)cargoSlot, 1);
+            Status = "Moving equipment to cargo";
+        }
+
+        /// <summary>Submit a bounded owned-inventory move through the server's durable transfer path.</summary>
+        private void SendInventoryTransfer(uint source, uint sourceSlot, uint destination, uint destinationSlot, uint quantity)
+        {
+            Send(0x27, Wire.Body(w =>
+            {
+                Wire.Big(w, Player); Wire.Big(w, source); Wire.Big(w, sourceSlot);
+                Wire.Big(w, destination); Wire.Big(w, destinationSlot); Wire.Big(w, quantity);
+            }));
         }
 
         /// <summary>Select a visible contact for group targeting and combat.</summary>
@@ -305,6 +403,12 @@ namespace Enb.Protocol
                     if (b.Length != 4) throw new InvalidDataException("Invalid sector start.");
                     Send(6, b); Send(0x3004, Wire.Body(w => w.Write(Player))); Ready = true; Status = "Connected"; break;
                 case 0x19:
+                    if (b.Length == 8 && dock != 0 && !dockRequested && Wire.U32(b, 0) == dock && Wire.U32(b, 4) == uint.MaxValue)
+                    {
+                        dockRequested = true;
+                        Send(0x2c, Wire.Body(w => { w.Write(Player); w.Write(28u); w.Write(dock); w.Write(0u); }));
+                        Status = "Waiting for docking clearance";
+                    }
                     if (b.Length == 8 && pendingLoot != 0 && !lootRequested && Wire.U32(b, 0) == pendingLoot && Wire.U32(b, 4) == uint.MaxValue)
                     {
                         lootRequested = true;
@@ -324,6 +428,11 @@ namespace Enb.Protocol
                     { World.SetOpenLoot(pendingLoot); pendingLoot = 0; Status = "Wreck open"; }
                     break;
                 case 0x92:
+                    if (b.Length == 8 && dock != 0 && dockRequested && Wire.U32(b, 0, true) == 5 && Wire.U32(b, 4, true) == dock)
+                    {
+                        Send(0x2c, Wire.Body(w => { w.Write(Player); w.Write(7u); w.Write(dock); w.Write(0u); }));
+                        dock = 0; Status = "Entering station";
+                    }
                     if (b.Length == 8 && gate != 0 && Wire.U32(b, 0, true) == 4 && Wire.U32(b, 4, true) == gate) gateCamera = true;
                     break;
                 case 0x1d:
@@ -361,6 +470,8 @@ namespace Enb.Protocol
                 if (handoff != null) { Enter(handoff); return; }
                 if (pendingLoot != 0 && now - pendingLootAt > 5)
                 { pendingLoot = 0; Status = "Wreck did not open"; }
+                if (dock != 0 && now - dockAt > 8)
+                { dock = 0; Status = "Docking timed out"; }
                 if (combatTarget != 0 && now - combatTargetAt > 5)
                 { combatTarget = 0; Status = "Target did not acknowledge weapon command"; }
                 if (gate != 0)

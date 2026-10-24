@@ -1,7 +1,8 @@
 # 42 and Beyond: Unity Client
 
 A desktop space client for the existing local Rust server, with a solid 3D ship,
-procedural asteroids, stations, gates, a distant ringed planet, and a sector chart.
+procedural asteroids, stations, gates, a docking bay, a distant ringed planet,
+and a sector chart.
 Nearby players appear as solid replacement ships with their toon names and interpolated
 movement. The server controls their visibility, including range and cloaking; ships
 are removed when they leave visibility or log out. Mobs have distinct procedural models,
@@ -88,6 +89,8 @@ loopback IPv4 addresses; it does not connect to the public game service.
 | Click a wreck in space or Wrecks | Select it, then open or tractor its loot |
 | F / Warp to target | Ask the server to warp to the target |
 | G / Activate gate | Activate a nearby selected gate |
+| Shift+D / Dock at station | Enter a selected station within 5 km |
+| L / Launch | Leave a station interior |
 
 The VM launcher uses the running server at `192.168.47.128`. The client reads that account's available toons and lets you
 choose one before entering space. The current Windows VM has narrow inbound
@@ -102,6 +105,14 @@ Warp to a gate first, then travel through it once stopped nearby. The server's
 gate sequence takes approximately 15 seconds. Loss of window focus sends brake
 and neutral steering. Disconnect and leaving Play mode cancel and join the
 network worker before its session is released.
+
+Select a station, warp nearby, then choose **Dock at station**. The server grants
+clearance and moves the character to its interior. Characters already docked can
+log in directly. The docking bay shows the parked ship, loadout and **Launch**.
+The server announces the station layout. The client lists public NPC names and
+follows the server-offered dialogue choices. A vendor branch opens its native
+stock and buy/sell panels with server quotes and credit balance. Room movement
+is next.
 
 ## Players, groups and mobs
 
@@ -127,7 +138,9 @@ Hostile contacts have red markers; other NPCs have gold markers. Press X or use
 The server controls firing, hits, damage, movement and death. The client shows
 weapon streaks and hit numbers. The ship loadout panel lists cargo, equipment,
 weapon and device mounts; select cargo and a mount to equip, or select installed
-gear to remove. Ammo can be loaded through the same server move command. Defeated
+gear to remove. The panel checks mount compatibility and cargo space before sending
+native inventory transfers, and shows item condition, range and any server quote.
+Ammo can be loaded through the same server move command. Defeated
 mobs leave server-owned wrecks. Select one within 2 km, open it, and tractor any
 listed item into cargo. The radar shows nearby contacts and navigation targets.
 Models are placeholders rather than the original NPC assets. Station interiors
@@ -147,11 +160,15 @@ and the full original combat and equipment UI remain unfinished.
   input queue cross the thread boundary. Socket polling is cancellation-aware.
 - Built-in rendering with lit surfaces, procedural sky and planet shaders, shared
   asteroid meshes, and interpolated server poses. No asset-store dependencies.
-- Rendering is capped at 60 FPS in the foreground and 15 FPS in the background.
+- Rendering targets 120 FPS in the foreground and 60 FPS while the window is visible behind another app.
   Unchanged static scenery is retained; navigation sorting is refreshed at 4 Hz.
+  The HUD reports measured FPS and the slowest frame in each one-second interval.
+  The client predicts the local ship's movement between the server's roughly
+  five-per-second position reports and corrects its view on each new pose.
   Normal play uses the standalone app, without the Editor's extra overhead.
 - The combat and loadout panels cover selection, weapon toggling, health, cargo,
-  hardpoints, equip/unequip, and wreck loot. Station interiors and docking remain unfinished.
+  hardpoints, equip/unequip, and wreck loot. Docking and launch work through the
+  station handoff; NPC dialogue and vendor trading work, while interior room movement remains unfinished.
   The account bridge supplies the toon names and selected server slot.
 
 Physical scenery uses server positions and scale with approximate replacement
@@ -187,7 +204,8 @@ On Windows, use `C:\PYTHON\python.exe` instead of `python3`. The harness builds
 Rust and C#, starts an owned loopback server with two temporary accounts, checks
 mutual player visibility, movement, logout removal, reentry, group invitation/decline/accept,
 roster updates, group chat, kick/leave/disband, formation actions, inventory moves,
-server MOB state, weapon effects, damage, wreck loot, and stops it
+server MOB state, weapon effects, damage, wreck loot, station docking, a docked
+reconnect, and launch, then stops it
 in a cleanup block. It fails if the ports are occupied rather than stopping any
 existing server. It must not be pointed at a live character session.
 

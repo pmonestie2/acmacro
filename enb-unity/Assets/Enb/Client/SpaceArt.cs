@@ -92,6 +92,35 @@ namespace Enb.Client
             return root;
         }
 
+        /// <returns>A compact procedural docking bay surrounding the parked ship.</returns>
+        public Transform Hangar(Transform parent)
+        {
+            Transform root = Root(parent, "Station docking bay");
+            Part(root, PrimitiveType.Cube, new Vector3(0, -.25f, 0), new Vector3(18, .4f, 24), dark);
+            Part(root, PrimitiveType.Cube, new Vector3(0, 6, 11.5f), new Vector3(18, 12, .8f), trim);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Part(root, PrimitiveType.Cube, new Vector3(side * 8.5f, 5, 0), new Vector3(.7f, 10, 24), trim);
+                Part(root, PrimitiveType.Cube, new Vector3(side * 5.4f, .05f, 0), new Vector3(.08f, .04f, 18), glow);
+                for (int i = -2; i <= 2; i++)
+                {
+                    Part(root, PrimitiveType.Cube, new Vector3(side * 8.05f, 4.5f, i * 4),
+                        new Vector3(.12f, 7, .18f), hull);
+                    Part(root, PrimitiveType.Cube, new Vector3(side * 7.9f, 7.5f, i * 4),
+                        new Vector3(.2f, .14f, 2.2f), glow);
+                }
+            }
+            Part(root, PrimitiveType.Cylinder, new Vector3(0, 0, 0), new Vector3(5, .12f, 5), hull);
+            Part(root, PrimitiveType.Cylinder, new Vector3(0, .1f, 0), new Vector3(3.7f, .04f, 3.7f), trim);
+            for (int i = 0; i < 12; i++)
+            {
+                float angle = i * Mathf.PI / 6;
+                Part(root, PrimitiveType.Cube, new Vector3(Mathf.Cos(angle) * 4.3f, .2f, Mathf.Sin(angle) * 4.3f),
+                    new Vector3(.65f, .08f, .18f), amber);
+            }
+            return root;
+        }
+
         /// <returns>A distinct procedural NPC craft using shared rendering assets.</returns>
         public Transform Mob(Transform parent)
         {

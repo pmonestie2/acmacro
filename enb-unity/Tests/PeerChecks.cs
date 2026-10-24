@@ -84,10 +84,10 @@ internal static class PeerChecks
                     observer.World.Players.TryGetValue(peerId, out ShipActor p) && p.HasPosition && p.Name == "Visitor" &&
                     visitor.World.Players.ContainsKey(observer.Player), "Mutual player visibility did not arrive.");
                 uint starterWeapon = observer.World.Equipment.Mounted[3].Template;
-                observer.Chat("/unequip 3");
+                observer.UnequipMount(3);
                 Wait(observer, null, () => observer.World.Equipment.Mounted[3]?.Present != true &&
                     observer.World.Equipment.Cargo[0]?.Template == starterWeapon, "Server unequip update did not move the weapon to cargo.");
-                observer.Chat("/equip 0 3");
+                observer.EquipCargo(0, 3);
                 Wait(observer, null, () => observer.World.Equipment.Mounted[3]?.Template == starterWeapon &&
                     observer.World.Equipment.Cargo[0]?.Present != true, "Server equip update did not restore the weapon.");
                 Console.WriteLine("PASS: item template, cargo and hardpoint decoding; authoritative unequip and equip");

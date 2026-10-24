@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Enb.Protocol
 {
-    public enum CommandKind { Thrust, Steer, Warp, Gate, Chat, ToggleWeapons, Formation, SelectTarget, StopWeapons, OpenLoot, TakeLoot }
+    public enum CommandKind { Thrust, Steer, Warp, Gate, Dock, Launch, OpenNpc, ChooseNpc, BuyVendor, SellVendor, EquipCargo, UnequipMount, Chat, ToggleWeapons, Formation, SelectTarget, StopWeapons, OpenLoot, TakeLoot }
 
     public readonly struct ClientCommand
     {
@@ -74,6 +74,14 @@ namespace Enb.Protocol
                                 case CommandKind.Steer: session.Steer(command.Yaw, command.Pitch); break;
                                 case CommandKind.Warp: session.Warp(command.Target); break;
                                 case CommandKind.Gate: session.Gate(command.Target); break;
+                                case CommandKind.Dock: session.Dock(command.Target); break;
+                                case CommandKind.Launch: session.Launch(); break;
+                                case CommandKind.OpenNpc: session.OpenNpc(command.Target); break;
+                                case CommandKind.ChooseNpc: session.ChooseNpc((byte)command.Target); break;
+                                case CommandKind.BuyVendor: session.BuyVendor(command.Slot); break;
+                                case CommandKind.SellVendor: session.SellVendor(command.Slot); break;
+                                case CommandKind.EquipCargo: session.EquipCargo((int)command.Target, command.Slot); break;
+                                case CommandKind.UnequipMount: session.UnequipMount((int)command.Target); break;
                                 case CommandKind.Chat: session.Chat(command.Text, (byte)command.Target); break;
                                 case CommandKind.ToggleWeapons: session.ToggleWeapons(command.Target); break;
                                 case CommandKind.Formation: session.Formation(command.Target); break;

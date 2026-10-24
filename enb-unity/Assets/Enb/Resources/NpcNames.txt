@@ -1,0 +1,305 @@
+7	Stephanie Baird
+9	Ibuka Terao
+10	Jenra Mos
+11	Mil Shahs
+12	Nakada Hatsue
+13	Quia Gensh
+14	Sara Madison
+15	Meredith Lot
+16	Roger Overton
+17	Genia Portman
+18	Fujiko Ohiya
+19	Harvey Krum
+20	Indigo Morrison
+21	Fessy O'Donnall
+22	Zak Letlin
+23	Elena Brown
+24	James Woods
+25	Nathan Keith
+26	Sander Pauls
+27	Executive Cailleach MacKellan
+28	Julie Bristol
+29	Javier Domingue
+30	Sondra Benen
+31	Lenorn Listor
+32	Eweyn Smither
+33	Jorge Montez
+34	Kath Wilson
+35	Robert Tagger
+36	Mar Talison
+37	Josephine Bloom
+38	Ann Betts
+39	Sable
+40	Holly Flanders
+41	Louden MacEwen
+42	Eddie DuChampe
+43	Seamus Davidson
+44	Fiona MacLachlan
+45	Eagan Monroe
+46	Lieutenant Kyle Raine
+47	Sergeant Trias
+49	Johnny Watt
+50	Charles Tesser
+51	Olisi Valtz
+64	Sari Manso
+65	Kido Arata
+66	Majine Do 'fuge
+67	Hishida Yujiro
+68	Bando Jun
+94	Flavius Grachhus
+95	Pedagogue Kluu
+96	Sub-Commander Trask
+97	Marius Crelion
+98	Senorix Rufus
+110	Liam O'Faolain
+111	Tal Savage
+112	Warden Orphant
+113	Isha Fars
+114	Tetsuo Ravenlock
+115	Ten'Shao Anala
+121	Nishin Si'imr
+122	Hsing Fu'un
+123	Ayako Ravenlock
+124	Maiki Vo
+125	Piq Ki
+126	Jienai She'sem
+127	Shisa Oli
+128	Sjeh Hram
+129	Relma Certo
+130	Andros Illyuctas
+131	Santin Sauls
+132	Polini Martas
+133	Prokop Murrius
+134	Flavia Metilius
+135	Shou Tzu
+136	Havyair Amen-Tol
+137	Arinyl Nairda
+138	Cleri Maste
+139	Burgen Lorensal
+140	Hessen Grundmeier
+141	Mannion Bly
+142	Chester Ludwigin
+143	Len Garing
+144	Feng Yonghong
+145	Sturmer
+146	Tarnish McHollis
+147	Oorjit Bly
+148	Tobias Mats
+149	Yun Panang
+150	Ylim Tjas
+151	Kylesh
+152	Tinidosh Othistre
+153	Xe Fej
+154	Yanagi Ochiyo
+155	Yanagi Misa
+156	Loremaster Daiki-ya
+157	Zachariah Garrett
+158	Daniel Malhause
+166	Olga Mantel
+213	Monty DuChampe
+214	Wenton Ness
+215	Kah Rinno
+216	Trevor Jorst
+217	Anveryn O'Connell
+218	Sara Green
+219	Regina Flore
+220	Kristin Sadler
+221	Ian Darson
+222	Portia LaPointe
+223	Belulah Lee
+224	Arno Suiliman
+235	Sadli Morn
+236	Hele Formin
+237	Ralla Sertris
+238	Jak Grosson
+239	Logan Ebson
+240	Andy Tall
+241	Science Officer Sharik
+242	Curator Whitley
+243	Shang Li Chun
+244	Julius Ortega
+245	Ivanna
+246	Leila Endora
+247	Mark Cyrus
+248	Amyli Hamston
+249	Daniel Yonda
+250	Draegul McCrocker
+251	Vel Ohla
+252	Angelique DeSaro
+253	Neva Anaso
+267	Anusha Dayakara
+268	Josher
+350	Kayen Silva
+351	Ahab  Al Battani
+352	Liu An Su Song
+353	Crayden Marco
+354	Wayens Menas
+363	Merjan Kathrada
+371	Crones  Christopher
+372	Sub Commander Brook
+375	Umbra Sobhan
+376	Vanessa Marks
+377	Kluge
+425	Penli Naevius
+426	Phrax Leta
+427	Quint Orso
+428	Saccius Epidus
+429	Ullom Zephies
+442	Raynard Duvet
+444	Frederick van Hoortendam
+445	Leif Peyre
+446	Eric Normark
+447	Gawain Modainas
+448	Jenn Jango
+449	Jade Jango
+450	Doma
+451	Gheanna
+452	Aoladur
+456	Stratia Magus
+457	Everro  Verri
+458	Ken Golby
+459	Jay Xavier
+460	Count Roland du Pyrenees
+461	General Otto von Hotenbaun-Bismarck
+462	Cassiopeia de Grey
+463	Minister Pierre du Solennoi
+464	Gwen Deracques
+465	Jacqueline Mitchel
+466	Charles Lafayette
+467	Renee Boral
+468	Claude van Gogh
+469	Sub Commander Frank
+472	Danielle Moeck
+476	Mathis Alexander
+477	Harrison Allen
+478	Naro Hamilton
+479	Ichiro Kohaya
+480	Richard Expulsion
+481	Gwendolyn Pedersen
+482	Benn Sanderson
+483	James Tucker
+484	Lisa Prowse
+485	Frank Mark's
+486	Rashid Bandy
+487	Trini ben Shaddah
+488	Mouhammud Shamalyiah
+489	Omaka Kasinagi
+490	Aschera Ravenmouth
+497	Gaius Pectorus
+511	Anthony Verdugo
+512	Lotus Blossom
+513	Synjin Talbot
+514	Frank Siebeta
+515	Frendlo Mecnavi
+516	Jurago  Ardregen
+517	Srefin Milken
+518	Ugarina  Pletu
+519	Jonac  Frotlin
+520	Pract Brog
+521	Monika Gwen
+522	Frodo  Bagits
+523	Manda  Rosepuddle
+524	Mickey  Meese
+525	Thomif Friff
+526	Autumn Wind
+527	Dog Soldier
+533	Earc Drummond
+534	Ainsley McMaster
+535	Alcander Maximus
+536	Harabolos Aikmene
+537	Drostan McClure
+538	Kaitya Neely
+539	Terance Simbose
+540	Leniose Targama
+541	Bao-Zhai Guo
+542	Trever Johansen
+548	Solar  Maker
+550	Nvari  Traff
+551	Scran  Ulbieght
+552	Wynn Betriv
+553	Porten Grouln
+554	Charen Bleek
+555	Ulsan Kellet
+556	Bargatate Stet
+557	Grenda Pien
+558	Vegra Lun
+559	Cielano Porv
+560	Admiral Jimmy
+561	Proconsul Leagle
+562	Grandmaster Urfer
+563	Kragor  Milktev
+564	change me
+565	Banacia Floot
+566	Joinilec Vertize
+567	Gildro Booz
+568	Timida  Praut
+569	Veronica Hertzfeldt
+570	David Relington
+571	Jason Weathers
+572	Allessa MacKreary
+573	Danielle Relington
+574	Antony Mays
+575	Billy Sullivan
+576	Mercedes Alvarez
+577	Jacob Wilkenson
+578	Rachael Hatfield
+579	Director Jessica Ellis
+580	Michael Bradford
+581	Xiao Lin Jinrei
+583	Deschide Poarta
+584	Intuneric  Vigoare
+594	Flien  Cha
+597	Jar Vlodim
+598	Pivitor Michael Trussel
+599	Munik Verdin
+600	Pierce Nkuklen
+601	Merdy Lark
+602	Levethix Aesthyr
+605	Ching Shih
+606	Lucius Verus
+607	Ricardo Cordoba
+608	Tyrian Ikaruga
+609	Nodens Ictus
+610	Chip Crispin
+611	Majin Luu
+612	Harry Pewter
+613	Darius Gradius
+614	Sugita Kumiko
+616	Sory Wilson
+617	Lydia Haruka
+618	Legate Arkren
+619	Lieutenant  Commander Rano
+620	Dai'shao  Okan
+621	Foreman Neitzhe
+622	Adept Shel'Kael
+623	Doctrinaire Vayra
+624	Dispatcher  Sonus
+625	Procurator Varo
+626	Gong'Jeu Kiana
+627	Toomey
+628	Moon Trep
+629	Nimel Forel
+630	Milev Snearel
+631	Wil Sment
+632	Anjuren Kahn
+633	Anthemiolus Troglita
+634	Pacurius  Stratelates
+635	Signifier Cornicularius
+636	Signifier Armicustos
+638	Quartermaster Kaden
+639	Lt. Commander Sara
+640	Commander Treaver
+641	Ensign Keira
+648	Minotaur  ZooZ
+649	Minotaur Jhah
+650	Minotaur Vhar
+651	Minotaur Shee
+652	Minotaur Vhee
+654	Gatekeeper Memnon
+655	Shou Tzu
+656	Yoshi Maru Scientist
+659	Explore Job
+665	Faldafeykir
+668	Signifier Horatius
+669	Signifier Marina
+671	GETco Mechanic

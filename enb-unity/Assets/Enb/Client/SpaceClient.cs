@@ -20,16 +20,19 @@ namespace Enb.Client
         private RemoteShips remoteShips;
         private CombatEffects combatEffects;
         private FlightHud hud;
-        private Transform ship, worldRoot, environment;
+        private Transform ship, worldRoot, environment, hangar;
         private readonly Dictionary<uint, Transform> bodies = new Dictionary<uint, Transform>();
         private string host = "192.168.47.128", username = "toon", password = "pass", status = "Ready to connect", sector = "";
         private uint target;
         private bool chart, positioned;
         private bool chatOpen;
         private int chatOpenedFrame = -1;
-        private int lastFrameRate = 60;
+        private int lastFrameRate = 120;
+        private int sampledFrames, displayFps;
+        private float sampledSeconds, slowestFrameMs, displayFrameMs, nextPerformanceLog;
         private float previousYaw, previousPitch, orbitYaw, orbitPitch, zoom = 2.8f, mapZoom = 1400;
         private Vector3 renderedPosition;
+        private float authoritativePoseAt;
         public Snapshot CurrentSnapshot => snapshot;
         public string ConnectionError => worker?.Error;
         public string Status => status;
@@ -42,6 +45,8 @@ namespace Enb.Client
         public bool Chart => chart;
         public MapObject Target => snapshot?.Objects.FirstOrDefault(item => item.Id == target);
         public int RenderedBodyCount => bodies.Count;
+        public int Fps => displayFps;
+        public float FrameMs => displayFrameMs;
 
         /// <summary>Create the space client when the bootstrap scene starts.</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -53,12 +58,13 @@ namespace Enb.Client
         {
             Application.runInBackground = true;
             QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 120;
             art = new SpaceArt(); hud = new FlightHud(this);
             worldRoot = new GameObject("Server world").transform; worldRoot.SetParent(transform, false);
             remoteShips = new RemoteShips(art, worldRoot);
             ship = art.Ship(transform); combatEffects = new CombatEffects(transform, ship, remoteShips); ship.localScale = Vector3.one * .25f;
             environment = art.Environment(transform);
+            hangar = art.Hangar(transform); hangar.gameObject.SetActive(false);
             RenderSettings.skybox = art.Sky; RenderSettings.ambientLight = new Color(.18f, .23f, .32f);
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             var sun = new GameObject("Sunlight", typeof(Light)); sun.transform.SetParent(transform, false);
@@ -116,10 +122,25 @@ namespace Enb.Client
             return Quaternion.LookRotation(new Vector3(forward.y, forward.z, forward.x), new Vector3(up.y, up.z, up.x));
         }
 
+        /// <returns>The current visual heading projected from native steering rates.</returns>
+        private static Quaternion ProjectRotation(Snapshot state, float age)
+        {
+            Quaternion source = new Quaternion(state.Orientation[0], state.Orientation[1],
+                state.Orientation[2], state.Orientation[3]).normalized;
+            float yaw = state.AngularZ * 420f * age;
+            float pitch = state.AngularY * 420f * age;
+            source = (source * new Quaternion(0, 0, yaw, 1).normalized *
+                new Quaternion(0, pitch, 0, 1).normalized).normalized;
+            Vector3 forward = source * Vector3.right, up = source * Vector3.forward;
+            return Quaternion.LookRotation(new Vector3(forward.y, forward.z, forward.x),
+                new Vector3(up.y, up.z, up.x));
+        }
+
         /// <summary>Consume snapshots and route keyboard and mouse actions.</summary>
         private void Update()
         {
-            int frameRate = !Application.isFocused ? 15 : Ready ? 60 : 30;
+            MeasureFrame();
+            int frameRate = !Application.isFocused ? 60 : 120;
             if (frameRate != lastFrameRate)
             {
                 Application.targetFrameRate = frameRate;
@@ -135,11 +156,16 @@ namespace Enb.Client
             Snapshot next = worker?.Latest;
             if (next != null && !ReferenceEquals(next, snapshot))
             {
+                bool poseChanged = next.HasPosition && (snapshot == null || !snapshot.HasPosition ||
+                    next.Position.Distance(snapshot.Position) > .001f || next.Speed != snapshot.Speed ||
+                    next.AngularY != snapshot.AngularY || next.AngularZ != snapshot.AngularZ ||
+                    !next.Orientation.SequenceEqual(snapshot.Orientation));
                 snapshot = next; if (worker.Error == null) status = next.Status;
                 if (sector != next.Sector) { ClearWorld(); sector = next.Sector; target = 0; positioned = false; }
                 ApplyWorld(next);
                 remoteShips.Apply(next.Players.Concat(next.Mobs).ToArray());
                 combatEffects.Apply(next);
+                if (poseChanged) authoritativePoseAt = Time.unscaledTime;
                 if (!positioned && next.HasPosition) { renderedPosition = Convert(next.Position); positioned = true; }
             }
             if (!Ready) return;
@@ -155,6 +181,12 @@ namespace Enb.Client
                 previousYaw = previousPitch = 0;
                 return;
             }
+            if (snapshot.Station != null)
+            {
+                if (Input.GetKeyDown(KeyCode.E)) hud.ToggleEquipment();
+                if (Input.GetKeyDown(KeyCode.L)) Launch();
+                return;
+            }
             if (Input.GetKeyDown(KeyCode.Tab)) SetChart(!chart);
             if (Input.GetKeyDown(KeyCode.E)) hud.ToggleEquipment();
             if (Input.GetKeyDown(KeyCode.X))
@@ -167,6 +199,8 @@ namespace Enb.Client
             if (Input.GetKeyDown(KeyCode.Space)) Thrust(4);
             if (Input.GetKeyDown(KeyCode.F)) WarpSelected();
             if (Input.GetKeyDown(KeyCode.G)) GateSelected();
+            if (Input.GetKeyDown(KeyCode.D) &&
+                (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) DockSelected();
             if (Input.GetKeyDown(KeyCode.C)) { orbitYaw = 0; orbitPitch = 0; }
             float yaw = (Input.GetKey(KeyCode.A) ? 1 : 0) - (Input.GetKey(KeyCode.D) ? 1 : 0);
             float pitch = (Input.GetKey(KeyCode.UpArrow) ? 1 : 0) - (Input.GetKey(KeyCode.DownArrow) ? 1 : 0);
@@ -180,6 +214,24 @@ namespace Enb.Client
                 if (chart) mapZoom = Mathf.Clamp(mapZoom * Mathf.Exp(-wheel * .12f), 100, 4000);
                 else zoom = Mathf.Clamp(zoom * Mathf.Exp(-wheel * .1f), 1.5f, 14);
                 if (Input.GetMouseButtonDown(0)) SelectAtPointer();
+            }
+        }
+
+        /// <summary>Publish one-second frame pacing measurements for the HUD.</summary>
+        private void MeasureFrame()
+        {
+            float delta = Time.unscaledDeltaTime;
+            if (delta <= 0 || delta > 1) return;
+            sampledSeconds += delta; sampledFrames++;
+            slowestFrameMs = Mathf.Max(slowestFrameMs, delta * 1000);
+            if (sampledSeconds < 1) return;
+            displayFps = Mathf.RoundToInt(sampledFrames / sampledSeconds);
+            displayFrameMs = slowestFrameMs;
+            sampledFrames = 0; sampledSeconds = slowestFrameMs = 0;
+            if (Time.unscaledTime >= nextPerformanceLog)
+            {
+                Debug.Log($"42 and Beyond frame pacing: {displayFps} FPS, slowest {displayFrameMs:0.0} ms, focused {Application.isFocused}, contacts {remoteShips.Count}");
+                nextPerformanceLog = Time.unscaledTime + 30;
             }
         }
 
@@ -205,15 +257,42 @@ namespace Enb.Client
         /// <summary>Smooth authoritative poses and position the camera without changing gameplay state.</summary>
         private void LateUpdate()
         {
-            float blend = 1 - Mathf.Exp(-14 * Time.unscaledDeltaTime);
-            if (snapshot != null)
+            float delta = Mathf.Min(Time.unscaledDeltaTime, .1f);
+            float blend = 1 - Mathf.Exp(-14 * delta);
+            bool docked = snapshot?.Station != null;
+            if (snapshot != null && !docked)
             {
-                Vector3 goal = Convert(snapshot.Position);
-                renderedPosition = Vector3.Distance(renderedPosition, goal) > 300 ? goal : Vector3.Lerp(renderedPosition, goal, blend);
-                ship.rotation = Quaternion.Slerp(ship.rotation, ConvertRotation(snapshot.Orientation), blend);
+                float age = Mathf.Clamp(Time.unscaledTime - authoritativePoseAt, 0, .25f);
+                Quaternion projectedRotation = ProjectRotation(snapshot, age);
+                ship.rotation = Quaternion.Slerp(ship.rotation, projectedRotation, blend);
+                float ramp = snapshot.Acceleration > .001f
+                    ? Mathf.Min(age, Mathf.Abs(snapshot.TargetSpeed - snapshot.Speed) / snapshot.Acceleration) : 0;
+                float direction = Mathf.Sign(snapshot.TargetSpeed - snapshot.Speed);
+                float currentSpeed = snapshot.Speed + direction * snapshot.Acceleration * ramp;
+                float distance = snapshot.Speed * ramp +
+                    .5f * direction * snapshot.Acceleration * ramp * ramp + currentSpeed * (age - ramp);
+                Vector3 velocity = ship.forward * (currentSpeed * MetersToWorld);
+                Vector3 predicted = Convert(snapshot.Position) +
+                    projectedRotation * Vector3.forward * (distance * MetersToWorld);
+                renderedPosition += velocity * delta;
+                renderedPosition = Vector3.Distance(renderedPosition, predicted) > 50
+                    ? predicted : Vector3.Lerp(renderedPosition, predicted, 1 - Mathf.Exp(-10 * delta));
             }
             worldRoot.position = -renderedPosition;
-            remoteShips.Tick(Time.unscaledDeltaTime); combatEffects.Tick(); environment.gameObject.SetActive(!chart);
+            remoteShips.Tick(Time.unscaledDeltaTime); combatEffects.Tick();
+            hangar.gameObject.SetActive(docked);
+            environment.gameObject.SetActive(!chart && !docked);
+            if (docked)
+            {
+                view.orthographic = false; view.clearFlags = CameraClearFlags.SolidColor;
+                view.backgroundColor = new Color(.025f, .055f, .075f);
+                ship.position = new Vector3(0, 1.4f, 0); ship.rotation = Quaternion.identity;
+                ship.localScale = Vector3.one * 1.3f;
+                view.transform.position = new Vector3(4, 3.5f, -8);
+                view.transform.LookAt(new Vector3(0, 1.2f, 0));
+                return;
+            }
+            ship.localPosition = Vector3.zero;
             if (chart)
             {
                 view.orthographic = true; view.orthographicSize = mapZoom;
@@ -268,6 +347,50 @@ namespace Enb.Client
         /// <summary>Request travel through the selected gate.</summary>
         public void GateSelected() { if (Ready && Target?.Kind == 11) worker.Submit(new ClientCommand(CommandKind.Gate, target)); }
 
+        /// <summary>Request docking at the selected nearby station.</summary>
+        public void DockSelected()
+        { if (Ready && Target?.Kind == 12 && Target.Position.Distance(snapshot.Position) <= 5000)
+                worker.Submit(new ClientCommand(CommandKind.Dock, target)); }
+
+        /// <summary>Leave the station after its server-owned launch transition.</summary>
+        public void Launch()
+        { if (Ready && snapshot.Station != null) worker.Submit(new ClientCommand(CommandKind.Launch)); }
+
+        /// <summary>Ask the server to open a contact placed in this station.</summary>
+        public void OpenNpc(uint id)
+        { if (Ready && snapshot.Station != null && snapshot.Station.NpcIds.Contains(id))
+                worker.Submit(new ClientCommand(CommandKind.OpenNpc, id)); }
+
+        /// <summary>Send one server-offered dialogue branch or close command.</summary>
+        public void ChooseNpc(byte node)
+        { if (Ready && snapshot.Dialogue != null)
+                worker.Submit(new ClientCommand(CommandKind.ChooseNpc, node)); }
+
+        /// <summary>Buy one item from a server-listed station vendor slot.</summary>
+        public void BuyVendor(int slot)
+        { if (Ready && snapshot.Dialogue?.VendorOpen == true)
+                worker.Submit(new ClientCommand(CommandKind.BuyVendor, slot: slot)); }
+
+        /// <summary>Sell one item from a cargo slot through the active vendor.</summary>
+        public void SellVendor(int slot)
+        { if (Ready && snapshot.Dialogue?.VendorOpen == true)
+                worker.Submit(new ClientCommand(CommandKind.SellVendor, slot: slot)); }
+
+        /// <summary>Install a cargo item in the selected ship hardpoint.</summary>
+        public void EquipCargo(int cargoSlot, int mountSlot)
+        {
+            if (Ready && cargoSlot >= 0 && cargoSlot < snapshot.Cargo.Length &&
+                mountSlot >= 0 && mountSlot < snapshot.Mounted.Length)
+                worker.Submit(new ClientCommand(CommandKind.EquipCargo, (uint)cargoSlot, slot: mountSlot));
+        }
+
+        /// <summary>Remove an installed item into an empty cargo slot.</summary>
+        public void UnequipMount(int mountSlot)
+        {
+            if (Ready && mountSlot >= 0 && mountSlot < snapshot.Mounted.Length)
+                worker.Submit(new ClientCommand(CommandKind.UnequipMount, (uint)mountSlot));
+        }
+
         /// <summary>Request a server-authoritative formation change or follow action.</summary>
         public void Formation(uint action)
         { if (Ready) worker.Submit(new ClientCommand(CommandKind.Formation, action)); }
@@ -305,7 +428,7 @@ namespace Enb.Client
         }
 
         /// <summary>Submit one explicit throttle or brake command.</summary>
-        public void Thrust(byte command) { if (Ready) worker.Submit(new ClientCommand(CommandKind.Thrust, command)); }
+        public void Thrust(byte command) { if (Ready && snapshot.Station == null) worker.Submit(new ClientCommand(CommandKind.Thrust, command)); }
 
         /// <summary>Send one chat line or local developer command to the server.</summary>
         public void SendChat(string text, bool group = false)
@@ -332,7 +455,7 @@ namespace Enb.Client
         /// <summary>Join the worker before removing the connected world's resources.</summary>
         public void Disconnect()
         {
-            worker?.Dispose(); worker = null; snapshot = null; sector = ""; target = 0; positioned = false;
+            worker?.Dispose(); worker = null; snapshot = null; sector = ""; target = 0; positioned = false; authoritativePoseAt = 0;
             picker?.Dispose(); picker = null; characters = null;
             previousYaw = previousPitch = 0; ClearWorld(); status = "Disconnected";
         }
@@ -343,8 +466,8 @@ namespace Enb.Client
         /// <summary>Brake and neutralize steering when foreground control is lost.</summary>
         private void OnApplicationFocus(bool focused)
         {
-            Application.targetFrameRate = focused ? 60 : 15;
-            if (focused || worker == null) return;
+            Application.targetFrameRate = focused ? 120 : 60;
+            if (focused || worker == null || snapshot?.Station != null) return;
             worker.Submit(new ClientCommand(CommandKind.Thrust, 4)); worker.Submit(new ClientCommand(CommandKind.Steer));
             previousYaw = previousPitch = 0;
         }

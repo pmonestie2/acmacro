@@ -111,6 +111,64 @@ internal static class Program
             Wait(session, () => session.Status == "Receiving sector", 45, "Gate handoff did not occur.");
             Wait(session, () => session.Ready && session.World.HasPosition && session.World.Objects.Count > 0, 15, "Destination map did not arrive.");
             Console.WriteLine("PASS: correlated gate activation, completion, destination handoff");
+            MapObject station = session.World.Objects.Values.First(x => x.Kind == 12);
+            session.Warp(station.Id);
+            Wait(session, () => session.World.Position.Distance(station.Position) < 5000 && Math.Abs(session.World.Speed) < 1,
+                45, "Warp did not approach the station exterior.");
+            session.Dock(station.Id);
+            Wait(session, () => session.Ready && session.World.Station?.Id == 10761 && session.World.Station.Rooms > 0,
+                20, "Docking handoff or station layout did not arrive.");
+            Console.WriteLine("PASS: station target, docking clearance, interior handoff and layout");
+            Assert(session.World.Station.NpcIds.Contains(7u), "Station NPC identities were not decoded.");
+            session.OpenNpc(7);
+            Wait(session, () => session.World.Dialogue?.NpcId == 7 &&
+                session.World.Dialogue.Choices.Any(choice => choice.Node == 2), 10, "NPC greeting or offered branches did not arrive.");
+            string greeting = session.World.Dialogue.Text;
+            session.ChooseNpc(2);
+            Wait(session, () => session.World.Dialogue?.Text != greeting &&
+                session.World.Dialogue.Choices.Any(choice => choice.Node == 0), 10,
+                "The selected NPC branch did not update the conversation.");
+            session.ChooseNpc(0);
+            Wait(session, () => session.World.Dialogue == null, 10, "NPC conversation did not close.");
+            Console.WriteLine("PASS: station NPC identity, greeting, offered branch and close");
+            Assert(session.World.Station.NpcIds.Contains(16u), "Station vendor identity was not decoded.");
+            session.OpenNpc(16);
+            Wait(session, () => session.World.Dialogue?.NpcId == 16 &&
+                session.World.Dialogue.Choices.Any(choice => choice.Node == 2), 10,
+                "Vendor greeting or trade branch did not arrive.");
+            session.ChooseNpc(2);
+            Wait(session, () => session.World.Dialogue?.VendorOpen == true &&
+                session.World.Vendor.Any(item => item?.Present == true) && session.World.Credits > 0,
+                10, "Vendor stock, opening control, or credits did not arrive.");
+            int offerSlot = Array.FindIndex(session.World.Vendor, item => item?.Present == true && item.Price > 0);
+            Assert(offerSlot >= 0, "Vendor had no priced offer.");
+            uint template = session.World.Vendor[offerSlot].Template;
+            ulong credits = session.World.Credits;
+            session.BuyVendor(offerSlot);
+            Wait(session, () => session.World.Credits < credits &&
+                session.World.Equipment.Cargo.Any(item => item?.Present == true && item.Template == template),
+                10, "Vendor purchase did not update cargo and credits.");
+            int cargoSlot = Array.FindIndex(session.World.Equipment.Cargo,
+                item => item?.Present == true && item.Template == template);
+            credits = session.World.Credits;
+            session.SellVendor(cargoSlot);
+            Wait(session, () => session.World.Credits > credits, 10,
+                "Vendor sale did not update the credit balance.");
+            session.ChooseNpc(230);
+            Wait(session, () => session.World.Dialogue == null &&
+                session.World.Vendor.All(item => item?.Present != true), 10,
+                "Closing the vendor did not clear the trade session.");
+            Console.WriteLine("PASS: native vendor stock, purchase, sale, credit updates and close");
+        }
+        using (var session = new LocalSession(CancellationToken.None))
+        {
+            session.Connect(host, "local", "local");
+            Wait(session, () => session.Ready && session.World.Station?.Id == 10761,
+                15, "A character already docked at the station could not reconnect.");
+            session.Launch();
+            Wait(session, () => session.Ready && session.World.Station == null && session.World.HasPosition &&
+                session.World.Objects.Values.Any(x => x.Kind == 12), 20, "Station launch did not restore exterior flight.");
+            Console.WriteLine("PASS: docked-character login, native launch and exterior handoff");
         }
         using (var worker = new ClientWorker(host, "local", "local"))
         {

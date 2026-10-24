@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import shutil
@@ -32,10 +33,19 @@ def main() -> None:
                 '--character', character,
             ], input=password + '\n', text=True, check=True)
         (state / 'sandbox_loadout.json').write_bytes((server_root / 'data' / 'sandbox_loadout.json').read_bytes())
+        sector = json.loads((server_root / 'data' / 'sector.json').read_text())
+        for point in sector['navpoints']:
+            if point['id'] == 100001:
+                point['id'] = 100002
+                point['gate_destination'] = 10761
+            elif point['id'] == 100002:
+                point['id'] = 100004
+        sector_path = state / 'sector-with-station.json'
+        sector_path.write_text(json.dumps(sector))
         with (state / 'server.log').open('w+') as log:
             process = subprocess.Popen([
                 str(executable), '--bind', '127.0.0.1', '--state-dir', str(state),
-                '--content', str(server_root / 'data' / 'sector.json'),
+                '--content', str(sector_path),
             ], stdout=log, stderr=subprocess.STDOUT)
             try:
                 deadline = time.monotonic() + 15

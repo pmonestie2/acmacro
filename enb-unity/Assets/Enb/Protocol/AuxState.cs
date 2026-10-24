@@ -218,6 +218,25 @@ namespace Enb.Protocol
             return contents;
         }
 
+        /// <returns>The server-owned credit balance when this global AUX updates it.</returns>
+        public static ulong? ReadCredits(byte[] body)
+        {
+            var reader = new AuxState(body); Flags fields = reader.Mask(18);
+            if (!fields.Present[0]) return null;
+            return reader.UInt() | ((ulong)reader.UInt() << 32);
+        }
+
+        /// <returns>A complete vendor stock update, or null for another global AUX.</returns>
+        public static ItemState[] ReadVendor(byte[] body)
+        {
+            var reader = new AuxState(body); Flags fields = reader.Mask(18);
+            if (!fields.Present[3]) return null;
+            for (int i = 0; i < 3; i++) if (fields.Present[i] || fields.Default[i]) return null;
+            var stock = new ItemState[128];
+            reader.ReadSlots(stock, 10);
+            return stock;
+        }
+
         /// <returns>The server's standalone group update, or null for unrelated player AUX.</returns>
         public static GroupState ReadGroup(byte[] body)
         {

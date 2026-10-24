@@ -60,6 +60,10 @@ namespace Enb.Client
         private bool groupChat;
         private uint contactId, wreckId;
         private Vector2 contactsScroll;
+        private Vector2 npcScroll, dialogueScroll;
+        private Vector2 vendorScroll, saleScroll;
+        private int vendorPage;
+        private Dictionary<uint, string> npcNames;
         private sealed class FloatingDamage
         {
             public readonly uint Target;
@@ -71,6 +75,8 @@ namespace Enb.Client
         private readonly List<FloatingDamage> damageLabels = new List<FloatingDamage>();
         private long lastDamage;
         private MapObject[] destinations = Array.Empty<MapObject>();
+        private MapObject[] nearbyWrecks = Array.Empty<MapObject>();
+        private ShipActor[] socialContacts = Array.Empty<ShipActor>();
         private float refreshAt;
         private string sector = "";
 
@@ -165,8 +171,17 @@ namespace Enb.Client
                 return;
             }
             Snapshot snapshot = client.CurrentSnapshot;
+            if (snapshot.Station != null)
+            {
+                Station(snapshot);
+                if (equipmentOpen) Equipment(snapshot);
+                InputFocused = false;
+                ChatEntry();
+                return;
+            }
             Panel(new Rect(24, 20, 390, 65)); GUI.Label(new Rect(38, 29, 360, 29), snapshot?.Sector.ToUpperInvariant() ?? "CONNECTING", heading);
             GUI.Label(new Rect(38, 58, 360, 20), "42 AND BEYOND   /   LOCAL UNIVERSE", small);
+            GUI.Label(new Rect(430, 28, 190, 20), $"{client.Fps} FPS   ·   {client.FrameMs:0} ms max", small);
             Panel(new Rect(24, CanvasHeight - 112, 330, 88)); GUI.Label(new Rect(38, CanvasHeight - 105, 300, 20), "IMPULSE / WARP VELOCITY", small);
             GUI.Label(new Rect(38, CanvasHeight - 83, 300, 30), $"{Math.Abs(snapshot?.Speed ?? 0):N0}  m/s", heading);
             GUI.Label(new Rect(38, CanvasHeight - 52, 300, 20), client.Status, small);
@@ -178,6 +193,10 @@ namespace Enb.Client
             {
                 if (sector != snapshot.Sector) { lastDamage = 0; damageLabels.Clear(); }
                 destinations = snapshot.Objects.Where(item => item.Navigable).OrderBy(item => item.Position.Distance(snapshot.Position)).ToArray();
+                nearbyWrecks = snapshot.Objects.Where(item => item.Kind == 25)
+                    .OrderBy(item => item.Position.Distance(snapshot.Position)).Take(12).ToArray();
+                socialContacts = snapshot.Players.Concat(snapshot.Mobs).Where(actor => actor.HasPosition)
+                    .OrderBy(actor => actor.Position.Distance(snapshot.Position)).Take(40).ToArray();
                 refreshAt = Time.unscaledTime + .25f; sector = snapshot.Sector;
             }
             TrackDamage(snapshot);
@@ -193,6 +212,125 @@ namespace Enb.Client
                 float x = CanvasWidth * .5f, y = CanvasHeight * .5f;
                 Fill(new Rect(x - 12, y, 8, 1), cyan); Fill(new Rect(x + 4, y, 8, 1), cyan); Fill(new Rect(x, y - 12, 1, 8), cyan); Fill(new Rect(x, y + 4, 1, 8), cyan);
             }
+        }
+
+        /// <summary>Present the server's station interior and launch controls.</summary>
+        private void Station(Snapshot snapshot)
+        {
+            EnsureNpcNames();
+            string name = snapshot.Station.Name.Length > 0 ? snapshot.Station.Name : "STATION " + snapshot.Station.Id;
+            Panel(new Rect(24, 20, 470, 72));
+            GUI.Label(new Rect(40, 30, 440, 32), name.ToUpperInvariant(), heading);
+            GUI.Label(new Rect(40, 64, 440, 20), "DOCKING BAY   /   42 AND BEYOND", small);
+            GUI.Label(new Rect(510, 29, 190, 22), $"{client.Fps} FPS   ·   {client.FrameMs:0} ms max", small);
+            Panel(new Rect(24, 110, 300, 265));
+            GUI.Label(new Rect(40, 124, 270, 28), "STATION SERVICES", body);
+            GUI.Label(new Rect(40, 158, 270, 54),
+                $"{snapshot.Station.Rooms} rooms   ·   {snapshot.Station.Terminals} terminals\n{snapshot.Station.NpcIds.Count} station contacts", small);
+            GUI.Label(new Rect(40, 216, 270, 43), "Cargo and installed equipment are available while docked.", small);
+            if (GUI.Button(new Rect(40, 280, 268, 34), equipmentOpen ? "CLOSE LOADOUT  ·  E" : "SHIP LOADOUT  ·  E", button))
+                ToggleEquipment();
+            if (GUI.Button(new Rect(40, 325, 268, 36), "LAUNCH INTO SPACE  ·  L", selected)) client.Launch();
+            Panel(new Rect(CanvasWidth - 320, 20, 296, 116));
+            GUI.Label(new Rect(CanvasWidth - 306, 34, 270, 24), "SHIP STATUS", body);
+            GUI.Label(new Rect(CanvasWidth - 306, 63, 270, 58),
+                $"HULL   {snapshot.Hull:0} / {snapshot.MaxHull:0}\nSHIELD   {snapshot.Shield:0} / {snapshot.MaxShield:0}", small);
+            float contactsHeight = Mathf.Max(210, CanvasHeight - 315);
+            Panel(new Rect(CanvasWidth - 320, 150, 296, contactsHeight));
+            GUI.Label(new Rect(CanvasWidth - 306, 164, 270, 22), "STATION CONTACTS", body);
+            GUILayout.BeginArea(new Rect(CanvasWidth - 308, 192, 272, contactsHeight - 54));
+            npcScroll = GUILayout.BeginScrollView(npcScroll);
+            foreach (uint id in snapshot.Station.NpcIds)
+            {
+                string label = npcNames.TryGetValue(id, out string npcName) ? npcName : "Contact " + id;
+                GUI.enabled = snapshot.Dialogue == null;
+                if (GUILayout.Button(label, button, GUILayout.Height(32))) client.OpenNpc(id);
+            }
+            GUI.enabled = true;
+            GUILayout.EndScrollView(); GUILayout.EndArea();
+            Panel(new Rect(24, CanvasHeight - 174, 445, 150));
+            GUI.Label(new Rect(40, CanvasHeight - 162, 410, 20), "STATION COMMUNICATIONS", small);
+            GUI.Label(new Rect(40, CanvasHeight - 136, 410, 104),
+                string.Join("\n", snapshot.Messages.Reverse().Take(5).Reverse()), small);
+            GUI.Label(new Rect(CanvasWidth - 320, CanvasHeight - 56, 296, 28), client.Status, small);
+            if (GUI.Button(new Rect(CanvasWidth - 154, 25, 130, 28), "Disconnect", button)) client.Disconnect();
+            if (snapshot.Dialogue != null) StationDialogue(snapshot);
+        }
+
+        /// <summary>Load archived public NPC labels once for station contact buttons.</summary>
+        private void EnsureNpcNames()
+        {
+            if (npcNames != null) return;
+            npcNames = new Dictionary<uint, string>();
+            TextAsset asset = Resources.Load<TextAsset>("NpcNames");
+            if (asset == null) return;
+            foreach (string row in asset.text.Split('\n'))
+            {
+                int separator = row.IndexOf('\t');
+                if (separator <= 0 || !uint.TryParse(row.Substring(0, separator), out uint id)) continue;
+                string name = row.Substring(separator + 1).Trim();
+                if (id != 0 && name.Length > 0) npcNames[id] = name;
+            }
+        }
+
+        /// <summary>Present only branches sent by the active server conversation.</summary>
+        private void StationDialogue(Snapshot snapshot)
+        {
+            DialogueState dialogue = snapshot.Dialogue;
+            bool trading = dialogue.VendorOpen;
+            float width = Mathf.Min(trading ? 680 : 590, CanvasWidth - 625), x = (CanvasWidth - width) * .5f;
+            float top = trading ? 116 : CanvasHeight - 285;
+            float height = trading ? CanvasHeight - 140 : 260;
+            Panel(new Rect(x, top, width, height));
+            string title = npcNames.TryGetValue(dialogue.NpcId, out string name) ? name : "Station contact";
+            GUI.Label(new Rect(x + 18, top + 11, width - 100, 26), title.ToUpperInvariant(), body);
+            if (GUI.Button(new Rect(x + width - 102, top + 12, 84, 26), "Close", button)) client.ChooseNpc(230);
+            GUILayout.BeginArea(new Rect(x + 18, top + 47, width - 36, trading ? 125 : 195));
+            dialogueScroll = GUILayout.BeginScrollView(dialogueScroll);
+            string line = dialogue.Text;
+            if (line.StartsWith("/", StringComparison.Ordinal))
+            {
+                int marker = line.IndexOf(' ');
+                if (marker > 0 && marker < 20) line = line.Substring(marker + 1);
+            }
+            GUILayout.Label(line.Length > 0 ? line : "Waiting for reply…", body);
+            GUILayout.Space(12);
+            foreach (DialogueChoice choice in dialogue.Choices)
+                if (GUILayout.Button(choice.Text, button, GUILayout.Height(30))) client.ChooseNpc(choice.Node);
+            GUILayout.EndScrollView(); GUILayout.EndArea();
+            if (trading) StationVendor(snapshot, new Rect(x + 18, top + 188, width - 36, height - 205));
+        }
+
+        /// <summary>Offer bounded server-authoritative buy and sell commands.</summary>
+        private void StationVendor(Snapshot snapshot, Rect rect)
+        {
+            GUI.Label(new Rect(rect.x, rect.y, rect.width, 24), $"TRADE COUNTER   ·   {snapshot.Credits:N0} CREDITS", body);
+            ItemView[] offers = snapshot.Vendor.Where(item => item != null).ToArray();
+            int pages = Mathf.Max(1, Mathf.CeilToInt(offers.Length / 16f));
+            vendorPage = Mathf.Clamp(vendorPage, 0, pages - 1);
+            float column = (rect.width - 12) * .5f;
+            GUI.Label(new Rect(rect.x, rect.y + 28, column, 20), $"FOR SALE   ·   PAGE {vendorPage + 1}/{pages}", small);
+            if (GUI.Button(new Rect(rect.x + column - 82, rect.y + 25, 34, 25), "‹", button)) vendorPage = Mathf.Max(0, vendorPage - 1);
+            if (GUI.Button(new Rect(rect.x + column - 42, rect.y + 25, 34, 25), "›", button)) vendorPage = Mathf.Min(pages - 1, vendorPage + 1);
+            GUI.Label(new Rect(rect.x + column + 12, rect.y + 28, column, 20), "SELL OWNED CARGO", small);
+            float listHeight = rect.height - 58;
+            GUILayout.BeginArea(new Rect(rect.x, rect.y + 55, column, listHeight));
+            vendorScroll = GUILayout.BeginScrollView(vendorScroll);
+            foreach (ItemView item in offers.Skip(vendorPage * 16).Take(16))
+                if (GUILayout.Button($"BUY  {item.Name}\n{item.Price:N0} credits", button, GUILayout.Height(42)))
+                    client.BuyVendor(item.Slot);
+            GUILayout.EndScrollView(); GUILayout.EndArea();
+            GUILayout.BeginArea(new Rect(rect.x + column + 12, rect.y + 55, column, listHeight));
+            saleScroll = GUILayout.BeginScrollView(saleScroll);
+            foreach (ItemView item in snapshot.Cargo.Where(item => item != null))
+            {
+                string quote = item.Price > 0 ? $"{item.Price:N0} credits" : "No buyer quote";
+                GUI.enabled = item.Price > 0;
+                if (GUILayout.Button($"SELL  {item.Name}  ×{item.Quantity}\n{quote}", button, GUILayout.Height(42)))
+                    client.SellVendor(item.Slot);
+            }
+            GUI.enabled = true;
+            GUILayout.EndScrollView(); GUILayout.EndArea();
         }
 
         /// <summary>Let the player choose one of the account's server characters.</summary>
@@ -262,8 +400,11 @@ namespace Enb.Client
             GUI.Label(new Rect(x + 12, top + 34, 270, 22), target == null ? "Click a marker or choose a destination" : $"RANGE   {target.Position.Distance(snapshot.Position) / 1000:0.00} km", small);
             GUI.enabled = client.Ready && target != null;
             if (GUI.Button(new Rect(x + 12, top + 63, 272, 32), "F    WARP TO TARGET", button)) client.WarpSelected();
-            GUI.enabled = client.Ready && target?.Kind == 11;
-            if (GUI.Button(new Rect(x + 12, top + 102, 272, 30), "G    ACTIVATE GATE", button)) client.GateSelected(); GUI.enabled = true;
+            bool station = target?.Kind == 12;
+            GUI.enabled = client.Ready && (target?.Kind == 11 || station && target.Position.Distance(snapshot.Position) <= 5000);
+            if (GUI.Button(new Rect(x + 12, top + 102, 272, 30), station ? "SHIFT+D    DOCK AT STATION" : "G    ACTIVATE GATE", button))
+            { if (station) client.DockSelected(); else client.GateSelected(); }
+            GUI.enabled = true;
         }
 
         /// <summary>Draw a world-relative scanner with nearby objects and ships.</summary>
@@ -346,7 +487,7 @@ namespace Enb.Client
         /// <summary>Identify nearby wrecks independently of navigation points.</summary>
         private void WreckLabels(Snapshot snapshot)
         {
-            foreach (MapObject item in snapshot.Objects.Where(item => item.Kind == 25).Take(12))
+            foreach (MapObject item in nearbyWrecks)
             {
                 Vector3 point = client.Project(item.Position); point.x /= Scale; point.y /= Scale;
                 if (point.z <= 0 || point.x < 30 || point.x > CanvasWidth - 335 || point.y < 90 || point.y > CanvasHeight - 140) continue;
@@ -449,8 +590,7 @@ namespace Enb.Client
                 GUILayout.EndHorizontal();
             }
             GUILayout.Space(12); GUILayout.Label("CONTACTS", body);
-            foreach (ShipActor actor in snapshot.Players.Concat(snapshot.Mobs).Where(a => a.HasPosition)
-                .OrderBy(a => a.Position.Distance(snapshot.Position)))
+            foreach (ShipActor actor in socialContacts)
             {
                 string kind = actor.IsPlayer ? "PLAYER" : actor.Hostile ? "HOSTILE" : "NPC";
                 if (GUILayout.Button($"{actor.Name} · {kind}\n{actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
@@ -468,8 +608,7 @@ namespace Enb.Client
                 { if (snapshot.WeaponsFiring) client.StopWeapons(); else client.ToggleWeapons(contact.Id); }
             }
             if (snapshot.WeaponsFiring && GUILayout.Button("STOP ALL WEAPONS  ·  X", button)) client.StopWeapons();
-            MapObject[] wrecks = snapshot.Objects.Where(item => item.Kind == 25)
-                .OrderBy(item => item.Position.Distance(snapshot.Position)).Take(12).ToArray();
+            MapObject[] wrecks = nearbyWrecks;
             if (wrecks.Length > 0) GUILayout.Label("WRECKS", body);
             foreach (MapObject wreck in wrecks)
                 if (GUILayout.Button(wreck.Name + "  ·  " + (wreck.Position.Distance(snapshot.Position) / 1000).ToString("0.0") + " km",
@@ -506,15 +645,17 @@ namespace Enb.Client
             if (GUI.Button(new Rect(rect.xMax - 47, rect.y + 15, 28, 28), "×", button)) equipmentOpen = false;
             GUI.Label(new Rect(rect.x + 20, rect.y + 50, 700, 24),
                 $"{snapshot.WeaponMounts} weapon hardpoints  ·  {snapshot.DeviceMounts} device slots  ·  Server equipment", small);
-            float columnHeight = rect.height - 165;
+            float columnHeight = rect.height - 225;
             GUILayout.BeginArea(new Rect(rect.x + 20, rect.y + 83, 344, columnHeight));
-            GUILayout.Label("CARGO HOLD", body);
+            int usedCargo = snapshot.Cargo.Count(item => item != null);
+            GUILayout.Label($"CARGO HOLD   {usedCargo}/{snapshot.Cargo.Length}", body);
             cargoScroll = GUILayout.BeginScrollView(cargoScroll);
             foreach (ItemView item in snapshot.Cargo)
             {
                 if (item == null) continue;
                 string title = $"{item.Slot:00}  {item.Name}" + (item.Quantity > 1 ? $"  ×{item.Quantity}" : "");
-                if (GUILayout.Button(title, selectedCargo == item.Slot ? selected : button, GUILayout.Height(28))) selectedCargo = item.Slot;
+                if (GUILayout.Button(title, selectedCargo == item.Slot ? selected : button, GUILayout.Height(28)))
+                    selectedCargo = selectedCargo == item.Slot ? -1 : item.Slot;
             }
             GUILayout.EndScrollView(); GUILayout.EndArea();
             GUILayout.BeginArea(new Rect(rect.x + 393, rect.y + 83, 344, columnHeight));
@@ -527,23 +668,56 @@ namespace Enb.Client
                 if (!available) continue;
                 ItemView item = snapshot.Mounted[slot];
                 string title = $"{slot:00}  " + (item?.Name ?? (slot < 3 ? new[] { "Reactor", "Engine", "Shield" }[slot] : slot < 9 ? "Weapon" : "Device") + " · EMPTY");
-                if (GUILayout.Button(title, selectedMount == slot ? selected : button, GUILayout.Height(28))) selectedMount = slot;
+                if (GUILayout.Button(title, selectedMount == slot ? selected : button, GUILayout.Height(28)))
+                    selectedMount = selectedMount == slot ? -1 : slot;
             }
             GUILayout.EndScrollView(); GUILayout.EndArea();
             float foot = rect.yMax - 70;
             ItemView cargo = selectedCargo >= 0 && selectedCargo < snapshot.Cargo.Length ? snapshot.Cargo[selectedCargo] : null;
             ItemView mounted = selectedMount >= 0 && selectedMount < snapshot.Mounted.Length ? snapshot.Mounted[selectedMount] : null;
-            GUI.Label(new Rect(rect.x + 20, foot - 31, 710, 24),
-                cargo != null ? $"Selected: {cargo.Name} · quality {cargo.Quality:0.00} · structure {cargo.Structure:0}%" :
-                mounted != null ? $"Selected: {mounted.Name} · quality {mounted.Quality:0.00} · range {mounted.Range:0} m" :
-                "Choose cargo and a hardpoint to equip, or choose installed gear to remove.", small);
-            GUI.enabled = cargo != null && selectedMount >= 0;
-            if (GUI.Button(new Rect(rect.x + 20, foot, 330, 34), cargo?.Type == 10 ? "LOAD AMMUNITION  →" : "INSTALL SELECTED CARGO  →", button))
-                client.SendChat($"/equip {selectedCargo} {selectedMount}");
-            GUI.enabled = mounted != null;
-            if (GUI.Button(new Rect(rect.x + 393, foot, 344, 34), "REMOVE FROM HARDPOINT", button))
-                client.SendChat($"/unequip {selectedMount}");
+            ItemView inspected = cargo ?? mounted;
+            GUI.Label(new Rect(rect.x + 20, foot - 82, 714, 25),
+                inspected != null ? $"{inspected.Name.ToUpperInvariant()}   ·   TEMPLATE {inspected.Template}   ·   ×{inspected.Quantity}" :
+                "Select cargo or installed gear to inspect its condition.", body);
+            if (inspected != null)
+            {
+                string details = $"Quality {inspected.Quality * 100:0}%   ·   Structure {inspected.Structure * 100:0}%";
+                if (inspected.Range > 0) details += $"   ·   Range {inspected.Range:0} m";
+                if (inspected.Price > 0) details += $"   ·   Quote {inspected.Price:N0} credits";
+                GUI.Label(new Rect(rect.x + 20, foot - 54, 714, 22), details, small);
+                if (!string.IsNullOrWhiteSpace(inspected.Info))
+                    GUI.Label(new Rect(rect.x + 20, foot - 32, 714, 20), inspected.Info, small);
+            }
+            bool fits = FitsHardpoint(cargo, selectedMount, snapshot);
+            bool cargoSpace = usedCargo < snapshot.Cargo.Length;
+            GUI.enabled = client.Ready && fits;
+            string installLabel = cargo?.Type == 10 ? "LOAD ONE AMMUNITION  →" : "INSTALL SELECTED CARGO  →";
+            if (GUI.Button(new Rect(rect.x + 20, foot, 330, 34), installLabel, button))
+                client.EquipCargo(selectedCargo, selectedMount);
+            GUI.enabled = client.Ready && mounted != null && cargoSpace;
+            if (GUI.Button(new Rect(rect.x + 393, foot, 344, 34), cargoSpace ? "REMOVE TO CARGO" : "CARGO HOLD FULL", button))
+                client.UnequipMount(selectedMount);
             GUI.enabled = true;
+        }
+
+        /// <summary>Check the item category against the unlocked ship hardpoint.</summary>
+        /// <returns>bool: Whether the selected cargo can be installed or loaded in this slot.</returns>
+        private static bool FitsHardpoint(ItemView cargo, int slot, Snapshot snapshot)
+        {
+            if (cargo == null || slot < 0 || slot >= snapshot.Mounted.Length) return false;
+            if (cargo.Type == 10)
+                return slot >= 3 && slot < 3 + snapshot.WeaponMounts &&
+                    snapshot.Mounted[slot]?.Type >= 14 && snapshot.Mounted[slot]?.Type <= 16;
+            if (cargo.Quantity != 1) return false;
+            switch (cargo.Type)
+            {
+                case 2: return slot == 0;
+                case 7: return slot == 1;
+                case 6: return slot == 2;
+                case 14: case 15: case 16: return slot >= 3 && slot < 3 + snapshot.WeaponMounts;
+                case 11: return slot >= 9 && slot < 9 + snapshot.DeviceMounts;
+                default: return false;
+            }
         }
 
         /// <summary>Submit a named invitation to the server, including players outside scan range.</summary>
