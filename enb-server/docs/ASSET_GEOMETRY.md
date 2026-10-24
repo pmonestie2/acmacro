@@ -54,3 +54,19 @@ Behavioral coverage includes strict sensor boundaries, large NPC standoff,
 warning distance, native player reach versus flight timing, follow stop distance,
 legacy checkpoints, and failed launch persistence rollback. Native graphical
 distance/collision playtesting remains separate from unit and packet checks.
+
+The complete 250 Rust tests, Clippy and 47 Python tool tests pass. Scoped type
+checks cover the importer/test modules and projectile/lifecycle smoke helpers.
+The deployed build also passes this isolated native-packet probe:
+
+```powershell
+$env:PYTHONPATH='enb-protocol'
+C:\PYTHON\python.exe enb-server/tools/smoke_npc_projectiles.py --server 127.0.0.19 --level 62 --radius 500 --refresh-radius
+```
+
+It observes the10500ms projectile effect before impact, changes the NPC radius
+to1000 across replacement, and checks the committed shot still lands exactly
+once on a cloaked target without repeating after a second replacement. This is
+protocol verification against a disposable account, separate from native UI
+playtesting. The owned server readiness probe permits30 seconds on this VM and
+still requires a registration reply from the live process.

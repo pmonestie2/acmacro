@@ -266,5 +266,11 @@ catalog covers all 139 public MOB assets; the migration added only radius to all
 6650 actors while preserving other content. All 47 Python tool tests pass;
 scoped type checks pass for the four importer/test modules and extended NPC
 projectile smoke. See ASSET_GEOMETRY.md for provenance and remaining geometry
-scope. This checkpoint precedes live deployment and the refreshed-radius packet
-smoke.
+scope. The build is deployed locally; both native sessions resumed. The isolated
+CL62 projectile smoke passes with radius500 and a content change to1000 during
+replacement: its already-launched shot retains the10500ms deadline, damages the
+cloaked target once and does not replay after another replacement. The first
+probe exceeded its15-second startup readiness window despite logging ready;
+the owned-process helper now allows30 seconds and the rerun passed. This result
+does not establish graphical collision behavior. The Unity agent's89d730c update
+was fetched and integrated without server-source overlap.

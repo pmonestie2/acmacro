@@ -13,7 +13,10 @@ def start_server(binary: Path, host: str, state: Path, content: Path, log: Path)
         process = subprocess.Popen([str(binary), '--bind', host, '--state-dir', str(state),
             '--content', str(content)], stdout=output, stderr=output)
     try:
-        deadline = time.monotonic() + 15
+        # Restoring catalogs and an in-flight checkpoint on the ARM64 Windows
+        # VM can exceed fifteen seconds. Keep polling this owned process and
+        # require an actual registration reply rather than a startup log line.
+        deadline = time.monotonic() + 30
         while not registered(host):
             if process.poll() is not None or time.monotonic() > deadline:
                 raise RuntimeError('Disposable protocol server did not start')
