@@ -14,8 +14,11 @@ are inferred from names. Player damage notifications use native opcode 0x64:
 damage float, modifier float, type, inflicted flag, source ID and target ID.
 Modifiers report absorbed damage as a negative value.
 
-`src/weapon_accuracy.rs` contains deterministic helpers for the next launcher
-integration. It does not generate random numbers or consume ammo/energy.
+`src/weapon_accuracy.rs` contains pure deterministic combat helpers. The live
+launcher now supplies a random roll for each prepared round and freezes the
+resulting damage and native inflicted flag in the durable launch journal.
+Recovery reuses that result and never rerolls. The helpers themselves do not
+generate random numbers or consume ammo/energy.
 `PlayerCombat.cpp::CalcDamage` uses one roll from 1 through 10,000, tests miss
 first, then critical. At baseline the miss threshold is 500 and the critical
 threshold is inclusively 9,500: exactly 500 misses, 8,999 ordinary hits and 501
@@ -29,12 +32,16 @@ A critical doubles already modified damage and uses native inflicted flag 3.
 Both an ordinary hit and a miss use inflicted flag 0; a miss has damage zero.
 In the native `Equipable::ShootAmmo` path, misses still consume ammunition and
 energy and produce weapon effects and damage notifications. The helper must
-not be used to skip admission of a missed shot. Durable random state and the
-frozen result belong in the launch transaction to prevent a retry reroll.
+not be used to skip admission of a missed shot. The frozen damage and outcome belong in the launch transaction to prevent a
+recovery reroll; unpublished preparation uses the process random source.
 
 `Equipable::CheckOrientation` restricts beam and projectile launchers to a
 strict 40 degree cone about the ship's three-dimensional heading. Missile
-launchers have no facing restriction. The pure helper rejects malformed
+launchers have no facing restriction. Player firing now checks this cone before
+rolling or consuming ammo, energy, reload or effect IDs. Turning away pauses
+the affected mounts without clearing auto-fire, so turning back permits the
+next ready shot. Already committed volleys retain their frozen admission and
+recovery behavior even if the ship subsequently turns. The pure helper rejects malformed
 vectors, normalizes headings, and explicitly accepts a coincident target
 instead of reproducing the native division by zero. Chance construction clamps
 out-of-range bonuses rather than reproducing signed-short overflow or the

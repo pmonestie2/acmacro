@@ -16,8 +16,8 @@ Public MOB durability and DPS now use the archived level interpolation tables,
 species hull/shield split, first equipped weapon and SQL combat multipliers.
 Organic/energy enemies have shields without a hull bar. Shield Leech can finish
 these enemies and preserves kill attribution. Checkpoint recovery rebinds current
-content/caps while preserving damage fractions. AI, faction hate and projectile
-travel still need work; this does not reproduce every original boss mechanic.
+content/caps while preserving damage fractions. Four-slot damage hate is
+persistent; faction hate, boss AI and NPC projectile travel still need work; this does not reproduce every original boss mechanic.
 The refinery supports 207 ore/product links and single/stack jobs with atomic
 cargo/credit/XP transactions and restart recovery. Native-format protocol tests
 pass; graphical refinery use remains unverified. Analysis and manufacturing now
@@ -294,4 +294,4 @@ captures, credentials, generated toolchains, or an entire duplicate repository.
 
 Developer commands include `/d_spawn` and `/d_jump`; see
 [developer command usage](docs/DEV_COMMANDS.md). Damage rules, aggro and remaining
-accuracy integration are described in [combat rules](docs/COMBAT_RULES.md).
+accuracy behavior are described in [combat rules](docs/COMBAT_RULES.md).

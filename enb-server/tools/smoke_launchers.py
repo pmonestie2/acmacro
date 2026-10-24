@@ -34,9 +34,13 @@ class OwnedState(TypedDict):
 class ActorState(TypedDict):
     shield: float
 
+class ProjectileState(TypedDict):
+    damage: float
+    inflicted: int
+
 class WorldState(TypedDict):
     actors: list[ActorState]
-    projectiles: list[dict[str, object]]
+    projectiles: list[ProjectileState]
 
 def item(template: int,quantity: int=1)->OwnedItem:
     return OwnedItem(template=template,quantity=quantity,quality=1.,structure=1.)
@@ -104,6 +108,10 @@ def exercise(binary: Path,host: str,kind: str)->None:
             shooter.send(0x5d,struct.pack('<IBB',owner,2,3))
             assert world()['actors'][0]['shield']==150.
             assert len(world()['projectiles'])==1
+            frozen=world()['projectiles'][0]
+            actual_damage=frozen['damage']
+            assert actual_damage in (0.,damage,damage*2.)
+            assert frozen['inflicted']==(3 if actual_damage==damage*2. else 0)
             wait(lambda:effect_count(owner)>0)
             assert owned()['shot_sequence']==1
             shooter.close()
@@ -114,21 +122,22 @@ def exercise(binary: Path,host: str,kind: str)->None:
             (state/'stop.request').write_text('restart with round in flight\n')
             process.wait(timeout=5)
             process=start_server(binary,host,state,content_file,log)
-            wait(lambda:watcher.stream.expected>sequence and world()['actors'][0]['shield']==150.-damage)
+            wait(lambda:watcher.stream.expected>sequence and world()['projectiles']==[]
+                and world()['actors'][0]['shield']==150.-actual_damage)
             assert watcher.sector.getsockname()==endpoint
             assert world()['projectiles']==[]
             assert owned()['shot_sequence']==1
             loaded=owned()['ammunition'][3]
             assert loaded is not None and loaded['quantity']==2
             print(f'PASS: {kind.upper()} uses ammo effect {effect}, consumes one round and auto-reloads owned cargo',flush=True)
-            print(f'PASS: delayed {damage:g} damage lands once after owner logout and server replacement',flush=True)
+            print(f'PASS: frozen outcome ({actual_damage:g} damage) resolves once after owner logout and server replacement',flush=True)
             # A second replacement must not replay the already applied hit.
             (state/'stop.request').write_text('restart after hit\n')
             process.wait(timeout=5)
             sequence=watcher.stream.expected
             process=start_server(binary,host,state,content_file,log)
             wait(lambda:watcher.stream.expected>sequence)
-            assert world()['actors'][0]['shield']==150.-damage
+            assert world()['actors'][0]['shield']==150.-actual_damage
             assert owned()['shot_sequence']==1
             print(f'PASS: {kind.upper()} resolved hit stays depleted across a second replacement',flush=True)
         except BaseException:

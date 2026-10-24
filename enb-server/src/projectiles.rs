@@ -20,6 +20,10 @@ pub struct Projectile {
     pub due_ms: u64,
     pub damage: f32,
     pub damage_type: usize,
+    /// Frozen native damage outcome: 0 normal/miss, 3 critical. Old journals
+    /// predate random outcomes and therefore deserialize as normal hits.
+    #[serde(default)]
+    pub inflicted: u32,
 }
 
 impl Projectile {
@@ -33,9 +37,11 @@ impl Projectile {
             && self.target > 0
             && self.due_ms > 0
             && self.damage.is_finite()
-            && self.damage > 0.
+            && self.damage >= 0.
             && self.damage <= 1e12
             && self.damage_type < 9
+            && matches!(self.inflicted, 0 | 3)
+            && (self.damage > 0. || self.inflicted == 0)
     }
 }
 

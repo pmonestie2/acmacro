@@ -218,5 +218,7 @@ one unwritable character must not make another player's checkpoint stale.
 `projectiles.rs` freezes target identity and flight deadlines; `combat_storage.rs`
 persists shared impacts and accepted sequences using `durable_json.rs` writes.
 `combat_damage.rs` resolves typed player damage, while `mob_aggro.rs` maintains
-bounded native-style hate lists. `weapon_accuracy.rs` currently provides tested
-roll/facing helpers; firing does not yet apply those helpers.
+bounded native-style hate lists. `weapon_accuracy.rs` supplies the live firing cone and one-roll miss/critical
+calculation. Equipment derives the signed percentage-point bonuses; the launch
+journal freezes each resulting damage amount and native outcome flag before
+resource publication.

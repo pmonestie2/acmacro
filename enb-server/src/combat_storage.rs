@@ -224,7 +224,7 @@ impl SectorCombat {
                     target: MOB_ID + index as u32,
                     damage: shot.damage,
                     damage_type: shot.damage_type,
-                    inflicted: 0,
+                    inflicted: shot.inflicted,
                 });
             }
             false
@@ -316,8 +316,52 @@ mod tests {
             due_ms: due,
             damage: 25.,
             damage_type: 3,
+            inflicted: 0,
         }
     }
+    #[test]
+    fn frozen_misses_and_criticals_survive_restart_without_changing_outcome() {
+        let (mut world, path) = world();
+        let initial = SectorCombat::from_actors(world.actors.clone());
+        let mut miss = shot(&world, 1, 1);
+        miss.damage = 0.;
+        let mut critical = shot(&world, 2, 1);
+        critical.damage = 50.;
+        critical.inflicted = 3;
+        world.admit(&[miss.clone(), critical.clone()]).unwrap();
+        let mut restored = SectorCombat::persistent(path.clone(), 1076, &initial).unwrap();
+        restored.resolve_due(1).unwrap();
+        assert_eq!(restored.actors[0].shield, 100.);
+        let reports = restored.take_damage_reports();
+        assert_eq!(reports.len(), 2);
+        assert_eq!((reports[0].damage, reports[0].inflicted), (0., 0));
+        assert_eq!((reports[1].damage, reports[1].inflicted), (50., 3));
+        let mut again = SectorCombat::persistent(path, 1076, &initial).unwrap();
+        again.admit(&[miss, critical]).unwrap();
+        again.resolve_due(1).unwrap();
+        assert_eq!(again.actors[0].shield, 100.);
+        assert!(again.take_damage_reports().is_empty());
+    }
+
+    #[test]
+    fn legacy_rounds_default_to_normal_and_invalid_outcomes_are_rejected() {
+        let (world, _) = world();
+        let mut value = serde_json::to_value(shot(&world, 1, 1)).unwrap();
+        value.as_object_mut().unwrap().remove("inflicted");
+        let mut legacy: Projectile = serde_json::from_value(value).unwrap();
+        assert_eq!(legacy.inflicted, 0);
+        assert!(legacy.valid());
+        legacy.inflicted = 1;
+        assert!(!legacy.valid());
+        legacy.inflicted = 3;
+        legacy.damage = 0.;
+        assert!(!legacy.valid());
+        legacy.inflicted = 0;
+        assert!(legacy.valid());
+        legacy.damage = -1.;
+        assert!(!legacy.valid());
+    }
+
     #[test]
     fn launched_hit_survives_owner_departure_restart_and_replay_without_double_damage() {
         let (mut world, path) = world();

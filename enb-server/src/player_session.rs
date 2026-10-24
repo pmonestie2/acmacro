@@ -2863,18 +2863,29 @@ mod tests {
         lock_combat(&shared).unwrap().actors[0].position = [100., 0., 0.];
         let before = lock_combat(&shared).unwrap().actors[0].shield;
         ship.toggle_all_weapons();
-        ship.fire_weapons().unwrap();
+        ship.fire_weapons_with_roll(|| 5000).unwrap();
         assert_eq!(lock_combat(&shared).unwrap().actors[0].shield, before - 18.);
         assert_eq!(ship.energy, 120.);
         assert_eq!(ship.weapon_cooldowns[3], 2.);
         ship.toggle_all_weapons();
         ship.toggle_all_weapons();
-        ship.fire_weapons().unwrap();
+        ship.fire_weapons_with_roll(|| 5000).unwrap();
         assert_eq!(ship.energy, 120.); // Toggling does not reset either reload.
+        lock_combat(&shared).unwrap().take_damage_reports();
         ship.advance_player(1.).unwrap();
         assert_eq!(lock_combat(&shared).unwrap().actors[0].shield, before - 18.);
         ship.advance_player(1.).unwrap();
-        assert_eq!(lock_combat(&shared).unwrap().actors[0].shield, before - 36.);
+        let reports = lock_combat(&shared).unwrap().take_damage_reports();
+        assert_eq!(reports.len(), 2);
+        assert!(reports
+            .iter()
+            .all(|report| matches!((report.damage, report.inflicted), (0. | 9., 0) | (18., 3))));
+        let damage: f32 = reports.iter().map(|report| report.damage).sum();
+        assert_eq!(
+            lock_combat(&shared).unwrap().actors[0].shield,
+            before - 18. - damage
+        );
+        assert_eq!(ship.inventory.shot_sequence, 4);
         ship.player_firing = false;
         ship.weapon_firing.fill(false);
         let activation = [ship.player_id().to_le_bytes().as_slice(), &[2, 3]].concat();

@@ -40,6 +40,7 @@ pub struct WeaponStats {
     pub energy: f32,
     pub reload: f32,
     pub effect: u16,
+    pub hit_chances: crate::weapon_accuracy::HitChances,
 }
 
 pub struct EquipmentStats {
@@ -80,6 +81,11 @@ impl EquippedModifiers {
     fn apply_signed(&self, name: &str, base: f32) -> f32 {
         base * (1. + (self.value(name, 2) - self.value(name, 4)) / 100.) + self.value(name, 1)
             - self.value(name, 3)
+    }
+    /// Accuracy/critical stats have a zero native base. Their percentage
+    /// operations are percentage-point bonuses, not multiplication of zero.
+    fn chance_bonus(&self, name: &str) -> f32 {
+        self.value(name, 1) + self.value(name, 2) - self.value(name, 3) - self.value(name, 4)
     }
 }
 
@@ -244,6 +250,18 @@ impl EquipmentStats {
                 template.number(19)
             };
             let skill_bonus = 1. + (skills.level(skill) as f32 - 1.).max(0.) * 0.25;
+            let accuracy_stat = match template.item_type {
+                14 => "STAT_BEAM_ACCURACY",
+                15 => "STAT_MISSILE_ACCURACY",
+                _ => "STAT_PROJECTILES_ACCURACY",
+            };
+            let critical_skill = (skills.level(16) as f32
+                + modifiers.apply_signed("STAT_SKILL_CRITICAL_TARGETING", 0.))
+            .max(0.);
+            let hit_chances = crate::weapon_accuracy::HitChances::from_bonuses(
+                modifiers.chance_bonus(accuracy_stat),
+                modifiers.chance_bonus("STAT_CRITICAL_RATE") + critical_skill * 10.,
+            )?;
             let turbo = (modifiers.apply("STAT_WEAPON_TURBO", 0.)
                 + modifiers.apply(turbo_stat, 0.))
             .min(95.);
@@ -269,6 +287,7 @@ impl EquipmentStats {
                     .map_or(template.use_effect, |item| item.use_effect)
                     .try_into()
                     .unwrap_or(35),
+                hit_chances,
             });
         }
         Ok(Self { ship, weapons })
@@ -278,6 +297,54 @@ impl EquipmentStats {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn chance_modifiers_keep_percent_operations_at_zero_base_and_strongest_effects() {
+        let mut modifiers = EquippedModifiers::default();
+        for (operation, value) in [(1, 2.), (2, 3.), (2, 1.), (3, 0.5), (4, 1.)] {
+            modifiers.add(&Modifier {
+                stat: "STAT_BEAM_ACCURACY".into(),
+                operation,
+                value,
+            });
+        }
+        assert_eq!(modifiers.chance_bonus("STAT_BEAM_ACCURACY"), 3.5);
+        let chances = crate::weapon_accuracy::HitChances::from_bonuses(
+            modifiers.chance_bonus("STAT_BEAM_ACCURACY"),
+            0.,
+        )
+        .unwrap();
+        assert_eq!(
+            chances,
+            crate::weapon_accuracy::HitChances::new(150, 500).unwrap()
+        );
+    }
+
+    #[test]
+    fn critical_targeting_changes_weapon_roll_thresholds_without_doubling_base_damage() {
+        let catalog = ItemCatalog::load().unwrap();
+        let inventory = Inventory::starter(&catalog).unwrap();
+        let mut profile = crate::account::Account::create("pw".into(), "pass", "PW".into())
+            .unwrap()
+            .character;
+        profile.race = 2;
+        profile.profession = 0;
+        let skills = SkillCatalog::for_profile(&profile).unwrap();
+        assert!(skills.level(16) > 0);
+        let stats = EquipmentStats::derive(&inventory, &catalog, &skills).unwrap();
+        let weapon = &stats.weapons[0];
+        let expected =
+            crate::weapon_accuracy::HitChances::from_bonuses(0., skills.level(16) as f32 * 10.)
+                .unwrap();
+        assert_eq!(weapon.hit_chances, expected);
+        assert!(weapon.damage > 0.);
+        assert_eq!(
+            crate::weapon_accuracy::roll_weapon_damage(weapon.damage, 10000, expected)
+                .unwrap()
+                .damage,
+            weapon.damage * 2.
+        );
+    }
+
     #[test]
     fn real_equipped_chemical_vulnerability_reaches_damage_resolution_and_signed_display_stats() {
         let catalog = ItemCatalog::load().unwrap();

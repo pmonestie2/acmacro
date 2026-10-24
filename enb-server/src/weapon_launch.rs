@@ -4,9 +4,14 @@
 use super::*;
 use crate::equipment_stats::WeaponStats;
 use crate::projectiles::{burst_interval_ms, travel_ms, LaunchJournal, Projectile};
+use crate::weapon_accuracy::{roll_weapon_damage, weapon_in_firing_arc, HIT_ROLL_MAX};
+use rand::Rng;
 
 impl PlayerSession {
-    fn prepare_weapon_launch(&self) -> io::Result<Option<Inventory>> {
+    fn prepare_weapon_launch(
+        &self,
+        roll: &mut impl FnMut() -> u32,
+    ) -> io::Result<Option<Inventory>> {
         let combat = lock_combat(&self.combat)?;
         let Some(target) = self
             .target
@@ -21,6 +26,8 @@ impl PlayerSession {
         let template = target.definition.template_id;
         let generation = target.death_generation;
         let range = distance(self.position, target.position);
+        let target_position = target.position;
+        let heading = self.motion.heading();
         let mut sequence = self
             .inventory
             .shot_sequence
@@ -49,6 +56,12 @@ impl PlayerSession {
                 || range > weapon.range
                 || weapon.damage <= 0.
             {
+                continue;
+            }
+            // Equipable::UseWeapon checks the three-dimensional beam/PL cone
+            // before consuming energy or ammunition. Turning away pauses this
+            // mount without switching off the player's auto-fire intention.
+            if !weapon_in_firing_arc(weapon.item_type, heading, self.position, target_position)? {
                 continue;
             }
             let before = journal.projectiles.len();
@@ -90,6 +103,10 @@ impl PlayerSession {
                     } else {
                         1.
                     };
+                // One roll determines miss/critical after ordinary damage
+                // bonuses. Freeze both wire outcome and damage in the journal;
+                // admission/checkpoint recovery must never roll a second time.
+                let result = roll_weapon_damage(damage, roll(), stats.hit_chances)?;
                 let shot = Projectile {
                     owner: self.player_id(),
                     sector: self.sector.id,
@@ -108,12 +125,13 @@ impl PlayerSession {
                     effect: stats.effect,
                     effect_id: journal.next_effect,
                     visual_sent: false,
-                    damage,
+                    damage: result.damage,
                     damage_type: stats.damage_type,
+                    inflicted: result.outcome.inflicted(),
                 };
                 journal.next_effect = journal.next_effect.wrapping_add(1);
                 if shot.due_ms <= now {
-                    simulated.damage_by(damage, self.player_id());
+                    simulated.damage_by(result.damage, self.player_id());
                 }
                 journal.projectiles.push(shot);
             }
@@ -261,6 +279,16 @@ impl PlayerSession {
     }
 
     pub(super) fn fire_weapons(&mut self) -> io::Result<()> {
+        let mut random = rand::thread_rng();
+        self.fire_weapons_with_roll(|| random.gen_range(1..=HIT_ROLL_MAX))
+    }
+
+    /// Supplying rolls separates deterministic behavioral tests from the live
+    /// random source. The callback runs once per newly prepared round only.
+    pub(super) fn fire_weapons_with_roll(
+        &mut self,
+        mut roll: impl FnMut() -> u32,
+    ) -> io::Result<()> {
         self.recover_weapon_launch()?;
         if self.hull <= 0.
             || self.warp.active()
@@ -270,7 +298,7 @@ impl PlayerSession {
         {
             return Ok(());
         }
-        if let Some(candidate) = self.prepare_weapon_launch()? {
+        if let Some(candidate) = self.prepare_weapon_launch(&mut roll)? {
             let journal = candidate
                 .pending_launch
                 .clone()
@@ -341,13 +369,159 @@ mod tests {
     }
 
     #[test]
+    fn beam_and_projectile_cones_pause_without_cost_and_resume_when_the_ship_turns() {
+        for weapon in [769, 3022] {
+            let mut ship = armed(3022, 512);
+            if weapon == 769 {
+                ship.inventory.equipped[3] = Some(ItemInstance::stock(769, 1));
+                ship.inventory.ammunition[3] = None;
+                ship.refresh_equipment().unwrap();
+            }
+            lock_combat(&ship.combat).unwrap().actors[0].position = [-100., 0., 0.];
+            crate::durable_json::replace(&ship.state_dir.join("inventory.json"), &ship.inventory)
+                .unwrap();
+            let inventory = serde_json::to_vec(&ship.inventory).unwrap();
+            let disk = fs::read(ship.state_dir.join("inventory.json")).unwrap();
+            let pending = ship.pending.len();
+            let effect = ship.next_effect;
+            let cooldowns = ship.weapon_cooldowns;
+            let energy = ship.energy;
+            let mut rolls = 0;
+            for _ in 0..2 {
+                ship.fire_weapons_with_roll(|| {
+                    rolls += 1;
+                    5000
+                })
+                .unwrap();
+            }
+            assert_eq!(rolls, 0);
+            assert_eq!(serde_json::to_vec(&ship.inventory).unwrap(), inventory);
+            assert_eq!(
+                fs::read(ship.state_dir.join("inventory.json")).unwrap(),
+                disk
+            );
+            assert_eq!(ship.energy, energy);
+            assert_eq!(ship.weapon_cooldowns, cooldowns);
+            assert_eq!(ship.next_effect, effect);
+            assert_eq!(ship.pending.len(), pending);
+            assert!(ship.weapon_firing[3] && ship.player_firing);
+            assert!(lock_combat(&ship.combat)
+                .unwrap()
+                .pending_projectiles()
+                .is_empty());
+            assert_eq!(lock_combat(&ship.combat).unwrap().actors[0].shield, 150.);
+            // Auto-fire stays selected: rotating the native +X model heading
+            // is sufficient to launch; the user need not toggle the mount.
+            ship.motion.face([-1., 0., 0.]).unwrap();
+            ship.fire_weapons_with_roll(|| {
+                rolls += 1;
+                5000
+            })
+            .unwrap();
+            assert_eq!(rolls, 1);
+            assert_eq!(ship.inventory.shot_sequence, 1);
+            assert!(ship.energy < energy && ship.weapon_cooldowns[3] > 0.);
+            assert!(ship.weapon_firing[3] && ship.player_firing);
+        }
+    }
+
+    #[test]
+    fn actual_missile_launcher_fires_behind_the_native_ship_heading() {
+        let mut ship = armed(2656, 507); // Iron Dragonclaw and owned missiles
+        ship.account.character.race = 0;
+        ship.account.character.profession = 0;
+        ship.skill_catalog = SkillCatalog::for_profile(&ship.account.character).unwrap();
+        for (slot, template) in [(0, 3628), (1, 3184), (2, 2507)] {
+            ship.inventory.equipped[slot] = Some(ItemInstance::stock(template, 1));
+        }
+        ship.refresh_equipment().unwrap();
+        ship.energy = ship.equipment.ship.energy_capacity;
+        let energy = ship.energy;
+        let cost = ship.equipment.weapons[0].energy;
+        lock_combat(&ship.combat).unwrap().actors[0].position = [-1000., 0., 0.];
+        ship.fire_weapons_with_roll(|| 1000).unwrap();
+        assert_eq!(ship.inventory.shot_sequence, 1);
+        assert_eq!(ship.energy, energy - cost);
+        assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 5);
+        assert!(ship.inventory.cargo[0].is_none());
+        let world = lock_combat(&ship.combat).unwrap();
+        assert_eq!(world.pending_projectiles().len(), 1);
+        assert_eq!(world.pending_projectiles()[0].duration_ms, 2000);
+    }
+
+    #[test]
+    fn a_missed_round_still_consumes_ammo_energy_and_reload_and_reports_zero_damage() {
+        let mut ship = armed(3022, 512);
+        ship.fire_weapons_with_roll(|| 1).unwrap();
+        assert_eq!(ship.energy, 89.);
+        assert_eq!(ship.inventory.shot_sequence, 1);
+        assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 5);
+        assert!(ship.inventory.cargo[0].is_none());
+        assert!(ship.weapon_cooldowns[3] > 0.);
+        let mut world = lock_combat(&ship.combat).unwrap();
+        let shot = world.pending_projectiles()[0].clone();
+        assert_eq!(shot.damage, 0.);
+        assert_eq!(shot.inflicted, 0);
+        world.resolve_due(shot.due_ms).unwrap();
+        assert_eq!(world.actors[0].shield, 150.);
+        // The normal report flag and zero damage identify the native miss.
+        let reports = world.take_damage_reports();
+        assert_eq!(reports.len(), 1);
+        assert_eq!(reports[0].damage, 0.);
+        assert_eq!(reports[0].inflicted, 0);
+        drop(world);
+        ship.fire_weapons_with_roll(|| panic!("cooldown must not roll again"))
+            .unwrap();
+        assert_eq!(ship.inventory.shot_sequence, 1);
+        assert_eq!(ship.energy, 89.);
+    }
+
+    #[test]
+    fn a_critical_outcome_is_frozen_across_failed_admission_and_restart() {
+        let mut ship = armed(3022, 512);
+        let path = ship.state_dir.join("combat/1076.json");
+        let blocked = path.with_extension("json.next");
+        fs::create_dir(&blocked).unwrap();
+        assert!(ship.fire_weapons_with_roll(|| 9500).is_err());
+        let journal = ship.inventory.pending_launch.clone().unwrap();
+        assert_eq!(journal.projectiles[0].damage, 22.);
+        assert_eq!(journal.projectiles[0].inflicted, 3);
+        assert!(ship
+            .fire_weapons_with_roll(|| panic!("recovery must not reroll"))
+            .is_err());
+        assert_eq!(ship.inventory.pending_launch.as_ref(), Some(&journal));
+        fs::remove_dir(blocked).unwrap();
+        let mut resumed = restore(&ship, &path);
+        resumed.recover_weapon_launch().unwrap();
+        assert_eq!(resumed.energy, 89.);
+        assert_eq!(resumed.inventory.shot_sequence, 1);
+        assert_eq!(
+            resumed.inventory.ammunition[3].as_ref().unwrap().quantity,
+            5
+        );
+        let mut world = lock_combat(&resumed.combat).unwrap();
+        world.resolve_due(journal.projectiles[0].due_ms).unwrap();
+        assert_eq!(world.actors[0].shield, 128.);
+        let reports = world.take_damage_reports();
+        assert_eq!(reports.len(), 1);
+        assert_eq!(reports[0].inflicted, 3);
+        assert_eq!(reports[0].damage, 22.);
+        world.admit(&journal.projectiles).unwrap();
+        world
+            .resolve_due(journal.projectiles[0].due_ms + 1)
+            .unwrap();
+        assert_eq!(world.actors[0].shield, 128.);
+        assert!(world.take_damage_reports().is_empty());
+    }
+
+    #[test]
     fn projectile_volley_consumes_owned_rounds_auto_reloads_and_hits_only_after_travel() {
         let mut ship = armed(937, 530); // public two-round Killing Dragontooth
         let stats = ship.equipment.weapons[0].clone();
         assert_eq!(stats.rounds, 2);
         assert_eq!(stats.damage, 16.5);
         assert_eq!(stats.ammunition, Some(530));
-        ship.fire_weapons().unwrap();
+        ship.fire_weapons_with_roll(|| 5000).unwrap();
         assert_eq!(ship.energy, 89.); // one activation, not one cost per round
         assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 4);
         assert!(ship.inventory.cargo[0].is_none());
@@ -363,7 +537,7 @@ mod tests {
             .unwrap();
         lock_combat(&ship.combat).unwrap().resolve_due(due).unwrap();
         assert_eq!(lock_combat(&ship.combat).unwrap().actors[0].shield, 117.);
-        ship.fire_weapons().unwrap();
+        ship.fire_weapons_with_roll(|| 5000).unwrap();
         assert_eq!(ship.inventory.shot_sequence, 2); // reload prevents toggle bypass
     }
 
@@ -373,11 +547,11 @@ mod tests {
         let path = ship.state_dir.join("combat/1076.json");
         let blocked = path.with_extension("json.next");
         fs::create_dir(&blocked).unwrap();
-        assert!(ship.fire_weapons().is_err());
+        assert!(ship.fire_weapons_with_roll(|| 5000).is_err());
         assert_eq!(ship.energy, 89.);
         assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 5);
         let journal = ship.inventory.pending_launch.clone().unwrap();
-        assert!(ship.fire_weapons().is_err());
+        assert!(ship.fire_weapons_with_roll(|| 5000).is_err());
         assert_eq!(ship.inventory.pending_launch.as_ref(), Some(&journal));
         assert_eq!(ship.inventory.shot_sequence, 1);
         let mut resumed = restore(&ship, &path);
@@ -408,7 +582,7 @@ mod tests {
         lock_combat(&ship.combat).unwrap().actors[0].position = [100., 0., 0.];
         let blocked = ship.state_dir.join("inventory.json.next");
         fs::create_dir(&blocked).unwrap();
-        assert!(ship.fire_weapons().is_err());
+        assert!(ship.fire_weapons_with_roll(|| 5000).is_err());
         assert_eq!(lock_combat(&ship.combat).unwrap().actors[0].shield, 141.);
         assert_eq!(ship.energy, 89.);
         assert!(ship.inventory.pending_launch.is_some());
@@ -425,7 +599,7 @@ mod tests {
         let mut ship = armed(3022, 512);
         let blocked = ship.state_dir.join("session.local.json.tmp");
         fs::create_dir(&blocked).unwrap();
-        assert!(ship.fire_weapons().is_err());
+        assert!(ship.fire_weapons_with_roll(|| 5000).is_err());
         let journal = ship.inventory.pending_launch.clone().unwrap();
         assert_eq!(
             lock_combat(&ship.combat)
@@ -462,7 +636,7 @@ mod tests {
         let mut ship = armed(3022, 512);
         let blocked = ship.state_dir.join("inventory.json.tmp");
         fs::create_dir(&blocked).unwrap();
-        assert!(ship.fire_weapons().is_err());
+        assert!(ship.fire_weapons_with_roll(|| 5000).is_err());
         assert_eq!(ship.energy, 100.);
         assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 1);
         assert_eq!(ship.inventory.shot_sequence, 0);

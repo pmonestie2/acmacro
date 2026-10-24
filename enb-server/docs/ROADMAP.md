@@ -49,7 +49,8 @@ mean the corresponding gameplay system is complete.
   abilities respect class ownership; other class ability handlers remain pending.
 - Loaded ammunition inventory and native cargo-to-launcher loading, stack merges,
   weapon swaps and safe unloading on removal. Ammo metadata and AUX snapshots
-  persist; projectile firing/travel and shared hit recovery remain unfinished.
+  persist. Player launcher travel and durable shared impacts survive owner logout
+  and server replacement. Native graphical launcher playtests remain pending.
 - Public catalog of 4,568 item templates with effects, restrictions, stacks,
   recipes/refine targets and weapon/reactor/shield/engine data. Starting mounts
   are separate from templates. Only owned item metadata is sent on login.
@@ -94,8 +95,10 @@ mean the corresponding gameplay system is complete.
    side. Vendor trade XP/acquisition history, finite shared stock, faction pricing and services
    beyond basic trade remain pending. Active item effects and remaining crafting
    behavior need implementation and native playtests.
-2. Complete active item effects, launcher/ammunition combat, damage-type rules,
-   hull progression and remaining imported stat effects. Native re-equipping
+2. Complete active item effects, NPC projectile travel, full hull-upgrade
+   progression and remaining imported stat effects. Player typed damage,
+   miss/critical outcomes and class maximum hull capacities are implemented;
+   broader native combat playtests remain pending. Native re-equipping
    still needs a fresh client/station check; /equip and /unequip use the same
    validated transaction path and provide a direct alternative.
 3. Broaden native gate and self-jumpstart playtests. A native Saturn -> Alpha
@@ -152,3 +155,14 @@ ability, equipment transfers, all gates/stations and full multiplayer gameplay.
 Local credentials, private profiles, runtime state, logs, build products and
 archived upstream copies stay ignored. The root `chat_prompt.txt` edit belongs to the user; it is included unchanged
 in the requested commit of all current changes.
+
+The player combat integration passes 189 Rust tests and Clippy with warnings
+denied. Scoped type checking passes for the launcher smoke. Beam/projectile
+firing cones, missile facing independence, ammo/resource costs on misses,
+critical flags and frozen-outcome crash recovery have behavioral coverage.
+These checks do not replace graphical combat playtests.
+
+Disposable native-packet launcher checks passed for both missile and projectile
+weapons, including a real critical outcome, owner logout, in-flight replacement
+and another replacement after resolution. The Controller/PW fight and changed
+content-cap recovery also pass with live randomized player shots.
