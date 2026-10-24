@@ -140,16 +140,17 @@ NAME`, `/accept`, `/decline`, `/leave`, `/disband`, `/kick NAME`, `/d_spawn
 Achilles Drone 1` and `/d_jump`. Typing in chat suspends flight-key input.
 
 Select a mob in Contacts or click its ship in space for shield and hull readings.
-Hostile contacts have red markers; other NPCs have gold markers. Press X or use
-**Fire weapons** to target and fire; press X again or use **Stop weapons** to stop.
+Hostile contacts have red markers; other NPCs have gold markers. Press F or use
+**Fire weapons** to target and fire; press F again or use **Stop weapons** to stop.
 The server controls firing, hits, damage, movement and death. The client shows
 weapon streaks and hit numbers. The ship loadout panel lists cargo, equipment,
 weapon and device mounts; select cargo and a mount to equip, or select installed
 gear to remove. The panel checks mount compatibility and cargo space before sending
 native inventory transfers, and shows item condition, range and any server quote.
 Ammo can be loaded through the same server move command. Defeated
-mobs leave server-owned wrecks. Select one within 2 km, open it, and tractor any
-listed item into cargo. The radar shows nearby contacts and navigation targets.
+mobs leave server-owned wrecks. Click a wreck to open its fixed loot panel;
+within 2 km, open it and tractor listed items into cargo. The radar shows nearby
+contacts and navigation targets.
 Models are placeholders rather than the original NPC assets. Station interiors
 and the full original combat and equipment UI remain unfinished.
 

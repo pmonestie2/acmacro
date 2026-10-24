@@ -27,7 +27,7 @@ namespace Enb.Client
         public bool SettingsOpen => settingsOpen;
         public uint SelectedContactId => contactId;
         /// <summary>Keep keyboard-selected contacts aligned with the tactical HUD.</summary>
-        public void SelectContact(uint id) { contactId = id; client.SelectContact(id); }
+        public void SelectContact(uint id) { contactId = id; wreckId = 0; client.SelectContact(id); }
         /// <returns>Whether a visible ship was selected at an actual screen point.</returns>
         public bool SelectContactAtPointer(Snapshot snapshot, Vector2 pointer)
         {
@@ -55,8 +55,10 @@ namespace Enb.Client
                 if (distance < closest) { closest = distance; selectedWreck = item.Id; }
             }
             if (selectedWreck == 0) return false;
-            wreckId = selectedWreck; return true;
+            SelectWreck(selectedWreck); return true;
         }
+        /// <summary>Show a chosen corpse without retaining the previous ship lock.</summary>
+        private void SelectWreck(uint id) { wreckId = id; contactId = 0; lootScroll = Vector2.zero; }
         /// <summary>Open or close the ship equipment overlay.</summary>
         public void ToggleEquipment() { equipmentOpen = !equipmentOpen; }
         private string chatText = "";
@@ -64,6 +66,7 @@ namespace Enb.Client
         public bool InputFocused { get; private set; }
         private bool groupChat;
         private uint contactId, wreckId;
+        private Vector2 lootScroll;
         private uint invitePendingId;
         private float invitePendingAt;
         private Vector2 contactsScroll;
@@ -96,6 +99,8 @@ namespace Enb.Client
             Vector2 p = new Vector2(Input.mousePosition.x / Scale, (Screen.height - Input.mousePosition.y) / Scale);
             return !client.Connected || (settingsOpen && SettingsRect().Contains(p)) ||
                 (equipmentOpen && EquipmentRect().Contains(p)) ||
+                ((contactId != 0 || wreckId != 0) &&
+                    new Rect((CanvasWidth - 360) * .5f, CanvasHeight - 380, 360, 260).Contains(p)) ||
                 new Rect(24, 100, 280, Mathf.Clamp(CanvasHeight - 360, 200, 440)).Contains(p) ||
                 (p.x < 354 && p.y > CanvasHeight - 235) ||
                 new Rect(CanvasWidth - 320, 20, 300, CanvasHeight - 40).Contains(p) ||
@@ -190,6 +195,7 @@ namespace Enb.Client
                 return;
             }
             Snapshot snapshot = client.CurrentSnapshot;
+            if (wreckId != 0 && !snapshot.Objects.Any(item => item.Id == wreckId && item.Kind == 25)) wreckId = 0;
             if (snapshot.Station != null)
             {
                 Station(snapshot);
@@ -228,6 +234,7 @@ namespace Enb.Client
             Radar(snapshot);
             Social(snapshot);
             TargetLock(snapshot);
+            WreckPanel(snapshot);
             if (equipmentOpen) Equipment(snapshot);
             InputFocused = GUI.GetNameOfFocusedControl() == "Group invite";
             ChatEntry();
@@ -510,6 +517,7 @@ namespace Enb.Client
         /// <summary>Keep the selected ship's range and survivability visible during flight.</summary>
         private void TargetLock(Snapshot snapshot)
         {
+            if (wreckId != 0) return;
             uint selectedId = contactId != 0 ? contactId : snapshot.SelectedTargetId;
             ShipActor target = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(actor => actor.Id == selectedId);
             if (target == null || !target.HasPosition) return;
@@ -545,6 +553,44 @@ namespace Enb.Client
                     client.Status != "Requesting group invitation")
                     GUI.Label(new Rect(x + 12, y + 118, 316, 20), client.Status, small);
             }
+        }
+
+        /// <summary>Keep an opened wreck and its tractorable items beside the flight view.</summary>
+        private void WreckPanel(Snapshot snapshot)
+        {
+            if (wreckId == 0) return;
+            MapObject wreck = snapshot.Objects.FirstOrDefault(item => item.Id == wreckId && item.Kind == 25);
+            if (wreck == null) return;
+            bool open = snapshot.OpenLootId == wreckId;
+            float height = open ? 250 : 126;
+            float x = (CanvasWidth - 360) * .5f, y = CanvasHeight - height - 122;
+            Panel(new Rect(x, y, 360, height));
+            GUI.Label(new Rect(x + 12, y + 8, 336, 22), wreck.Name, body);
+            float distance = wreck.Position.Distance(snapshot.Position);
+            GUI.Label(new Rect(x + 12, y + 33, 336, 20), $"WRECK RANGE  {distance / 1000:0.00} km", small);
+            GUI.enabled = client.Ready && distance < 2000 && !open;
+            if (GUI.Button(new Rect(x + 12, y + 57, 336, 30), open ? "WRECK OPEN" :
+                distance >= 2000 ? "MOVE WITHIN 2 KM TO LOOT" : "OPEN WRECK", button))
+                client.OpenLoot(wreckId);
+            GUI.enabled = true;
+            if (!open) return;
+            CorpseLoot contents = snapshot.Loot.FirstOrDefault(item => item.Id == wreckId);
+            GUILayout.BeginArea(new Rect(x + 12, y + 96, 336, height - 108));
+            lootScroll = GUILayout.BeginScrollView(lootScroll);
+            if (contents == null) GUILayout.Label("Reading wreck contents…", small);
+            else
+            {
+                ItemView[] stock = contents.Items.Where(item => item != null).ToArray();
+                if (stock.Length == 0) GUILayout.Label("No items remain", small);
+                foreach (ItemView item in stock)
+                {
+                    GUI.enabled = distance < 2000;
+                    if (GUILayout.Button("TRACTOR  " + item.Name + "  ×" + item.Quantity, button,
+                        GUILayout.Height(34))) client.TakeLoot(wreckId, item.Slot);
+                }
+            }
+            GUI.enabled = true;
+            GUILayout.EndScrollView(); GUILayout.EndArea();
         }
 
         /// <summary>Project limited markers without enlarging physical models.</summary>
@@ -722,7 +768,7 @@ namespace Enb.Client
             if (wrecks.Length > 0) GUILayout.Label("WRECKS", body);
             foreach (MapObject wreck in wrecks)
                 if (GUILayout.Button(wreck.Name + "  ·  " + (wreck.Position.Distance(snapshot.Position) / 1000).ToString("0.0") + " km",
-                    wreckId == wreck.Id ? selected : button)) wreckId = wreck.Id;
+                    wreckId == wreck.Id ? selected : button)) SelectWreck(wreck.Id);
             MapObject selectedWreck = wrecks.FirstOrDefault(item => item.Id == wreckId);
             if (selectedWreck != null)
             {
