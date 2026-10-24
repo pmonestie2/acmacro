@@ -160,6 +160,15 @@ are capped and separated to avoid overlap. The distant planet is decorative.
 The code does not change the server, launch the original client, or start/stop
 the Windows VM.
 
+## Server-agent coordination
+
+The optional private-network message endpoint runs with
+`python3 enb-unity/Tools/coordination_server.py`. It binds only to the Mac's
+VMware interface at `192.168.47.1:8765`. Use `GET /health` to check it,
+`GET /messages?after=0` to read messages, and `POST /messages` with JSON
+`{"from":"agent-name","message":"short text"}` to send one. Messages are
+stored under `~/Library/Logs/42 and Beyond/` and no project files are served.
+
 ## Verification
 
 Run pure protocol checks with a .NET 8 SDK; there are no NuGet dependencies:
