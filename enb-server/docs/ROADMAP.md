@@ -294,5 +294,8 @@ and Follow (verb13) within its native1500m surface range. Incapacity disables
 those actions; cloaked/departed contacts lose them. Eligibility is rebuilt from
 current coordinator snapshots rather than saved peer health. Two scoped verb
 tests and Clippy pass; the multiplayer packet smoke now requires the enabled
-Group verb before exercising invitation/acceptance. Native deployment and that
-extended smoke are pending at this checkpoint.
+Group verb before exercising invitation/acceptance. Build3c76b2f is deployed;
+the extended two-client packet smoke passes Group visibility, native invitation
+and acceptance, follow, formation, group cloak, replacement and leave cleanup.
+The original client resumed, but actual graphical invitation clicks remain
+separate from that packet verification.
