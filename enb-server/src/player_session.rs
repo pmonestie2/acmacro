@@ -46,6 +46,8 @@ mod looting;
 mod mining;
 #[path = "mob_damage.rs"]
 mod mob_damage;
+#[path = "native_jumpstart.rs"]
+mod native_jumpstart;
 #[path = "npc_services.rs"]
 mod npc_services;
 #[path = "production_service.rs"]
@@ -969,6 +971,11 @@ impl PlayerSession {
                     17 => self.open_resource_window(target)?,
                     18 => self.begin_gating(target)?,
                     19 => self.complete_gating(target)?,
+                    26 => {
+                        if let Err(error) = self.begin_jumpstart(target) {
+                            self.pending.push(packets::message(&error.to_string()));
+                        }
+                    }
                     9 => {
                         if self.skills.cloak_rank > 0 {
                             self.stop_cloak();

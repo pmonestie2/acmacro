@@ -299,3 +299,17 @@ the extended two-client packet smoke passes Group visibility, native invitation
 and acceptance, follow, formation, group cloak, replacement and leave cleanup.
 The original client resumed, but actual graphical invitation clicks remain
 separate from that packet verification.
+
+Native Jumpstart now advertises verb12 and routes action26 through ability65,
+including self-incap recovery and visible nongroup rescue. Completed recovery
+rechecks a fresh peer snapshot; other support remains group-only. All258 Rust
+tests and Clippy pass. The disposable native-packet test uses real NPC damage,
+self recovery, warp travel and nongroup PW recovery, and passes. Catalog
+cost/timing and missing recipient confirmation remain documented in
+NATIVE_JUMPSTART.md. Deployment is pending at this checkpoint.
+
+Restart tooling now compiles in a separate cached target while the current
+server remains playable, validates ownership again, then installs the complete
+binary after graceful shutdown. Compile failures leave the old server running;
+live readiness timeouts never launch a duplicate. All55 Python tool tests and
+scoped type checks pass. See SERVER_RESTARTS.md.

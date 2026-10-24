@@ -271,7 +271,7 @@ impl PlayerSession {
                 self.message(if source == self.player_id() {
                     "Self-jumpstart restored your ship."
                 } else {
-                    "Your group member jumpstarted your ship."
+                    "Another player jumpstarted your ship."
                 });
             }
             SupportAction::Fold { .. } => self.fold_self(),

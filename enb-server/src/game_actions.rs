@@ -324,11 +324,22 @@ impl GameState {
         for (source, sector, position, actions) in actions {
             for action in actions {
                 let mut delivered = false;
-                for id in self.groups.members(source) {
+                // Native Jumpstart can rescue any visible incapacitated ship,
+                // independently of group membership. Other support stays scoped
+                // to the source's actual group.
+                let recipients = match action {
+                    SupportAction::Jumpstart { target } => vec![target],
+                    _ => self.groups.members(source),
+                };
+                for id in recipients {
                     if id == source {
                         continue;
                     }
-                    let Some(peer) = self.sessions[&id].peer_snapshot() else {
+                    let Some(peer) = self
+                        .sessions
+                        .get(&id)
+                        .and_then(PlayerSession::peer_snapshot)
+                    else {
                         continue;
                     };
                     let eligible = match action {
@@ -349,10 +360,7 @@ impl GameState {
                                 && distance(peer.position, position) <= 3000.
                         }
                         SupportAction::Jumpstart { target } => {
-                            target == id
-                                && peer.hull <= 0.
-                                && peer.sector == sector
-                                && distance(peer.position, position) <= 2750.
+                            target == id && self.sessions[&source].can_deliver_jumpstart(&peer)
                         }
                         SupportAction::Fold { target } => {
                             target == id
@@ -377,10 +385,13 @@ impl GameState {
                         SupportAction::Jumpstart { .. } | SupportAction::Fold { .. }
                     )
                 {
-                    self.sessions
-                        .get_mut(&source)
-                        .unwrap()
-                        .message("The group member left ability range before completion.");
+                    self.sessions.get_mut(&source).unwrap().message(
+                        if matches!(action, SupportAction::Jumpstart { .. }) {
+                            "The target ship left Jumpstart range or no longer needs recovery."
+                        } else {
+                            "The group member left ability range before completion."
+                        },
+                    );
                 }
             }
         }

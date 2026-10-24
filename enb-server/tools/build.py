@@ -44,13 +44,16 @@ def build_environment(cargo: Path) -> dict[str, str]:
     return environment
 
 
-def build(release: bool = False) -> Path:
+def build(release: bool = False, *, target_dir: Path | None = None) -> Path:
     cargo = cargo_path()
     arguments = [str(cargo), 'build', '--manifest-path', str(ROOT / 'Cargo.toml'), '--locked']
     if release:
         arguments.append('--release')
+    if target_dir is not None:
+        arguments.extend(['--target-dir', str(target_dir.resolve())])
     subprocess.run(arguments, env=build_environment(cargo), check=True)
-    return ROOT / 'target' / ('release' if release else 'debug') / ('enb-server.exe' if os.name == 'nt' else 'enb-server')
+    destination = ROOT / 'target' if target_dir is None else target_dir.resolve()
+    return destination / ('release' if release else 'debug') / ('enb-server.exe' if os.name == 'nt' else 'enb-server')
 
 
 def main() -> None:

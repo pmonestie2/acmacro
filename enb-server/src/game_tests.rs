@@ -122,6 +122,44 @@ fn land_npc_shots(game: &mut GameState) {
 }
 
 #[test]
+fn native_jumpstart_action_recovers_an_incapacitated_player_without_a_group() {
+    let mut game = game();
+    let source = FIRST_PLAYER_ID;
+    let target = source + 1;
+    login(&mut game, source, 22611, "alice");
+    login(&mut game, target, 22612, "bob");
+    {
+        let victim = game.sessions.get_mut(&target).unwrap();
+        victim.position = [1000., 0., 0.];
+        victim
+            .receive_mob_hit(&crate::npc_projectiles::MobHit {
+                sector: 1076,
+                sequence: 1,
+                target,
+                target_epoch: victim.threat().session_epoch,
+                attacker_index: 0,
+                attacker_source: 46,
+                attacker_template: 0,
+                attacker_generation: 0,
+                damage: 1_000_000.,
+                damage_type: 3,
+            })
+            .unwrap();
+    }
+    game.advance(0.1).unwrap();
+    assert!(!game.groups.together(source, target));
+    game.handle_input(
+        source,
+        0x2c,
+        &[source, 26, target, 0].map(u32::to_le_bytes).concat(),
+    )
+    .unwrap();
+    advance(&mut game, 8.);
+    assert!(game.sessions[&target].peer_snapshot().unwrap().hull > 0.);
+    assert!(!game.groups.together(source, target));
+}
+
+#[test]
 fn npc_ack_failure_and_server_replacement_never_repeat_committed_player_damage() {
     let mut game = game();
     let player = FIRST_PLAYER_ID;

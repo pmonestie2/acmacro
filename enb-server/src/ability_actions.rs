@@ -6,12 +6,23 @@ use crate::skills::{AbilityDefinition, AbilityKind, Cast, SupportAction};
 
 impl PlayerSession {
     pub(super) fn begin_ability(&mut self, index: u32) -> io::Result<()> {
+        self.begin_ability_for(index, self.target)
+    }
+
+    pub(super) fn begin_ability_for(
+        &mut self,
+        index: u32,
+        requested_target: u32,
+    ) -> io::Result<()> {
         if self.gate_transit.is_some() {
             return Err(invalid(
                 "Wait for the gate transition before using abilities.",
             ));
         }
         let ability = self.skill_catalog.ability(index)?;
+        if ability.kind == AbilityKind::Jumpstart {
+            self.jumpstart_definition()?;
+        }
         if ability.kind == AbilityKind::Unsupported {
             return Err(invalid("This class ability is not implemented yet."));
         }
@@ -26,7 +37,7 @@ impl PlayerSession {
             return Err(invalid("Another ability is charging."));
         }
         let self_jumpstart = ability.kind == AbilityKind::Jumpstart
-            && (self.target == self.player_id() || self.target == u32::MAX);
+            && (requested_target == self.player_id() || requested_target == u32::MAX);
         if self.hull <= 0. && !self_jumpstart {
             return Err(invalid(
                 "An incapacitated ship cannot activate this ability.",
@@ -43,7 +54,7 @@ impl PlayerSession {
         {
             return Err(invalid("This skill is recovering."));
         }
-        let target = self.ability_target(&ability)?;
+        let target = self.ability_target(&ability, requested_target)?;
         if self.energy < ability.energy {
             return Err(invalid("Insufficient reactor energy."));
         }
@@ -97,7 +108,14 @@ impl PlayerSession {
         Ok(())
     }
 
-    fn ability_target(&self, ability: &AbilityDefinition) -> io::Result<u32> {
+    fn ability_target(
+        &self,
+        ability: &AbilityDefinition,
+        requested_target: u32,
+    ) -> io::Result<u32> {
+        if ability.kind == AbilityKind::Jumpstart {
+            return self.jumpstart_target(ability, requested_target);
+        }
         let combat = lock_combat(&self.combat)?;
         let enemy = matches!(
             ability.kind,
@@ -119,13 +137,7 @@ impl PlayerSession {
             }
             return Ok(self.target);
         }
-        if ability.kind == AbilityKind::Jumpstart
-            && self.hull <= 0.
-            && (self.target == self.player_id() || self.target == u32::MAX)
-        {
-            return Ok(self.player_id());
-        }
-        if ability.kind == AbilityKind::Jumpstart || ability.id == 125 {
+        if ability.id == 125 {
             let contact = self
                 .group_contacts
                 .iter()
@@ -133,11 +145,8 @@ impl PlayerSession {
                 .ok_or_else(|| invalid("Select a group member first."))?;
             if contact.sector != self.sector.id
                 || distance(contact.position, self.position) > ability.range as f32
-                || ability.kind == AbilityKind::Jumpstart && !contact.incapacitated
             {
-                return Err(invalid(
-                    "Group member is out of range or does not need jumpstart.",
-                ));
+                return Err(invalid("Group member is out of fold range."));
             }
             return Ok(contact.id);
         }
@@ -197,7 +206,15 @@ impl PlayerSession {
             let definition = self.skill_catalog.ability(cast.ability)?;
             let self_jumpstart =
                 definition.kind == AbilityKind::Jumpstart && cast.target == self.player_id();
+            let invalid_jumpstart = definition.kind == AbilityKind::Jumpstart
+                && (self.jumpstart_definition().is_err()
+                    || self.jumpstart_target(&definition, cast.target).is_err()
+                    || self.warp.active()
+                    || self.gate_transit.is_some()
+                    || !self.logged_in
+                    || self.sector.station.is_some());
             if (self.hull <= 0. && !self_jumpstart)
+                || invalid_jumpstart
                 || definition.kind == AbilityKind::Cloak
                     && definition.rank < 5
                     && self.motion.speed.abs() > 0.1

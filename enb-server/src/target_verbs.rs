@@ -9,6 +9,17 @@ impl PlayerSession {
         }
         let mut verbs = Vec::new();
         let can_act = self.hull > 0. && !self.warp.active() && self.gate_transit.is_none();
+        if self.target == self.player_id() && self.hull <= 0. && self.jumpstart_definition().is_ok()
+        {
+            verbs.push((
+                12,
+                if !self.warp.active() && self.gate_transit.is_none() {
+                    0
+                } else {
+                    2
+                },
+            ));
+        }
         if let Some(peer) = self.peer_contacts.get(&self.target) {
             // Native Player::OnTargeted advertises GROUP with unlimited range
             // for living peers. Verb4 opens Group/Invite; action10 sends it.
@@ -19,6 +30,20 @@ impl PlayerSession {
             let range =
                 (distance(self.position, peer.position) - crate::following::PLAYER_RADIUS).max(0.);
             verbs.push((13, if alive && range <= 1500. { 0 } else { 2 }));
+            if peer.incapacitated && self.jumpstart_definition().is_ok() {
+                // Player::OnTargeted's UI range is one skill step shorter than
+                // AJumpStart::CalculateRange; retain that native distinction.
+                let range_limit =
+                    1000. + self.skill_catalog.level(31).saturating_sub(1) as f32 * 250.;
+                verbs.push((
+                    12,
+                    if can_act && range <= range_limit {
+                        0
+                    } else {
+                        2
+                    },
+                ));
+            }
         }
         if let Some(position) = self.visible_corpses.get(&self.target) {
             verbs.push((
@@ -109,7 +134,10 @@ mod tests {
         ship.refresh_target_verbs(false);
         assert_eq!(
             ship.last_verbs,
-            Some(packets::target_verbs(ship.target, &[(4, 2), (13, 2)]))
+            Some(packets::target_verbs(
+                ship.target,
+                &[(4, 2), (13, 2), (12, 0)]
+            ))
         );
     }
 
