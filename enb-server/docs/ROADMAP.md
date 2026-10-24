@@ -280,7 +280,9 @@ fixture can legitimately roll no items. The corrected two-player backend smoke
 requires public template2010's guaranteed item5931, then verifies native opening,
 tractor competition, replacement, owner cargo award and durable depletion. It
 passes against the deployed radius build. The relocated fixture clears its old
-roaming region to avoid a tractor-range race. Corpse-birth diagnostics now expose
-the server's actual generated stock; see LOOT.md. Diagnostics code is awaiting
-its next build/deployment rather than being assumed loaded into the running
-server.
+roaming region to avoid a tractor-range race. Corpse-birth diagnostics expose
+the server's actual generated stock; see LOOT.md. Diagnostics build c968c73 is
+deployed and both native sessions resumed. All ten scoped loot tests and Clippy
+pass. The UI
+agent independently confirmed a decoded Present item and cargo award through
+the C# client using the guaranteed-drop fixture, without wire changes.
