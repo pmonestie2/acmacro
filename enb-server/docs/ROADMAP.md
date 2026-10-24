@@ -195,15 +195,17 @@ AuxNameSignature.IsNav bit for ordinary nav actors. Cooper contained32 visible
 map records, but the missing bit left its generic Type37 navs unmarked while
 planets/gates could still appear. Session resume refreshes existing actors with
 native name/signature AUX and navigation packets, without duplicate Creates.
-Native graphical confirmation is still in progress.
+Native graphical confirmation now passes on PW in Cooper: ordinary nav markers
+appear on the minimap and selections reach the server.
 
 NPC movement now publishes authoritative facing, velocity and movement IDs,
 including chase/home/rest/death transitions. Legacy motion-less saves remain
 readable. Expired legacy respawn countdowns are normalized and new countdowns
 clamp at zero, repairing an observed startup rejection from two old actors.
-The full209 Rust tests and Clippy pass. The server is running this build; the
-current native client was relaunched after its transport recovery expired.
+The full209 Rust tests and Clippy pass. The server is running this build. The native client was relaunched after its
+transport recovery expired; PW logged back into Cooper successfully.
 
 Mission runtime is deferred as requested. The completed public-content import
 preserves364 definitions/1430 stages, known XML repairs and unknown rule operands;
-see MISSION_CONTENT.md. Six focused importer tests and scoped type checks pass.
+see MISSION_CONTENT.md. Six focused importer tests and scoped type checks pass; the complete Python
+tool suite passes at39 tests.
