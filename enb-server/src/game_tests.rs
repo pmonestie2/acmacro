@@ -445,6 +445,68 @@ fn formation_follows_rotated_leader_restores_and_detaches_on_manual_thrust() {
 }
 
 #[test]
+fn formed_group_keeps_relative_position_through_leader_warp() {
+    let mut game = game();
+    let leader = FIRST_PLAYER_ID;
+    let follower = leader + 1;
+    login(&mut game, leader, 22501, "alice");
+    login(&mut game, follower, 22502, "bob");
+    game.groups.invite(leader, follower).unwrap();
+    game.groups.accept(follower).unwrap();
+    game.handle_event(
+        leader,
+        ClientEvent::Formation {
+            action: 5,
+            target: 0,
+        },
+    )
+    .unwrap();
+    game.sessions.get_mut(&follower).unwrap().position = [100., 0., 0.];
+    game.handle_event(
+        follower,
+        ClientEvent::Formation {
+            action: 7,
+            target: 0,
+        },
+    )
+    .unwrap();
+    advance(&mut game, 0.1);
+    let route = [
+        (leader & 0xffffff).to_le_bytes().as_slice(),
+        &1u16.to_le_bytes(),
+        &100000u32.to_le_bytes(),
+    ]
+    .concat();
+    game.handle_input(leader, 0x9b, &route).unwrap();
+    advance(&mut game, 5.);
+    let lead = game.sessions[&leader].peer_snapshot().unwrap();
+    let wing = game.sessions[&follower].peer_snapshot().unwrap();
+    assert!(lead.position[0] > 6000.);
+    assert!(game
+        .groups
+        .group(follower)
+        .unwrap()
+        .formed
+        .contains(&follower));
+    let offset = crate::groups::formation_offset(5, 1);
+    let rotated = lead.motion.rotate(offset);
+    assert!(
+        distance(
+            wing.position,
+            std::array::from_fn(|axis| lead.position[axis] + rotated[axis])
+        ) < 1.
+    );
+    game.handle_input(leader, 0x9b, &route).unwrap();
+    advance(&mut game, 0.1);
+    assert!(game
+        .groups
+        .group(follower)
+        .unwrap()
+        .formed
+        .contains(&follower));
+}
+
+#[test]
 fn failed_weapon_storage_for_one_player_does_not_stop_another_players_tick() {
     let mut game = game();
     let a = FIRST_PLAYER_ID;

@@ -267,14 +267,14 @@ impl GameState {
     }
 
     pub(super) fn advance_formations(&mut self) {
-        // Relative flight is deliberately limited to impulse. A leader warping,
-        // gating, becoming incapacitated or logging out releases the followers.
+        // Formed ships retain their relative offsets while the leader warps.
+        // A sector transfer, incapacitation or logout releases them.
         let mut following = std::collections::HashSet::new();
         for group in self.groups.formation_groups() {
             let leader = self
                 .sessions
                 .get(&group.leader)
-                .filter(|session| session.can_form_up())
+                .filter(|session| session.can_lead_formation())
                 .and_then(|session| session.peer_snapshot());
             for member in group
                 .formed
@@ -284,9 +284,7 @@ impl GameState {
             {
                 let eligible = leader.as_ref().is_some_and(|leader| {
                     self.sessions.get(&member).is_some_and(|session| {
-                        session.can_form_up()
-                            && session.sector.id == leader.sector
-                            && distance(session.position, leader.position) <= 6000.
+                        session.can_form_up() && session.sector.id == leader.sector
                     })
                 });
                 if eligible {

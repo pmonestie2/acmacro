@@ -61,6 +61,13 @@ impl PlayerSession {
             && !self.warp.active()
             && self.gate_transit.is_none()
     }
+    /// Whether this ship can keep leading formed members, including during warp.
+    pub(crate) fn can_lead_formation(&self) -> bool {
+        self.logged_in
+            && self.sector.station.is_none()
+            && self.hull > 0.
+            && self.gate_transit.is_none()
+    }
     pub(crate) fn peer_snapshot(&self) -> Option<PeerSnapshot> {
         (self.logged_in && self.sector.station.is_none()).then(|| PeerSnapshot {
             stats: self.equipment.ship,
