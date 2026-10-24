@@ -302,14 +302,22 @@ separate from that packet verification.
 
 Native Jumpstart now advertises verb12 and routes action26 through ability65,
 including self-incap recovery and visible nongroup rescue. Completed recovery
-rechecks a fresh peer snapshot; other support remains group-only. All258 Rust
+rechecks a fresh peer snapshot; other support remains group-only. All 258 Rust
 tests and Clippy pass. The disposable native-packet test uses real NPC damage,
 self recovery, warp travel and nongroup PW recovery, and passes. Catalog
 cost/timing and missing recipient confirmation remain documented in
-NATIVE_JUMPSTART.md. Deployment is pending at this checkpoint.
+NATIVE_JUMPSTART.md. Build b4a7363 is deployed locally; the active native toon
+session resumed without relogging.
 
 Restart tooling now compiles in a separate cached target while the current
 server remains playable, validates ownership again, then installs the complete
 binary after graceful shutdown. Compile failures leave the old server running;
-live readiness timeouts never launch a duplicate. All55 Python tool tests and
+live readiness timeouts never launch a duplicate. All 55 Python tool tests and
 scoped type checks pass. See SERVER_RESTARTS.md.
+The first live staged handoff built from the warm cache in 0.09 seconds and the
+native session's measured outage was 3035ms, excluding the earlier compilation
+that completed while the old server stayed online.
+
+All 12 local sandbox inventories were checked for the user's full-weapons request:
+every class-allowed hardpoint is filled (JE 3, PW 6, the other classes 4 or 5). No
+gear replacement or revision reset was needed; existing gear/cargo was preserved.

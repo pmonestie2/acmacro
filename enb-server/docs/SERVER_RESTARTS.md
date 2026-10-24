@@ -17,7 +17,7 @@ A terminal new-process failure attempts the saved old executable. A readiness
 timeout while the replacement remains alive leaves it running and reports the
 PID; it does not terminate it or launch a competing fallback. A changed process
 identity or an occupied server address also prevents a duplicate launch. Startup
-still needs a valid registration response, with a30-second observation window;
+still needs a valid registration response, with a 30-second observation window;
 printing a ready log line alone is insufficient. Configuration/state errors can
 also prevent the fallback starting and require inspection of `logs/server.log`.
 
@@ -27,5 +27,12 @@ macOS; this VM is the live verification environment. Mocked lifecycle tests use
 temporary files and processes supplied by test doubles, without driving clients.
 They cover compile-before-stop, compiler failure, changed ownership, atomic
 install, terminal startup fallback and preserving live processes on observation
-timeout. The complete Python tool suite passes55 tests and scoped type checks
+timeout. The complete Python tool suite passes 55 tests and scoped type checks
 cover the modified build/restart modules and tests.
+
+Live verification on this VM deployed the recovery build from the warm cache
+in 0.09 seconds. The active native session resumed with 3035ms of measured outage;
+the initial one-minute48-second cache compilation happened while the old server
+continued running. This verifies the ordinary staged handoff. Compiler and
+terminal-startup failure paths were verified with mocked process lifecycle
+tests, not by breaking the playable server.
