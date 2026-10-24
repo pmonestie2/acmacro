@@ -202,6 +202,9 @@ namespace Enb.Client
                 else ToggleWeapons(hud.SelectedContactId);
             }
             if (bindings.Pressed(ControlAction.NextHostile)) TargetNextHostile();
+            for (int abilitySlot = 0; abilitySlot < 6; abilitySlot++)
+                if (bindings.Pressed((ControlAction)((int)ControlAction.AbilityOne + abilitySlot)))
+                    abilityHud.ActivateSlot(abilitySlot, snapshot);
             if (bindings.Pressed(ControlAction.Forward)) Thrust(2);
             if (bindings.Pressed(ControlAction.Reverse)) Thrust(3);
             if (bindings.Pressed(ControlAction.Brake)) Thrust(4);

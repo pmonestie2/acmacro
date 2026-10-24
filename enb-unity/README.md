@@ -161,7 +161,9 @@ RPG packet. Selecting one sends the native activation command, and the panel
 shows the server's charge and cooldown updates. The server applies target, range,
 energy, charge, and cooldown rules. Refresh display labels from
 the public Rust catalog with `python3 enb-unity/Tools/sync_ability_catalog.py`
-after server skill-content changes.
+after server skill-content changes. Click one of six slots in the Skills panel,
+then an ability, to assign the flight bar. Slot keys default to 1–6 and can be
+changed in Controls. Assignments are saved per character on this Mac.
 Models are placeholders rather than the original NPC assets. Station interiors
 and the full original combat and equipment UI remain unfinished.
 

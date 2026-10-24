@@ -34,8 +34,11 @@ namespace Enb.Client
         private readonly SpaceClient client;
         private readonly FlightHud flightHud;
         private readonly AbilityDefinition[] catalog;
+        private readonly int[] slots = { -1, -1, -1, -1, -1, -1 };
         private Vector2 scroll;
         private bool open;
+        private int assigningSlot = -1;
+        private uint slotOwner;
         public bool IsOpen => open;
         private float CanvasWidth => Screen.width / flightHud.Scale;
         private float CanvasHeight => Screen.height / flightHud.Scale;
@@ -60,7 +63,8 @@ namespace Enb.Client
         {
             Vector2 point = new Vector2(Input.mousePosition.x / flightHud.Scale,
                 (Screen.height - Input.mousePosition.y) / flightHud.Scale);
-            return ButtonRect().Contains(point) || open && PanelRect().Contains(point);
+            return ButtonRect().Contains(point) ||
+                (open ? PanelRect().Contains(point) : QuickbarRect().Contains(point));
         }
 
         /// <returns>Rect: Bounds of the ability panel's persistent toolbar button.</returns>
@@ -73,22 +77,76 @@ namespace Enb.Client
             return new Rect((CanvasWidth - 520) * .5f, 82, 520, height);
         }
 
+        /// <returns>Rect: Bounds of the six flight ability slots.</returns>
+        private Rect QuickbarRect()
+        { return new Rect((CanvasWidth - 560) * .5f, CanvasHeight - 112, 560, 60); }
+
+        /// <summary>Load a separate ability layout for each server character identity.</summary>
+        private void LoadSlots(uint playerId)
+        {
+            if (slotOwner == playerId) return;
+            slotOwner = playerId; assigningSlot = -1;
+            for (int i = 0; i < slots.Length; i++)
+                slots[i] = PlayerPrefs.GetInt($"42andBeyond.ability.{playerId}.{i}", -1);
+        }
+
+        /// <summary>Activate a bound slot while leaving target and resource checks to the server.</summary>
+        public void ActivateSlot(int index, Snapshot snapshot)
+        {
+            if (snapshot == null || index < 0 || index >= slots.Length) return;
+            LoadSlots(snapshot.PlayerId);
+            if (slots[index] < 0 || !snapshot.AvailableAbilities.Contains((uint)slots[index])) return;
+            client.ActivateAbility((uint)slots[index]);
+        }
+
+        /// <summary>Show bound abilities and their configured keys during flight.</summary>
+        private void Quickbar(Snapshot snapshot)
+        {
+            Rect bar = QuickbarRect(); flightHud.Panel(bar);
+            for (int i = 0; i < slots.Length; i++)
+            {
+                int id = slots[i];
+                AbilityDefinition ability = catalog.FirstOrDefault(item => item.id == id);
+                string key = client.Bindings.Display((ControlAction)((int)ControlAction.AbilityOne + i));
+                string name = ability == null ? "Assign" : ability.name.Length > 12 ?
+                    ability.name.Substring(0, 12) + "…" : ability.name;
+                string label = key + "  " + name;
+                if (GUI.Button(new Rect(bar.x + 9 + i * 90, bar.y + 10, 84, 40), label,
+                    flightHud.ButtonStyle))
+                {
+                    if (ability == null) { open = true; assigningSlot = i; }
+                    else ActivateSlot(i, snapshot);
+                }
+            }
+        }
+
         /// <summary>Show only abilities that this character received in native RPG packets.</summary>
         public void Draw(Snapshot snapshot)
         {
             if (snapshot == null || snapshot.Station != null) { open = false; return; }
+            LoadSlots(snapshot.PlayerId);
             if (GUI.Button(ButtonRect(), open ? "Close skills" : "Skills", flightHud.ButtonStyle))
                 open = !open;
-            if (!open) return;
+            if (!open) { Quickbar(snapshot); return; }
             Rect panel = PanelRect(); flightHud.Panel(panel);
             GUI.Label(new Rect(panel.x + 18, panel.y + 15, 380, 28), "CLASS ABILITIES", flightHud.BodyStyle);
             if (GUI.Button(new Rect(panel.xMax - 48, panel.y + 12, 30, 28), "×", flightHud.ButtonStyle))
             { open = false; return; }
             GUI.Label(new Rect(panel.x + 18, panel.y + 42, panel.width - 36, 20),
-                "Select a target first for combat or group abilities.", flightHud.SmallStyle);
+                assigningSlot < 0 ? "Select a target first for combat or group abilities." :
+                $"Choose an ability below for slot {assigningSlot + 1}.", flightHud.SmallStyle);
+            for (int i = 0; i < slots.Length; i++)
+            {
+                int id = slots[i];
+                AbilityDefinition bound = catalog.FirstOrDefault(item => item.id == id);
+                string label = client.Bindings.Display((ControlAction)((int)ControlAction.AbilityOne + i)) + "  " +
+                    (bound == null ? "Empty" : bound.name.Length > 8 ? bound.name.Substring(0, 8) + "…" : bound.name);
+                if (GUI.Button(new Rect(panel.x + 18 + i * 81, panel.y + 68, 77, 37),
+                    label, flightHud.ButtonStyle)) assigningSlot = i;
+            }
             AbilityDefinition[] available = catalog.Where(item => item.id >= 0 && snapshot.AvailableAbilities.Contains((uint)item.id))
                 .OrderBy(item => item.name).ToArray();
-            GUILayout.BeginArea(new Rect(panel.x + 18, panel.y + 70, panel.width - 36, panel.height - 119));
+            GUILayout.BeginArea(new Rect(panel.x + 18, panel.y + 116, panel.width - 36, panel.height - 165));
             scroll = GUILayout.BeginScrollView(scroll);
             if (available.Length == 0)
                 GUILayout.Label("Waiting for class abilities from the server…", flightHud.SmallStyle);
@@ -101,9 +159,17 @@ namespace Enb.Client
                     charging && snapshot.CastingAbilityId == (uint)ability.id ?
                     $"{ability.name}  ·  CHARGING {snapshot.CastRemainingSeconds:0.#} S" :
                     $"{ability.name}  ·  RANK {ability.rank}  ·  {ability.energy:0} ENERGY";
-                GUI.enabled = recovery <= 0 && !charging;
+                GUI.enabled = assigningSlot >= 0 || recovery <= 0 && !charging;
                 if (GUILayout.Button(new GUIContent(label, description), flightHud.ButtonStyle, GUILayout.Height(34)))
-                    client.ActivateAbility((uint)ability.id);
+                {
+                    if (assigningSlot >= 0)
+                    {
+                        slots[assigningSlot] = ability.id;
+                        PlayerPrefs.SetInt($"42andBeyond.ability.{slotOwner}.{assigningSlot}", ability.id);
+                        PlayerPrefs.Save(); assigningSlot = -1;
+                    }
+                    else client.ActivateAbility((uint)ability.id);
+                }
                 GUI.enabled = true;
             }
             GUILayout.EndScrollView(); GUILayout.EndArea();

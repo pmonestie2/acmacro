@@ -7,7 +7,8 @@ namespace Enb.Client
     public enum ControlAction
     {
         OpenChat, Forward, Reverse, TurnLeft, TurnRight, PitchUp, PitchDown, Brake,
-        Warp, Fire, NextHostile, Follow, Gate, Dock, Launch, Chart, Equipment, ResetCamera
+        Warp, Fire, NextHostile, Follow, Gate, Dock, Launch, Chart, Equipment, ResetCamera,
+        AbilityOne, AbilityTwo, AbilityThree, AbilityFour, AbilityFive, AbilitySix
     }
 
     /// <summary>Persist one unique keyboard key for each flight action.</summary>
@@ -19,7 +20,9 @@ namespace Enb.Client
             KeyCode.Return, KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D,
             KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.Space, KeyCode.Q, KeyCode.F,
             KeyCode.T, KeyCode.R, KeyCode.G, KeyCode.O, KeyCode.L,
-            KeyCode.Tab, KeyCode.E, KeyCode.C
+            KeyCode.Tab, KeyCode.E, KeyCode.C,
+            KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3,
+            KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6
         };
         public static readonly ControlAction[] Actions = (ControlAction[])Enum.GetValues(typeof(ControlAction));
         private readonly KeyCode[] keys = (KeyCode[])Defaults.Clone();
@@ -83,6 +86,12 @@ namespace Enb.Client
                 case ControlAction.Chart: return "Sector chart";
                 case ControlAction.Equipment: return "Equipment panel";
                 case ControlAction.ResetCamera: return "Reset camera";
+                case ControlAction.AbilityOne: return "Ability slot 1";
+                case ControlAction.AbilityTwo: return "Ability slot 2";
+                case ControlAction.AbilityThree: return "Ability slot 3";
+                case ControlAction.AbilityFour: return "Ability slot 4";
+                case ControlAction.AbilityFive: return "Ability slot 5";
+                case ControlAction.AbilitySix: return "Ability slot 6";
                 default: throw new ArgumentOutOfRangeException(nameof(action));
             }
         }
