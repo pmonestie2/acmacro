@@ -198,6 +198,7 @@ impl PlayerSession {
         let combat = lock_combat(&shared)?;
         self.mob_states.resize(combat.actors.len(), MobState::Idle);
         self.mob_visible.resize(combat.actors.len(), false);
+        self.mob_relationships.resize(combat.actors.len(), None);
         for (index, mob) in combat.actors.iter().enumerate() {
             if mob.state != self.mob_states[index] {
                 if mob.state == MobState::Dead && self.mob_visible[index] {
@@ -207,7 +208,9 @@ impl PlayerSession {
                 self.mob_states[index] = mob.state;
             }
             let visible = self.mob_visible_in_scan(index, mob);
+            let reaction = self.mob_relationship(mob);
             if visible && !self.mob_visible[index] {
+                self.mob_relationships[index] = Some(reaction);
                 self.pending.extend(packets::mob_spawn(
                     MOB_ID + index as u32,
                     mob,
@@ -215,6 +218,7 @@ impl PlayerSession {
                     self.mob_relationship(mob),
                 ));
             } else if !visible && self.mob_visible[index] {
+                self.mob_relationships[index] = None;
                 self.pending.push(Frame::new(
                     7,
                     (MOB_ID + index as u32).to_le_bytes().to_vec(),
@@ -229,10 +233,11 @@ impl PlayerSession {
             }
             self.mob_visible[index] = visible;
             if broadcast && visible {
-                self.pending.push(packets::relationship(
-                    MOB_ID + index as u32,
-                    self.mob_relationship(mob),
-                ));
+                if self.mob_relationships[index] != Some(reaction) {
+                    self.pending
+                        .push(packets::relationship(MOB_ID + index as u32, reaction));
+                    self.mob_relationships[index] = Some(reaction);
+                }
                 self.pending
                     .push(packets::mob_movement(MOB_ID + index as u32, mob, tick));
                 self.pending

@@ -270,6 +270,7 @@ impl PlayerSession {
         self.mob_states = combat.actors.iter().map(|mob| mob.state).collect();
         self.mob_visible = saved.mob_visible;
         self.mob_visible.resize(combat.actors.len(), false);
+        self.mob_relationships = vec![None; combat.actors.len()];
         self.tick_offset = saved.tick.wrapping_add(gap.unwrap() as u32);
         self.started = Instant::now();
         self.logged_in = self.handoff.is_none();
@@ -346,6 +347,7 @@ impl PlayerSession {
         for (index, mob) in combat.actors.iter().enumerate() {
             self.mob_visible[index] = self.mob_visible_in_scan(index, mob);
             if self.mob_visible[index] {
+                self.mob_relationships[index] = Some(self.mob_relationship(mob));
                 self.pending.extend(packets::mob_spawn(
                     MOB_ID + index as u32,
                     mob,

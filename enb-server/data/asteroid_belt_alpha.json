@@ -13737,6 +13737,16 @@
   "mobs": [
     {
       "source_id": 263400,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -126641.0,
+          54293.1,
+          -2078.97
+        ],
+        "radius": 0.0
+      },
       "mob_type": 2,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13770,6 +13780,16 @@
     },
     {
       "source_id": 263401,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -126641.0,
+          54293.1,
+          -2078.97
+        ],
+        "radius": 0.0
+      },
       "mob_type": 2,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13803,6 +13823,16 @@
     },
     {
       "source_id": 263402,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -126641.0,
+          54293.1,
+          -2078.97
+        ],
+        "radius": 0.0
+      },
       "mob_type": 2,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13836,6 +13866,16 @@
     },
     {
       "source_id": 456100,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -51037.7,
+          142828.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13869,6 +13909,16 @@
     },
     {
       "source_id": 456101,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -51037.7,
+          142828.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13902,6 +13952,16 @@
     },
     {
       "source_id": 456102,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -51037.7,
+          142828.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13935,6 +13995,16 @@
     },
     {
       "source_id": 456103,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -51037.7,
+          142828.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -13968,6 +14038,16 @@
     },
     {
       "source_id": 456200,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -46916.1,
+          114670.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14001,6 +14081,16 @@
     },
     {
       "source_id": 456201,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -46916.1,
+          114670.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14034,6 +14124,16 @@
     },
     {
       "source_id": 456202,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -46916.1,
+          114670.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14067,6 +14167,16 @@
     },
     {
       "source_id": 456500,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          67253.0,
+          97794.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14100,6 +14210,16 @@
     },
     {
       "source_id": 456501,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          67253.0,
+          97794.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14133,6 +14253,16 @@
     },
     {
       "source_id": 456502,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          67253.0,
+          97794.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14166,6 +14296,16 @@
     },
     {
       "source_id": 457600,
+      "faction": 0,
+      "aggression": 4,
+      "spawn_region": {
+        "center": [
+          19927.1,
+          158989.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14199,6 +14339,16 @@
     },
     {
       "source_id": 457601,
+      "faction": 0,
+      "aggression": 1,
+      "spawn_region": {
+        "center": [
+          19927.1,
+          158989.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14232,6 +14382,16 @@
     },
     {
       "source_id": 457602,
+      "faction": 0,
+      "aggression": 4,
+      "spawn_region": {
+        "center": [
+          19927.1,
+          158989.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14265,6 +14425,16 @@
     },
     {
       "source_id": 457700,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -62120.0,
+          144334.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14298,6 +14468,16 @@
     },
     {
       "source_id": 457701,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -62120.0,
+          144334.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14331,6 +14511,16 @@
     },
     {
       "source_id": 457702,
+      "faction": 0,
+      "aggression": 0,
+      "spawn_region": {
+        "center": [
+          -62120.0,
+          144334.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14364,6 +14554,16 @@
     },
     {
       "source_id": 457900,
+      "faction": 0,
+      "aggression": 4,
+      "spawn_region": {
+        "center": [
+          -45091.6,
+          111629.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14397,6 +14597,16 @@
     },
     {
       "source_id": 457901,
+      "faction": 0,
+      "aggression": 1,
+      "spawn_region": {
+        "center": [
+          -45091.6,
+          111629.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14430,6 +14640,16 @@
     },
     {
       "source_id": 457902,
+      "faction": 0,
+      "aggression": 4,
+      "spawn_region": {
+        "center": [
+          -45091.6,
+          111629.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14463,6 +14683,16 @@
     },
     {
       "source_id": 457903,
+      "faction": 0,
+      "aggression": 1,
+      "spawn_region": {
+        "center": [
+          -45091.6,
+          111629.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 3,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14496,6 +14726,16 @@
     },
     {
       "source_id": 543300,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          26871.3,
+          136040.0,
+          0.0
+        ],
+        "radius": 2000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14529,6 +14769,16 @@
     },
     {
       "source_id": 1360300,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14562,6 +14812,16 @@
     },
     {
       "source_id": 1360301,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14595,6 +14855,16 @@
     },
     {
       "source_id": 1360302,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14628,6 +14898,16 @@
     },
     {
       "source_id": 1360303,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14661,6 +14941,16 @@
     },
     {
       "source_id": 1360304,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14694,6 +14984,16 @@
     },
     {
       "source_id": 1360305,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -153258.0,
+          -66803.3,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14727,6 +15027,16 @@
     },
     {
       "source_id": 1360400,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          25682.6,
+          159278.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14760,6 +15070,16 @@
     },
     {
       "source_id": 1360401,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          25682.6,
+          159278.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14793,6 +15113,16 @@
     },
     {
       "source_id": 1360402,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          25682.6,
+          159278.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14826,6 +15156,16 @@
     },
     {
       "source_id": 1360403,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          25682.6,
+          159278.0,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14859,6 +15199,16 @@
     },
     {
       "source_id": 1360600,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -92387.9,
+          93549.8,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14892,6 +15242,16 @@
     },
     {
       "source_id": 1360601,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -92387.9,
+          93549.8,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14925,6 +15285,16 @@
     },
     {
       "source_id": 1360602,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          -92387.9,
+          93549.8,
+          0.0
+        ],
+        "radius": 4000.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14958,6 +15328,16 @@
     },
     {
       "source_id": 1412300,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          83870.7,
+          -74122.5,
+          0.0
+        ],
+        "radius": 500.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -14991,6 +15371,16 @@
     },
     {
       "source_id": 1412301,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          83870.7,
+          -74122.5,
+          0.0
+        ],
+        "radius": 500.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,
@@ -15024,6 +15414,16 @@
     },
     {
       "source_id": 1412302,
+      "faction": 22,
+      "aggression": 5,
+      "spawn_region": {
+        "center": [
+          83870.7,
+          -74122.5,
+          0.0
+        ],
+        "radius": 500.0
+      },
       "mob_type": 1,
       "shield_modifier": 1.0,
       "damage_modifier": 1.0,

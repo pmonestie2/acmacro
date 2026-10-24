@@ -220,6 +220,7 @@ impl PlayerSession {
         self.combat = Arc::new(Mutex::new(SectorCombat::new(&self.sector.mobs)));
         self.mob_states = vec![MobState::Idle; self.sector.mobs.len()];
         self.mob_visible = vec![false; self.sector.mobs.len()];
+        self.mob_relationships = vec![None; self.sector.mobs.len()];
         self.logged_in = false;
         self.gate_transit = None;
         self.visible_resources.clear();

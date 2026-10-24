@@ -24,12 +24,19 @@ fn new_selection_takes_over_immediately_and_old_logout_packets_cannot_close_it()
     ship.comms = Some(old_comms);
     ship.weapon_firing[3] = true;
     ship.player_firing = true;
+    ship.support_actions
+        .push(SupportAction::Energy { amount: 1. });
+    ship.client_events.push(ClientEvent::Chat {
+        channel: 0,
+        text: "old queued chat".into(),
+    });
     let epoch = ship.session_epoch;
     let owner = ship.player_id();
     let reply = ship.select(0, ip, false).unwrap();
     assert!(!ship.logged_in);
     assert!(ship.endpoint.is_none() && ship.comms.is_none());
     assert!(!ship.player_firing);
+    assert!(ship.support_actions.is_empty() && ship.client_events.is_empty());
     assert_ne!(ship.session_epoch, epoch);
     ship.handle_udp(
         3806,

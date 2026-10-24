@@ -4,6 +4,9 @@ use crate::mob_aggro::{MobAggro, PlayerThreat};
 use crate::mob_stats::{MobStats, MobWeapon};
 use crate::mob_targeting::{mob_detects_cloak, MobSensors};
 use crate::motion::Motion;
+#[cfg(test)]
+#[path = "mob_faction_tests.rs"]
+mod faction_tests;
 use serde::{Deserialize, Serialize};
 #[path = "mob_motion.rs"]
 mod movement;
@@ -303,6 +306,7 @@ impl Mob {
             self.killer = None;
             self.aggro.clear();
             self.sensors.clear();
+            self.roaming.reset_interest();
             self.unowned_provoked = false;
         }
     }
@@ -361,6 +365,7 @@ impl Mob {
         self.unowned_provoked = false;
         self.aggro.clear();
         self.sensors.clear();
+        self.roaming.reset_interest();
     }
     /// LockTarget prefers positive attacker hate. The coordinator supplies only
     /// local player identities; invisible/cloaked ships lose hate. Ordinary
@@ -369,6 +374,7 @@ impl Mob {
     pub fn select_target(&mut self, players: &[PlayerThreat]) -> Option<usize> {
         if self.state == MobState::Dead || self.disabled_seconds > 0. {
             self.sensors.clear();
+            self.roaming.reset_interest();
             self.aggro.target(None);
             return None;
         }
@@ -429,6 +435,7 @@ impl Mob {
     pub fn remove_player_hate(&mut self, player: u32) {
         self.aggro.remove(player);
         self.sensors.remove(player);
+        self.roaming.forget_player(player);
     }
     /// Native FireWeapon decreases this victim's hate by truncated damage/10.
     /// Called on the authoritative simulation only, before the tick is saved.
@@ -536,6 +543,7 @@ impl Mob {
                 self.unowned_provoked = false;
                 self.aggro.clear();
                 self.sensors.clear();
+                self.roaming.reset_interest();
                 self.killer = None;
                 self.state = MobState::Idle;
             }
@@ -564,6 +572,7 @@ impl Mob {
             self.unowned_provoked = false;
             self.aggro.clear();
             self.sensors.clear();
+            self.roaming.reset_interest();
             move_towards(&mut self.position, self.definition.spawn, 100. * dt);
             return 0.;
         }

@@ -140,9 +140,7 @@ fn explicit_static_regions_stay_stationary_and_legacy_fields_default_without_los
     assert_eq!(stationary.position, [0.; 3]);
     assert_eq!(stationary.motion.speed, 0.);
     let mut value = serde_json::to_value(mob(4000.)).unwrap();
-    for key in ["roaming"] {
-        value.as_object_mut().unwrap().remove(key);
-    }
+    value.as_object_mut().unwrap().remove("roaming");
     for key in ["spawn_region", "faction", "aggression"] {
         value["definition"].as_object_mut().unwrap().remove(key);
     }
@@ -194,4 +192,25 @@ fn region_and_native_movement_thresholds_reject_bad_data_without_guessing_paths(
     assert_eq!(pursuit_speed(750., 200.), 200.);
     assert_eq!(curious_speed(900., 130.), 130.); // preserve source horizon ordering
     assert_eq!(curious_speed(900., 229.), 0.);
+}
+
+#[test]
+fn curiosity_does_not_survive_departure_contemplation_or_a_new_npc_life() {
+    let mut mob = mob(4000.);
+    mob.tick_idle(0.1, &[]);
+    for action in 0..3 {
+        mob.roaming.behavior = IdleBehavior::Curious {
+            player: 0x40000001,
+            epoch: 1,
+        };
+        match action {
+            0 => mob.remove_player_hate(0x40000001),
+            1 => mob.pacify(30.),
+            _ => mob.damage(1000.),
+        }
+        assert!(matches!(mob.roaming.behavior, IdleBehavior::Drift));
+    }
+    mob.tick_visible(20., [0.; 3], false);
+    assert_eq!(mob.state, MobState::Idle);
+    assert!(matches!(mob.roaming.behavior, IdleBehavior::Drift));
 }

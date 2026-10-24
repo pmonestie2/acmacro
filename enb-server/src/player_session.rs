@@ -169,6 +169,7 @@ pub struct PlayerSession {
     pub(crate) combat: Arc<Mutex<SectorCombat>>,
     mob_states: Vec<MobState>,
     mob_visible: Vec<bool>,
+    mob_relationships: Vec<Option<u32>>,
     player_firing: bool,
     weapon_cooldowns: [f32; 20],
     weapon_firing: [bool; 20],
@@ -264,6 +265,7 @@ impl PlayerSession {
             .collect::<Vec<_>>();
         let mob_states = vec![MobState::Idle; mobs.len()];
         let mob_visible = vec![false; mobs.len()];
+        let mob_relationships = vec![None; mobs.len()];
         let now = Instant::now();
         let next_effect = 1_000_001 + (account.character.game_id & 0xffff) * 1_000_000;
         let mut resource_field = ResourceField::load(
@@ -343,6 +345,7 @@ impl PlayerSession {
             combat: Arc::new(Mutex::new(SectorCombat::from_actors(mobs))),
             mob_states,
             mob_visible,
+            mob_relationships,
             player_firing: false,
             weapon_cooldowns: [0.; 20],
             weapon_firing: [false; 20],
@@ -492,6 +495,10 @@ impl PlayerSession {
             );
             self.logout()?;
             self.outgoing.clear();
+            self.support_actions.clear();
+            self.client_events.clear();
+            self.inputs.clear();
+            self.replay.clear();
         }
         self.stop_following();
         self.selected_peer = Some(peer);
@@ -704,9 +711,11 @@ impl PlayerSession {
                 let shared = Arc::clone(&self.combat);
                 let combat = lock_combat(&shared)?;
                 self.mob_visible.fill(false);
+                self.mob_relationships.resize(combat.actors.len(), None);
                 for (index, mob) in combat.actors.iter().enumerate() {
                     self.mob_visible[index] = self.mob_visible_in_scan(index, mob);
                     if self.mob_visible[index] {
+                        self.mob_relationships[index] = Some(self.mob_relationship(mob));
                         self.pending.extend(packets::mob_spawn(
                             MOB_ID + index as u32,
                             mob,

@@ -44,6 +44,17 @@ pub(super) struct RoamState {
 }
 
 impl RoamState {
+    pub fn reset_interest(&mut self) {
+        self.behavior = IdleBehavior::Drift;
+    }
+
+    pub fn forget_player(&mut self, player: u32) {
+        if matches!(self.behavior, IdleBehavior::Curious { player: target, .. } if target == player)
+        {
+            self.reset_interest();
+        }
+    }
+
     pub fn validate(&self) -> std::io::Result<()> {
         if !self.default_speed.is_finite()
             || !self.default_turn.is_finite()

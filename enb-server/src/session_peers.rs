@@ -165,6 +165,7 @@ impl PlayerSession {
         self.combat = shared;
         self.mob_states.resize(count, MobState::Idle);
         self.mob_visible.resize(count, false);
+        self.mob_relationships.resize(count, None);
         Ok(())
     }
     pub(crate) fn register_peer(&mut self, peer: IpAddr) {
