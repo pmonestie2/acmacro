@@ -528,14 +528,15 @@ namespace Enb.Client
             {
                 bool member = snapshot.Group.Members.Any(item => item.Id == target.Id);
                 bool leader = !snapshot.Group.Joined || snapshot.Group.IsLeader;
+                bool full = snapshot.Group.Joined && snapshot.Group.Members.Length >= 5;
                 bool pending = invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 5 &&
                     (Time.unscaledTime - invitePendingAt < .2f || client.Status == "Requesting group invitation");
                 bool sentRecently = invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 5 &&
                     client.Status == "Group invitation sent.";
-                GUI.enabled = leader && !member && !pending && !sentRecently;
+                GUI.enabled = leader && !member && !full && !pending && !sentRecently;
                 if (GUI.Button(new Rect(x + 12, y + 82, 316, 30),
                     member ? "ALREADY IN YOUR GROUP" : !leader ? "ONLY YOUR LEADER CAN INVITE" :
-                    pending ? "WAITING FOR SERVER…" : sentRecently ? "INVITATION SENT" :
+                    full ? "GROUP IS FULL" : pending ? "WAITING FOR SERVER…" : sentRecently ? "INVITATION SENT" :
                     "INVITE " + target.Name.ToUpperInvariant() + " TO GROUP", button))
                 { client.InvitePlayer(target.Id); invitePendingId = target.Id; invitePendingAt = Time.unscaledTime; }
                 GUI.enabled = true;
