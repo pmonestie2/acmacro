@@ -12,7 +12,9 @@ namespace Enb.Client
             public readonly Transform Model;
             public ShipActor State;
             public Vector3 Destination;
+            public Vector3 Velocity;
             public Quaternion Orientation;
+            public float PoseAt;
 
             /// <summary>Place a new ship immediately at its first authoritative pose.</summary>
             public View(Transform model, ShipActor state)
@@ -26,8 +28,17 @@ namespace Enb.Client
             /// <summary>Retain the latest pose for foreground interpolation.</summary>
             public void Apply(ShipActor state)
             {
+                Vector3 next = SpaceClient.Convert(state.Position);
+                if (State != null && Vector3.Distance(next, Destination) > .0001f)
+                {
+                    float elapsed = Mathf.Max(.04f, Time.unscaledTime - PoseAt);
+                    Vector3 estimate = (next - Destination) / elapsed;
+                    Velocity = estimate.magnitude <= 50 ? estimate : Vector3.zero;
+                    PoseAt = Time.unscaledTime;
+                }
+                else if (State == null) PoseAt = Time.unscaledTime;
                 State = state;
-                Destination = SpaceClient.Convert(state.Position);
+                Destination = next;
                 Orientation = SpaceClient.ConvertRotation(state.Orientation);
             }
         }
@@ -77,8 +88,11 @@ namespace Enb.Client
             foreach (View view in ships.Values)
             {
                 Transform model = view.Model;
-                model.localPosition = Vector3.Distance(model.localPosition, view.Destination) > 300
-                    ? view.Destination : Vector3.Lerp(model.localPosition, view.Destination, blend);
+                float age = Time.unscaledTime - view.PoseAt;
+                Vector3 predicted = view.Destination +
+                    (age < .35f ? view.Velocity * Mathf.Min(age, .25f) : Vector3.zero);
+                model.localPosition = Vector3.Distance(model.localPosition, predicted) > 300
+                    ? predicted : Vector3.Lerp(model.localPosition, predicted, blend);
                 model.localRotation = Quaternion.Slerp(model.localRotation, view.Orientation, blend);
             }
         }

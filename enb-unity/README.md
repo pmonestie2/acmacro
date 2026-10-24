@@ -169,8 +169,8 @@ and the full original combat and equipment UI remain unfinished.
 - Rendering targets 120 FPS in the foreground and 60 FPS while the window is visible behind another app.
   Unchanged static scenery is retained; navigation sorting is refreshed at 4 Hz.
   The HUD reports measured FPS and the slowest frame in each one-second interval.
-  The client predicts the local ship's movement between the server's roughly
-  five-per-second position reports and corrects its view on each new pose.
+  The client predicts local and visible remote ship movement between the server's
+  roughly five-per-second position reports and corrects on each new pose.
   Normal play uses the standalone app, without the Editor's extra overhead.
 - The combat and loadout panels cover selection, weapon toggling, health, cargo,
   hardpoints, equip/unequip, and wreck loot. Docking and launch work through the
