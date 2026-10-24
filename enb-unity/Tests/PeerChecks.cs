@@ -49,6 +49,22 @@ internal static class PeerChecks
         Array.Copy(BitConverter.GetBytes((uint)sector.Length - 8), 0, sector, 4, 4);
         world.Apply(new Frame(0x97, sector), self);
         Require(world.Players.Count == 0 && old.Players.Length == 1, "Sector transition leaked player models or changed an old snapshot.");
+        byte[] rescue = Wire.Body(writer =>
+        {
+            writer.Write(Encoding.UTF8.GetBytes("Rescue control: do you need assistance?\0\0"));
+            writer.Write((byte)3);
+            string[] labels = { "I need a tow", "Send distress call", "Wait for jumpstart" };
+            for (int choice = 0; choice < labels.Length; choice++)
+            {
+                writer.Write((uint)choice);
+                writer.Write(Encoding.UTF8.GetBytes(labels[choice] + "\0"));
+            }
+        });
+        world.Apply(new Frame(0x54, rescue), self);
+        Require(world.Dialogue?.Choices.Length == 3 && world.Dialogue.Choices[0].Node == 0 &&
+            world.Dialogue.Choices[2].Node == 2, "Native rescue choices were not decoded.");
+        world.Apply(new Frame(0x56, BitConverter.GetBytes(-32)), self);
+        Require(world.Dialogue == null, "Native rescue close did not dismiss the panel.");
         bool rejected = false;
         try { world.Apply(new Frame(4, new byte[10]), self); } catch (InvalidDataException) { rejected = true; }
         Require(rejected, "Truncated creation was accepted.");

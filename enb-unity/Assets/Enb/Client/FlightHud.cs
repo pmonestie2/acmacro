@@ -218,6 +218,7 @@ namespace Enb.Client
                 return;
             }
             Snapshot snapshot = client.CurrentSnapshot;
+            if (client.Incapacitated) equipmentOpen = false;
             if (wreckId != 0 && !snapshot.Objects.Any(item => item.Id == wreckId && item.Kind == 25)) wreckId = 0;
             if (snapshot.Station != null)
             {
@@ -256,7 +257,7 @@ namespace Enb.Client
             Navigation(snapshot);
             Radar(snapshot);
             Social(snapshot);
-            if (!client.AbilitiesOpen) { TargetLock(snapshot); WreckPanel(snapshot); }
+            if (!client.AbilitiesOpen && !client.Incapacitated) { TargetLock(snapshot); WreckPanel(snapshot); }
             if (equipmentOpen) Equipment(snapshot);
             InputFocused = GUI.GetNameOfFocusedControl() == "Group invite";
             ChatEntry();
@@ -493,10 +494,11 @@ namespace Enb.Client
             GUILayout.EndScrollView(); GUILayout.EndArea(); float top = height + 112; MapObject target = client.Target;
             Panel(new Rect(x, top, 296, 145)); GUI.Label(new Rect(x + 12, top + 9, 270, 24), target?.Name ?? "Select a destination", body);
             GUI.Label(new Rect(x + 12, top + 34, 270, 22), target == null ? "Click a marker or choose a destination" : $"RANGE   {target.Position.Distance(snapshot.Position) / 1000:0.00} km", small);
-            GUI.enabled = client.Ready && target != null;
+            GUI.enabled = client.Ready && !client.Incapacitated && target != null;
             if (GUI.Button(new Rect(x + 12, top + 63, 272, 32), client.Bindings.Display(ControlAction.Warp) + "    WARP TO TARGET", button)) client.WarpSelected();
             bool station = target?.Kind == 12;
-            GUI.enabled = client.Ready && (target?.Kind == 11 || station && target.Position.Distance(snapshot.Position) <= 5000);
+            GUI.enabled = client.Ready && !client.Incapacitated &&
+                (target?.Kind == 11 || station && target.Position.Distance(snapshot.Position) <= 5000);
             if (GUI.Button(new Rect(x + 12, top + 102, 272, 30), station ?
                 client.Bindings.Display(ControlAction.Dock) + "    DOCK AT STATION" :
                 client.Bindings.Display(ControlAction.Gate) + "    ACTIVATE GATE", button))

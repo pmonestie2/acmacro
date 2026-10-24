@@ -21,8 +21,8 @@ namespace Enb.Protocol
         private uint sequence = 1;
         private double receivedAt, keepaliveAt, resendAt, gateAt, dockAt, enteredAt;
         private uint gate, dock, combatTarget, followTarget, pendingLoot, pendingResource;
-        private double combatTargetAt, followTargetAt, pendingLootAt, pendingResourceAt;
-        private bool gateActivated, gateCamera, gateFinished, dockRequested, lootRequested, disposed, failed;
+        private double combatTargetAt, followTargetAt, pendingLootAt, pendingResourceAt, selfJumpstartAt, rescueRequestAt;
+        private bool gateActivated, gateCamera, gateFinished, dockRequested, lootRequested, selfJumpstartPending, rescuePending, disposed, failed;
         private byte[] handoff;
         public uint Player { get; private set; }
         public World World { get; private set; } = new World();
@@ -169,7 +169,7 @@ namespace Enb.Protocol
             if (port == 0) throw new InvalidDataException("Missing sector port.");
             sector.Connect(address, port);
             stream = new SectorStream(Player); World = new World(); sequence = 1; Ready = false;
-            gate = dock = followTarget = pendingResource = 0; handoff = null;
+            gate = dock = followTarget = pendingResource = 0; selfJumpstartPending = rescuePending = false; handoff = null;
             byte[] body = Wire.Body(w =>
             {
                 w.Write(join); w.Write(unchecked((uint)Environment.TickCount)); w.Write(new byte[40]);
@@ -435,6 +435,36 @@ namespace Enb.Protocol
             Status = "Activating ability " + id;
         }
 
+        /// <summary>Ask rescue control for the native incapacitation choices.</summary>
+        public void RequestRescue()
+        {
+            if (!Ready || gate != 0 || World.Station != null || World.Equipment.Hull > 0 ||
+                World.Equipment.MaxHull <= 0 || World.Dialogue != null || rescuePending) return;
+            rescuePending = true; rescueRequestAt = clock.Elapsed.TotalSeconds;
+            Send(0x8d, Wire.Body(w => w.Write(Player)));
+            Status = "Requesting rescue options";
+        }
+
+        /// <summary>Choose only an offered native rescue action.</summary>
+        public void ChooseRescue(byte node)
+        {
+            if (!Ready || World.Station != null || World.Equipment.Hull > 0 ||
+                World.Dialogue == null || !World.Dialogue.Choices.Any(choice => choice.Node == node)) return;
+            Send(0x55, Wire.Body(w => { w.Write(Player); w.Write(node); }));
+            Status = node == 0 ? "Requesting tow to station" :
+                node == 1 ? "Sending distress call" : "Waiting for jumpstart";
+        }
+
+        /// <summary>Select the incapacitated ship itself before activating Jumpstart.</summary>
+        public void SelfJumpstart()
+        {
+            if (!Ready || gate != 0 || World.Station != null || World.Equipment.Hull > 0 ||
+                !World.AvailableAbilities.Contains(65u) || selfJumpstartPending) return;
+            selfJumpstartPending = true; selfJumpstartAt = clock.Elapsed.TotalSeconds;
+            Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(Player); }));
+            Status = "Selecting own ship for jumpstart";
+        }
+
         /// <summary>Send one native group formation action after local validation.</summary>
         public void Formation(uint action, uint target = 0)
         {
@@ -466,7 +496,16 @@ namespace Enb.Protocol
                 case 5:
                     if (b.Length != 4) throw new InvalidDataException("Invalid sector start.");
                     Send(6, b); Send(0x3004, Wire.Body(w => w.Write(Player))); Ready = true; Status = "Connected"; break;
+                case 0x54:
+                    if (rescuePending) { rescuePending = false; Status = "Rescue options received"; }
+                    break;
                 case 0x19:
+                    if (b.Length == 8 && selfJumpstartPending && Wire.U32(b, 0) == Player && Wire.U32(b, 4) == uint.MaxValue)
+                    {
+                        selfJumpstartPending = false;
+                        Send(0x58, Wire.Body(w => { w.Write(Player); w.Write(0u); w.Write(65u); }));
+                        Status = "Charging self jumpstart";
+                    }
                     if (b.Length == 8 && dock != 0 && !dockRequested && Wire.U32(b, 0) == dock && Wire.U32(b, 4) == uint.MaxValue)
                     {
                         dockRequested = true;
@@ -550,6 +589,10 @@ namespace Enb.Protocol
                 { pendingLoot = 0; Status = "Wreck did not open"; }
                 if (pendingResource != 0 && now - pendingResourceAt > 5)
                 { pendingResource = 0; World.SetResourceTarget(0); Status = "Asteroid did not acknowledge selection"; }
+                if (selfJumpstartPending && now - selfJumpstartAt > 5)
+                { selfJumpstartPending = false; Status = "Self jumpstart target timed out"; }
+                if (rescuePending && now - rescueRequestAt > 5)
+                { rescuePending = false; Status = "Rescue control did not respond"; }
                 if (dock != 0 && now - dockAt > 8)
                 { dock = 0; Status = "Docking timed out"; }
                 if (combatTarget != 0 && now - combatTargetAt > 5)

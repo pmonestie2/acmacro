@@ -23,7 +23,10 @@ namespace Enb.Client
         private FlightHud hud;
         private MiningHud miningHud;
         private AbilityHud abilityHud;
+        private RecoveryHud recoveryHud;
         public bool AbilitiesOpen => abilityHud != null && abilityHud.IsOpen;
+        public bool Incapacitated => snapshot != null && snapshot.Station == null &&
+            snapshot.MaxHull > 0 && snapshot.Hull <= 0;
         private Transform ship, worldRoot, environment, hangar;
         private readonly Dictionary<uint, Transform> bodies = new Dictionary<uint, Transform>();
         private string host = "192.168.47.128", username = "toon", password = "pass", status = "Ready to connect", sector = "";
@@ -67,6 +70,7 @@ namespace Enb.Client
             Application.targetFrameRate = 120;
             art = new SpaceArt(); hud = new FlightHud(this); miningHud = new MiningHud(this, hud);
             abilityHud = new AbilityHud(this, hud);
+            recoveryHud = new RecoveryHud(this, hud);
             worldRoot = new GameObject("Server world").transform; worldRoot.SetParent(transform, false);
             remoteShips = new RemoteShips(art, worldRoot);
             ship = art.Ship(transform); combatEffects = new CombatEffects(transform, ship, remoteShips); ship.localScale = Vector3.one * .25f;
@@ -192,6 +196,13 @@ namespace Enb.Client
             {
                 if (bindings.Pressed(ControlAction.Equipment)) hud.ToggleEquipment();
                 if (bindings.Pressed(ControlAction.Launch)) Launch();
+                return;
+            }
+            if (Incapacitated)
+            {
+                if (previousYaw != 0 || previousPitch != 0)
+                    worker.Submit(new ClientCommand(CommandKind.Steer));
+                previousYaw = previousPitch = 0;
                 return;
             }
             if (bindings.Pressed(ControlAction.Chart)) SetChart(!chart);
@@ -450,6 +461,25 @@ namespace Enb.Client
                 worker.Submit(new ClientCommand(CommandKind.ActivateAbility, id));
         }
 
+        /// <summary>Ask the server for choices after the ship is incapacitated.</summary>
+        public void RequestRescue()
+        { if (Ready && Incapacitated) worker.Submit(new ClientCommand(CommandKind.RequestRescue)); }
+
+        /// <summary>Send one rescue choice listed by the server.</summary>
+        public void ChooseRescue(byte node)
+        {
+            if (Ready && Incapacitated && snapshot.Dialogue != null &&
+                snapshot.Dialogue.Choices.Any(choice => choice.Node == node))
+                worker.Submit(new ClientCommand(CommandKind.ChooseRescue, node));
+        }
+
+        /// <summary>Use the character's Jumpstart ability on its own incapacitated ship.</summary>
+        public void SelfJumpstart()
+        {
+            if (Ready && Incapacitated && snapshot.AvailableAbilities.Contains(65u))
+                worker.Submit(new ClientCommand(CommandKind.SelfJumpstart));
+        }
+
         /// <summary>Set the authoritative target of a visible contact.</summary>
         public void SelectContact(uint id)
         {
@@ -517,8 +547,9 @@ namespace Enb.Client
             try
             {
                 hud.Draw(ref host, ref username, ref password);
-                if (!hud.SettingsOpen && !hud.EquipmentOpen && !AbilitiesOpen) miningHud.Draw(snapshot);
-                if (!hud.SettingsOpen && !hud.EquipmentOpen) abilityHud.Draw(snapshot);
+                if (!hud.SettingsOpen && !hud.EquipmentOpen && !AbilitiesOpen && !Incapacitated) miningHud.Draw(snapshot);
+                if (!hud.SettingsOpen && !hud.EquipmentOpen && !Incapacitated) abilityHud.Draw(snapshot);
+                if (!hud.SettingsOpen && Incapacitated) recoveryHud.Draw(snapshot);
             }
             finally { GUI.matrix = previous; }
         }
