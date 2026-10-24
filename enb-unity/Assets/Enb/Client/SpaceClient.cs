@@ -11,6 +11,7 @@ namespace Enb.Client
     {
         public const float MetersToWorld = .01f;
         private ClientWorker worker;
+        private KeyBindings bindings;
         private CharacterPickerWorker picker;
         private CharacterRecord[] characters;
         private Snapshot snapshot;
@@ -47,6 +48,7 @@ namespace Enb.Client
         public int RenderedBodyCount => bodies.Count;
         public int Fps => displayFps;
         public float FrameMs => displayFrameMs;
+        public KeyBindings Bindings => bindings;
 
         /// <summary>Create the space client when the bootstrap scene starts.</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -56,6 +58,7 @@ namespace Enb.Client
         /// <summary>Create lighting, reusable models, the camera and the flight HUD.</summary>
         private void Awake()
         {
+            bindings = new KeyBindings();
             Application.runInBackground = true;
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 120;
@@ -169,13 +172,13 @@ namespace Enb.Client
                 if (!positioned && next.HasPosition) { renderedPosition = Convert(next.Position); positioned = true; }
             }
             if (!Ready) return;
-            if (Input.GetKeyDown(KeyCode.Return) && !chatOpen)
+            if (bindings.Pressed(ControlAction.OpenChat) && !chatOpen && !hud.SettingsOpen)
             {
                 chatOpen = true;
                 chatOpenedFrame = Time.frameCount;
             }
             if (Input.GetKeyDown(KeyCode.Escape)) chatOpen = false;
-            if (chatOpen || hud.InputFocused)
+            if (chatOpen || hud.InputFocused || hud.SettingsOpen)
             {
                 if (previousYaw != 0 || previousPitch != 0) worker.Submit(new ClientCommand(CommandKind.Steer));
                 previousYaw = previousPitch = 0;
@@ -183,30 +186,32 @@ namespace Enb.Client
             }
             if (snapshot.Station != null)
             {
-                if (Input.GetKeyDown(KeyCode.E)) hud.ToggleEquipment();
-                if (Input.GetKeyDown(KeyCode.L)) Launch();
+                if (bindings.Pressed(ControlAction.Equipment)) hud.ToggleEquipment();
+                if (bindings.Pressed(ControlAction.Launch)) Launch();
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.Tab)) SetChart(!chart);
-            if (Input.GetKeyDown(KeyCode.E)) hud.ToggleEquipment();
-            if (Input.GetKeyDown(KeyCode.X))
+            if (bindings.Pressed(ControlAction.Chart)) SetChart(!chart);
+            if (bindings.Pressed(ControlAction.Equipment)) hud.ToggleEquipment();
+            if (bindings.Pressed(ControlAction.Fire))
             {
                 if (snapshot.WeaponsFiring) StopWeapons();
                 else ToggleWeapons(hud.SelectedContactId);
             }
-            if (Input.GetKeyDown(KeyCode.T)) TargetNextHostile();
-            if (Input.GetKeyDown(KeyCode.W)) Thrust(2);
-            if (Input.GetKeyDown(KeyCode.S)) Thrust(3);
-            if (Input.GetKeyDown(KeyCode.Space)) Thrust(4);
-            if (Input.GetKeyDown(KeyCode.F)) WarpSelected();
-            if (Input.GetKeyDown(KeyCode.G)) GateSelected();
-            if (Input.GetKeyDown(KeyCode.D) &&
-                (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) DockSelected();
-            if (Input.GetKeyDown(KeyCode.C)) { orbitYaw = 0; orbitPitch = 0; }
-            float yaw = (Input.GetKey(KeyCode.A) ? 1 : 0) - (Input.GetKey(KeyCode.D) ? 1 : 0);
-            float pitch = (Input.GetKey(KeyCode.UpArrow) ? 1 : 0) - (Input.GetKey(KeyCode.DownArrow) ? 1 : 0);
+            if (bindings.Pressed(ControlAction.NextHostile)) TargetNextHostile();
+            if (bindings.Pressed(ControlAction.Forward)) Thrust(2);
+            if (bindings.Pressed(ControlAction.Reverse)) Thrust(3);
+            if (bindings.Pressed(ControlAction.Brake)) Thrust(4);
+            if (bindings.Pressed(ControlAction.Warp)) WarpSelected();
+            if (bindings.Pressed(ControlAction.Gate)) GateSelected();
+            if (bindings.Pressed(ControlAction.Dock)) DockSelected();
+            if (bindings.Pressed(ControlAction.ResetCamera)) { orbitYaw = 0; orbitPitch = 0; }
+            float yaw = (bindings.Held(ControlAction.TurnLeft) ? 1 : 0) -
+                (bindings.Held(ControlAction.TurnRight) ? 1 : 0);
+            float pitch = (bindings.Held(ControlAction.PitchUp) ? 1 : 0) -
+                (bindings.Held(ControlAction.PitchDown) ? 1 : 0);
             if (yaw != previousYaw || pitch != previousPitch)
             { worker.Submit(new ClientCommand(CommandKind.Steer, yaw: yaw, pitch: pitch)); previousYaw = yaw; previousPitch = pitch; }
+            if (bindings.Pressed(ControlAction.Follow)) FollowSelected();
             if (!hud.ContainsPointer())
             {
                 if (Input.GetMouseButton(1) && !chart)
@@ -415,6 +420,14 @@ namespace Enb.Client
         {
             if (Ready && snapshot.Players.Concat(snapshot.Mobs).Any(actor => actor.Id == id))
                 worker.Submit(new ClientCommand(CommandKind.SelectTarget, id));
+        }
+
+        /// <summary>Follow the currently selected visible ship through native flight control.</summary>
+        public void FollowSelected()
+        {
+            uint id = hud.SelectedContactId;
+            if (Ready && snapshot.Players.Concat(snapshot.Mobs).Any(actor => actor.Id == id && actor.HasPosition))
+                worker.Submit(new ClientCommand(CommandKind.FollowTarget, id));
         }
 
         /// <summary>Cycle through server-visible hostile ships in distance order.</summary>

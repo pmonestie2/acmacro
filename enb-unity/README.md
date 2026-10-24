@@ -82,16 +82,21 @@ loopback IPv4 addresses; it does not connect to the public game service.
 | RMB / wheel / C | Orbit / zoom / reset camera |
 | Tab | Toggle chase camera / top-down sector chart |
 | E | Open ship loadout |
-| X | Fire on the selected MOB, or stop active weapons |
+| F | Fire on the selected MOB, or stop active weapons |
 | Enter | Open chat and server command line |
 | Click a target-list entry or world label | Select a destination |
 | Click a ship in space or Contacts | Select that ship |
 | T | Select the next visible hostile ship |
+| R / Follow target | Follow the selected visible ship or MOB; manual flight cancels follow |
 | Click a wreck in space or Wrecks | Select it, then open or tractor its loot |
-| F / Warp to target | Ask the server to warp to the target |
+| Q / Warp to target | Ask the server to warp to the target |
 | G / Activate gate | Activate a nearby selected gate |
-| Shift+D / Dock at station | Enter a selected station within 5 km |
+| O / Dock at station | Enter a selected station within 5 km |
 | L / Launch | Leave a station interior |
+
+The **Controls** panel in the upper right can rebind every keyboard action in
+this table. Assigning a key already in use swaps the two actions. Changes are
+saved locally; **Restore defaults** returns to the layout above.
 
 The VM launcher uses the running server at `192.168.47.128`. The client reads that account's available toons and lets you
 choose one before entering space. The current Windows VM has narrow inbound

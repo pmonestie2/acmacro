@@ -20,8 +20,8 @@ namespace Enb.Protocol
         private SectorStream stream;
         private uint sequence = 1;
         private double receivedAt, keepaliveAt, resendAt, gateAt, dockAt, enteredAt;
-        private uint gate, dock, combatTarget, pendingLoot;
-        private double combatTargetAt, pendingLootAt;
+        private uint gate, dock, combatTarget, followTarget, pendingLoot;
+        private double combatTargetAt, followTargetAt, pendingLootAt;
         private bool gateActivated, gateCamera, gateFinished, dockRequested, lootRequested, disposed, failed;
         private byte[] handoff;
         public uint Player { get; private set; }
@@ -169,7 +169,7 @@ namespace Enb.Protocol
             if (port == 0) throw new InvalidDataException("Missing sector port.");
             sector.Connect(address, port);
             stream = new SectorStream(Player); World = new World(); sequence = 1; Ready = false;
-            gate = dock = 0; handoff = null;
+            gate = dock = followTarget = 0; handoff = null;
             byte[] body = Wire.Body(w =>
             {
                 w.Write(join); w.Write(unchecked((uint)Environment.TickCount)); w.Write(new byte[40]);
@@ -190,6 +190,7 @@ namespace Enb.Protocol
         {
             if (!Ready || gate != 0) return;
             if (command != 2 && command != 3 && command != 4) throw new ArgumentOutOfRangeException(nameof(command));
+            followTarget = 0;
             Send(0x14, Wire.Body(w => { w.Write(Player); w.Write(command); }));
         }
 
@@ -210,6 +211,7 @@ namespace Enb.Protocol
         {
             if (!Ready || gate != 0) return;
             if (float.IsNaN(yaw) || float.IsNaN(pitch) || Math.Abs(yaw) > 1 || Math.Abs(pitch) > 1) throw new ArgumentOutOfRangeException(nameof(yaw));
+            followTarget = 0;
             Send(0x12, Wire.Body(w => { w.Write(Player); w.Write(yaw); }));
             Send(0x13, Wire.Body(w => { w.Write(Player); w.Write(pitch); }));
         }
@@ -218,6 +220,7 @@ namespace Enb.Protocol
         public void Warp(uint target)
         {
             if (!Ready || gate != 0 || !World.Objects.TryGetValue(target, out MapObject item) || !item.Navigable) return;
+            followTarget = 0;
             Send(0x9b, Wire.Body(w => { w.Write(Player & 0xffffff); w.Write((ushort)1); w.Write(target); }));
             Status = "Warp requested: " + item.Name;
         }
@@ -226,6 +229,7 @@ namespace Enb.Protocol
         public void Gate(uint target)
         {
             if (!Ready || gate != 0 || !World.Objects.TryGetValue(target, out MapObject item) || item.Kind != 11) return;
+            followTarget = 0;
             gate = target; gateActivated = gateCamera = gateFinished = false; gateAt = clock.Elapsed.TotalSeconds;
             Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
             Send(0x5a, Wire.Body(w => { Wire.Big(w, Player); Wire.Big(w, target); w.Write(1u); }));
@@ -239,6 +243,7 @@ namespace Enb.Protocol
                 !World.Objects.TryGetValue(target, out MapObject item) || item.Kind != 12 ||
                 !World.HasPosition || World.Position.Distance(item.Position) > 5000)
                 return;
+            followTarget = 0;
             dock = target; dockAt = clock.Elapsed.TotalSeconds; dockRequested = false;
             Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
             Status = "Requesting docking clearance: " + item.Name;
@@ -335,8 +340,18 @@ namespace Enb.Protocol
         public void SelectTarget(uint target)
         {
             if (!Ready || gate != 0 || (!World.Mobs.ContainsKey(target) && !World.Players.ContainsKey(target))) return;
+            if (followTarget != target) followTarget = 0;
             World.SetOpenLoot(0);
             Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
+        }
+
+        /// <summary>Follow a visible ship after its matching target acknowledgment.</summary>
+        public void FollowTarget(uint target)
+        {
+            if (!Ready || gate != 0 || (!World.Mobs.ContainsKey(target) && !World.Players.ContainsKey(target))) return;
+            followTarget = target; followTargetAt = clock.Elapsed.TotalSeconds;
+            Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
+            Status = "Selecting ship to follow";
         }
 
         /// <summary>Stop active weapons even after the target leaves visibility.</summary>
@@ -351,6 +366,7 @@ namespace Enb.Protocol
         {
             if (!Ready || gate != 0 || pendingLoot != 0 || !World.Objects.TryGetValue(target, out MapObject corpse) || corpse.Kind != 25)
                 return;
+            followTarget = 0;
             pendingLoot = target; pendingLootAt = clock.Elapsed.TotalSeconds; lootRequested = false;
             World.SetOpenLoot(0);
             Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
@@ -420,6 +436,11 @@ namespace Enb.Protocol
                         Send(0x2c, Wire.Body(w => { w.Write(Player); w.Write(9u); w.Write(combatTarget); w.Write(0u); }));
                         combatTarget = 0; Status = "Weapon toggle sent";
                     }
+                    if (b.Length == 8 && followTarget != 0 && Wire.U32(b, 0) == followTarget && Wire.U32(b, 4) == uint.MaxValue)
+                    {
+                        Send(0x14, Wire.Body(w => { w.Write(Player); w.Write((byte)12); }));
+                        followTarget = 0; Status = "Following selected ship";
+                    }
                     if (b.Length == 8 && gate != 0 && Wire.U32(b, 0) == gate && Wire.U32(b, 4) == uint.MaxValue && !gateActivated)
                     { GateAction(18); gateActivated = true; gateAt = clock.Elapsed.TotalSeconds; Status = "Gate sequence running"; }
                     break;
@@ -474,6 +495,8 @@ namespace Enb.Protocol
                 { dock = 0; Status = "Docking timed out"; }
                 if (combatTarget != 0 && now - combatTargetAt > 5)
                 { combatTarget = 0; Status = "Target did not acknowledge weapon command"; }
+                if (followTarget != 0 && now - followTargetAt > 5)
+                { followTarget = 0; Status = "Follow target did not acknowledge"; }
                 if (gate != 0)
                 {
                     double elapsed = now - gateAt;

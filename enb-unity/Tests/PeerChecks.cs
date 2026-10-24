@@ -93,8 +93,19 @@ internal static class PeerChecks
                 Console.WriteLine("PASS: item template, cargo and hardpoint decoding; authoritative unequip and equip");
                 Position before = observer.World.Players[peerId].Position;
                 visitor.Thrust(2);
-                Wait(observer, visitor, () => observer.World.Players[peerId].Position.Distance(before) > 10, "Remote ship did not move.");
+                Wait(observer, visitor, () => observer.World.Players[peerId].Position.Distance(before) > 1900,
+                    "Remote ship did not move far enough to test follow.");
                 visitor.Thrust(4);
+                Wait(observer, visitor, () => Math.Abs(visitor.World.Speed) < 1,
+                    "Remote ship did not brake before follow.");
+                float followDistance = visitor.World.Position.Distance(observer.World.Position);
+                visitor.FollowTarget(observer.Player);
+                Wait(observer, visitor, () => visitor.World.Position.Distance(observer.World.Position) < followDistance - 150,
+                    "Native follow did not approach the selected player.");
+                visitor.Thrust(4);
+                Wait(observer, visitor, () => Math.Abs(visitor.World.Speed) < 1,
+                    "Manual braking did not cancel follow.");
+                Console.WriteLine("PASS: correlated native follow and manual-flight cancellation");
                 observer.Chat("/invite Visitor");
                 Wait(observer, visitor, () => visitor.World.Invitation.Contains("SandboxPilot"), "Group invitation did not arrive.");
                 visitor.Chat("/decline");
@@ -142,10 +153,10 @@ internal static class PeerChecks
                 Wait(observer, visitor, () => observer.World.Group.Members.Length == 1 && visitor.World.Group.Joined, "Disband setup did not join.");
                 observer.Chat("/disband");
                 Wait(observer, visitor, () => !observer.World.Group.Joined && !visitor.World.Group.Joined, "Disband did not clear both clients.");
-                observer.Chat("/d_spawn Achilles Drone 1");
-                Wait(observer, visitor, () => observer.World.Mobs.Values.Any(m => m.HasPosition && m.Name.Contains("Achilles") && m.MaxHull > 0 && m.Shield >= 0),
-                    "Spawned mob identity, pose, hostility and resources did not arrive.");
-                ShipActor spawned = observer.World.Mobs.Values.First(m => m.Name.Contains("Achilles") && m.HasPosition);
+                observer.Chat("/d_spawn Ishuan Revenant Young 1");
+                Wait(observer, visitor, () => observer.World.Mobs.Values.Any(m => m.HasPosition && m.Name.Contains("Ishuan Revenant Young") && m.Shield >= 0),
+                    "Spawned mob identity, pose, and shield did not arrive.");
+                ShipActor spawned = observer.World.Mobs.Values.First(m => m.Name.Contains("Ishuan Revenant Young") && m.HasPosition);
                 observer.Thrust(2);
                 Wait(observer, visitor, () => observer.World.Position.Distance(spawned.Position) < 700,
                     "Pilot did not close to starter-beam range.");
@@ -180,15 +191,12 @@ internal static class PeerChecks
                 ItemState[] stock = observer.World.Loot.TryGetValue(wreck.Id, out ItemState[] contents)
                     ? contents : Array.Empty<ItemState>();
                 int lootSlot = Array.FindIndex(stock, item => item?.Present == true);
-                if (lootSlot >= 0)
-                {
-                    uint template = stock[lootSlot].Template;
-                    observer.TakeLoot(wreck.Id, lootSlot);
-                    Wait(observer, visitor, () => observer.World.Equipment.Cargo.Any(item => item?.Template == template),
-                        "Tractor collection did not add the wreck item to cargo.");
-                }
-                Console.WriteLine("PASS: wreck targeting, open permission and authoritative contents" +
-                    (lootSlot >= 0 ? ", tractor collection" : " (wreck had no item stock)"));
+                Require(lootSlot >= 0, "Guaranteed Ishuan Revenant Young drop was missing from the corpse inventory.");
+                uint template = stock[lootSlot].Template;
+                observer.TakeLoot(wreck.Id, lootSlot);
+                Wait(observer, visitor, () => observer.World.Equipment.Cargo.Any(item => item?.Template == template),
+                    "Tractor collection did not add the wreck item to cargo.");
+                Console.WriteLine("PASS: wreck targeting, open permission, guaranteed item stock and tractor collection");
                 Console.WriteLine("PASS: group invitation, decline, accept, roster, group chat, kick, rejoin, leave, disband; server mob spawn/status, weapon effects and damage");
             }
             Wait(observer, null, () => !observer.World.Players.ContainsKey(peerId), "Logged-out player remained visible.");

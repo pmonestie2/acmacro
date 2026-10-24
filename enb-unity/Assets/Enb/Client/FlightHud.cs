@@ -18,10 +18,13 @@ namespace Enb.Client
         private GUIStyle heading, body, small, button, selected, damageStyle;
         private Texture2D buttonTexture, selectedTexture, radarTexture;
         private Vector2 scroll;
-        private bool navigation = true, equipmentOpen;
+        private bool navigation = true, equipmentOpen, settingsOpen;
+        private ControlAction? bindingAction;
+        private Vector2 settingsScroll;
         private int selectedCargo = -1, selectedMount = -1;
         private Vector2 cargoScroll, mountScroll;
         public bool EquipmentOpen => equipmentOpen;
+        public bool SettingsOpen => settingsOpen;
         public uint SelectedContactId => contactId;
         /// <summary>Keep keyboard-selected contacts aligned with the tactical HUD.</summary>
         public void SelectContact(uint id) { contactId = id; client.SelectContact(id); }
@@ -89,7 +92,12 @@ namespace Enb.Client
         public bool ContainsPointer()
         {
             Vector2 p = new Vector2(Input.mousePosition.x / Scale, (Screen.height - Input.mousePosition.y) / Scale);
-            return !client.Connected || (equipmentOpen && EquipmentRect().Contains(p)) || new Rect(24, 100, 280, Mathf.Clamp(CanvasHeight - 360, 200, 440)).Contains(p) || (p.x < 354 && p.y > CanvasHeight - 235) || new Rect(CanvasWidth - 320, 20, 300, CanvasHeight - 40).Contains(p) || p.y > CanvasHeight - 115 || p.y < 85;
+            return !client.Connected || (settingsOpen && SettingsRect().Contains(p)) ||
+                (equipmentOpen && EquipmentRect().Contains(p)) ||
+                new Rect(24, 100, 280, Mathf.Clamp(CanvasHeight - 360, 200, 440)).Contains(p) ||
+                (p.x < 354 && p.y > CanvasHeight - 235) ||
+                new Rect(CanvasWidth - 320, 20, 300, CanvasHeight - 40).Contains(p) ||
+                p.y > CanvasHeight - 115 || p.y < 85;
         }
 
         /// <returns>A one-pixel owned background texture.</returns>
@@ -157,11 +165,17 @@ namespace Enb.Client
         private Rect EquipmentRect()
         { return new Rect((CanvasWidth - 760) * .5f, Mathf.Max(95, (CanvasHeight - 610) * .5f), 760, Mathf.Min(610, CanvasHeight - 130)); }
 
+        /// <returns>The centered keyboard settings overlay bounds.</returns>
+        private Rect SettingsRect()
+        { return new Rect((CanvasWidth - 580) * .5f, 80, 580, Mathf.Min(610, CanvasHeight - 150)); }
+
         /// <summary>Draw connection controls, flight instruments and navigation.</summary>
         public void Draw(ref string host, ref string username, ref string password)
         {
-            EnsureStyles(); if (!client.Connected) { InputFocused = false; Connection(ref host, ref username, ref password); return; }
-            if (client.ChoosingCharacter) { InputFocused = false; CharacterSelection(); return; }
+            EnsureStyles();
+            if (settingsOpen) { InputFocused = false; Settings(); return; }
+            if (!client.Connected) { InputFocused = false; Connection(ref host, ref username, ref password); Settings(); return; }
+            if (client.ChoosingCharacter) { InputFocused = false; CharacterSelection(); Settings(); return; }
             if (client.CurrentSnapshot == null)
             {
                 InputFocused = false;
@@ -170,6 +184,7 @@ namespace Enb.Client
                 GUI.Label(new Rect(waiting.x + 24, waiting.y + 74, 390, 48), client.LoginError ?? client.Status, body);
                 GUI.Label(new Rect(waiting.x + 24, waiting.y + 128, 390, 40), client.PickingCharacter ? "Reading characters from the server…" : "Entering space…", small);
                 if (GUI.Button(new Rect(waiting.x + 24, waiting.y + 182, 150, 34), "Back to login", button)) client.ReturnToLogin();
+                Settings();
                 return;
             }
             Snapshot snapshot = client.CurrentSnapshot;
@@ -179,6 +194,7 @@ namespace Enb.Client
                 if (equipmentOpen) Equipment(snapshot);
                 InputFocused = false;
                 ChatEntry();
+                Settings();
                 return;
             }
             Panel(new Rect(24, 20, 390, 65)); GUI.Label(new Rect(38, 29, 360, 29), snapshot?.Sector.ToUpperInvariant() ?? "CONNECTING", heading);
@@ -187,8 +203,11 @@ namespace Enb.Client
             Panel(new Rect(24, CanvasHeight - 112, 330, 88)); GUI.Label(new Rect(38, CanvasHeight - 105, 300, 20), "IMPULSE / WARP VELOCITY", small);
             GUI.Label(new Rect(38, CanvasHeight - 83, 300, 30), $"{Math.Abs(snapshot?.Speed ?? 0):N0}  m/s", heading);
             GUI.Label(new Rect(38, CanvasHeight - 52, 300, 20), client.Status, small);
-            GUI.Label(new Rect(375, CanvasHeight - 46, CanvasWidth - 720, 40), "W / S thrust   ·   A / D turn   ·   ↑ ↓ pitch   ·   SPACE brake\nT next hostile   ·   X weapons   ·   RMB orbit   ·   TAB chart", small);
-            if (GUI.Button(new Rect(CanvasWidth - 160, 25, 136, 28), client.Chart ? "TAB  Flight view" : "TAB  Sector chart", button)) client.SetChart(!client.Chart);
+            KeyBindings keys = client.Bindings;
+            GUI.Label(new Rect(375, CanvasHeight - 46, CanvasWidth - 720, 40),
+                $"{keys.Display(ControlAction.Forward)} / {keys.Display(ControlAction.Reverse)} thrust   ·   {keys.Display(ControlAction.TurnLeft)} / {keys.Display(ControlAction.TurnRight)} turn   ·   {keys.Display(ControlAction.Brake)} brake\n" +
+                $"{keys.Display(ControlAction.NextHostile)} hostile   ·   {keys.Display(ControlAction.Follow)} follow   ·   {keys.Display(ControlAction.Fire)} fire   ·   RMB orbit", small);
+            if (GUI.Button(new Rect(CanvasWidth - 160, 25, 136, 28), keys.Display(ControlAction.Chart) + (client.Chart ? "  Flight view" : "  Sector chart"), button)) client.SetChart(!client.Chart);
             if (GUI.Button(new Rect(CanvasWidth - 300, 25, 130, 28), "Disconnect", button)) { client.Disconnect(); return; }
             if (snapshot == null) return;
             if (Time.unscaledTime >= refreshAt || sector != snapshot.Sector)
@@ -215,6 +234,47 @@ namespace Enb.Client
                 float x = CanvasWidth * .5f, y = CanvasHeight * .5f;
                 Fill(new Rect(x - 12, y, 8, 1), cyan); Fill(new Rect(x + 4, y, 8, 1), cyan); Fill(new Rect(x, y - 12, 1, 8), cyan); Fill(new Rect(x, y + 4, 1, 8), cyan);
             }
+            Settings();
+        }
+
+        /// <summary>Capture and persist keyboard controls without passing keys to flight input.</summary>
+        private void Settings()
+        {
+            if (GUI.Button(new Rect(CanvasWidth - 430, 25, 110, 28), "Controls", button))
+            { settingsOpen = !settingsOpen; bindingAction = null; }
+            if (!settingsOpen) return;
+            if (bindingAction.HasValue && Event.current.type == EventType.KeyDown)
+            {
+                KeyCode key = Event.current.keyCode;
+                if (key == KeyCode.Escape) bindingAction = null;
+                else if (key != KeyCode.None)
+                {
+                    client.Bindings.Bind(bindingAction.Value, key);
+                    bindingAction = null;
+                }
+                Event.current.Use();
+            }
+            Rect panel = SettingsRect(); Panel(panel);
+            GUI.Label(new Rect(panel.x + 20, panel.y + 15, 400, 28), "KEYBOARD CONTROLS", heading);
+            if (GUI.Button(new Rect(panel.xMax - 49, panel.y + 15, 29, 28), "×", button))
+            { settingsOpen = false; bindingAction = null; return; }
+            GUILayout.BeginArea(new Rect(panel.x + 20, panel.y + 56, panel.width - 40, panel.height - 115));
+            settingsScroll = GUILayout.BeginScrollView(settingsScroll);
+            foreach (ControlAction action in KeyBindings.Actions)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(KeyBindings.Label(action), body, GUILayout.Width(320), GUILayout.Height(30));
+                string label = bindingAction == action ? "Press a key…" : client.Bindings.Display(action);
+                if (GUILayout.Button(label, bindingAction == action ? selected : button,
+                    GUILayout.Width(185), GUILayout.Height(28))) bindingAction = action;
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndScrollView(); GUILayout.EndArea();
+            GUI.Label(new Rect(panel.x + 20, panel.yMax - 53, 380, 20),
+                bindingAction.HasValue ? "Esc cancels · choosing an occupied key swaps its action" :
+                "Click a key to change it · occupied keys swap actions", small);
+            if (GUI.Button(new Rect(panel.xMax - 150, panel.yMax - 57, 130, 32), "Restore defaults", button))
+            { client.Bindings.Reset(); bindingAction = null; }
         }
 
         /// <summary>Present the server's station interior and launch controls.</summary>
@@ -231,9 +291,10 @@ namespace Enb.Client
             GUI.Label(new Rect(40, 158, 270, 54),
                 $"{snapshot.Station.Rooms} rooms   ·   {snapshot.Station.Terminals} terminals\n{snapshot.Station.NpcIds.Count} station contacts", small);
             GUI.Label(new Rect(40, 216, 270, 43), "Cargo and installed equipment are available while docked.", small);
-            if (GUI.Button(new Rect(40, 280, 268, 34), equipmentOpen ? "CLOSE LOADOUT  ·  E" : "SHIP LOADOUT  ·  E", button))
+            string equipmentKey = client.Bindings.Display(ControlAction.Equipment);
+            if (GUI.Button(new Rect(40, 280, 268, 34), equipmentOpen ? "CLOSE LOADOUT  ·  " + equipmentKey : "SHIP LOADOUT  ·  " + equipmentKey, button))
                 ToggleEquipment();
-            if (GUI.Button(new Rect(40, 325, 268, 36), "LAUNCH INTO SPACE  ·  L", selected)) client.Launch();
+            if (GUI.Button(new Rect(40, 325, 268, 36), "LAUNCH INTO SPACE  ·  " + client.Bindings.Display(ControlAction.Launch), selected)) client.Launch();
             Panel(new Rect(CanvasWidth - 320, 20, 296, 116));
             GUI.Label(new Rect(CanvasWidth - 306, 34, 270, 24), "SHIP STATUS", body);
             GUI.Label(new Rect(CanvasWidth - 306, 63, 270, 58),
@@ -402,10 +463,12 @@ namespace Enb.Client
             Panel(new Rect(x, top, 296, 145)); GUI.Label(new Rect(x + 12, top + 9, 270, 24), target?.Name ?? "Select a destination", body);
             GUI.Label(new Rect(x + 12, top + 34, 270, 22), target == null ? "Click a marker or choose a destination" : $"RANGE   {target.Position.Distance(snapshot.Position) / 1000:0.00} km", small);
             GUI.enabled = client.Ready && target != null;
-            if (GUI.Button(new Rect(x + 12, top + 63, 272, 32), "F    WARP TO TARGET", button)) client.WarpSelected();
+            if (GUI.Button(new Rect(x + 12, top + 63, 272, 32), client.Bindings.Display(ControlAction.Warp) + "    WARP TO TARGET", button)) client.WarpSelected();
             bool station = target?.Kind == 12;
             GUI.enabled = client.Ready && (target?.Kind == 11 || station && target.Position.Distance(snapshot.Position) <= 5000);
-            if (GUI.Button(new Rect(x + 12, top + 102, 272, 30), station ? "SHIFT+D    DOCK AT STATION" : "G    ACTIVATE GATE", button))
+            if (GUI.Button(new Rect(x + 12, top + 102, 272, 30), station ?
+                client.Bindings.Display(ControlAction.Dock) + "    DOCK AT STATION" :
+                client.Bindings.Display(ControlAction.Gate) + "    ACTIVATE GATE", button))
             { if (station) client.DockSelected(); else client.GateSelected(); }
             GUI.enabled = true;
         }
@@ -624,11 +687,13 @@ namespace Enb.Client
                 GUILayout.Space(8); GUILayout.Label(contact.Name, body);
                 if (contact.Shield >= 0) GUILayout.Label($"Shield  {contact.Shield * 100:0}%", small);
                 if (contact.MaxHull > 0) GUILayout.Label($"Hull  {contact.Hull:0} / {contact.MaxHull:0}", small);
+                if (GUILayout.Button("Follow target  ·  " + client.Bindings.Display(ControlAction.Follow), button)) client.FollowSelected();
                 if (contact.IsPlayer && GUILayout.Button("Invite to group", button)) client.SendChat("/invite " + contact.Name);
-                if (!contact.IsPlayer && GUILayout.Button(snapshot.WeaponsFiring ? "Stop weapons  ·  X" : "Fire weapons  ·  X", button))
+                if (!contact.IsPlayer && GUILayout.Button((snapshot.WeaponsFiring ? "Stop weapons  ·  " : "Fire weapons  ·  ") +
+                    client.Bindings.Display(ControlAction.Fire), button))
                 { if (snapshot.WeaponsFiring) client.StopWeapons(); else client.ToggleWeapons(contact.Id); }
             }
-            if (snapshot.WeaponsFiring && GUILayout.Button("STOP ALL WEAPONS  ·  X", button)) client.StopWeapons();
+            if (snapshot.WeaponsFiring && GUILayout.Button("STOP ALL WEAPONS  ·  " + client.Bindings.Display(ControlAction.Fire), button)) client.StopWeapons();
             MapObject[] wrecks = nearbyWrecks;
             if (wrecks.Length > 0) GUILayout.Label("WRECKS", body);
             foreach (MapObject wreck in wrecks)

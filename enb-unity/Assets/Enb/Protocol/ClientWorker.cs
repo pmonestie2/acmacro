@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Enb.Protocol
 {
-    public enum CommandKind { Thrust, Steer, Warp, Gate, Dock, Launch, OpenNpc, ChooseNpc, BuyVendor, SellVendor, EquipCargo, UnequipMount, Chat, ToggleWeapons, Formation, SelectTarget, StopWeapons, OpenLoot, TakeLoot }
+    public enum CommandKind { Thrust, Steer, Warp, Gate, Dock, Launch, OpenNpc, ChooseNpc, BuyVendor, SellVendor, EquipCargo, UnequipMount, Chat, ToggleWeapons, Formation, SelectTarget, FollowTarget, StopWeapons, OpenLoot, TakeLoot }
 
     public readonly struct ClientCommand
     {
@@ -86,6 +86,7 @@ namespace Enb.Protocol
                                 case CommandKind.ToggleWeapons: session.ToggleWeapons(command.Target); break;
                                 case CommandKind.Formation: session.Formation(command.Target); break;
                                 case CommandKind.SelectTarget: session.SelectTarget(command.Target); break;
+                                case CommandKind.FollowTarget: session.FollowTarget(command.Target); break;
                                 case CommandKind.StopWeapons: session.StopWeapons(); break;
                                 case CommandKind.OpenLoot: session.OpenLoot(command.Target); break;
                                 case CommandKind.TakeLoot: session.TakeLoot(command.Target, command.Slot); break;
