@@ -93,7 +93,7 @@ impl PlayerSession {
                 incapacitated: peer.hull <= 0.,
             })
             .collect();
-        self.peer_ids = peers
+        self.peer_contacts = peers
             .iter()
             .filter(|peer| {
                 peer.profile.game_id != self.player_id()
@@ -101,8 +101,17 @@ impl PlayerSession {
                     && distance(peer.position, self.position) <= 20_000.
                     && (!peer.cloaked || group.contains(&peer.profile.game_id))
             })
-            .map(|peer| peer.profile.game_id)
+            .map(|peer| {
+                (
+                    peer.profile.game_id,
+                    crate::peers::PeerContact {
+                        position: peer.position,
+                        incapacitated: peer.hull <= 0.,
+                    },
+                )
+            })
             .collect();
+        self.peer_ids = self.peer_contacts.keys().copied().collect();
         self.follow_peer = peers
             .iter()
             .find(|peer| {

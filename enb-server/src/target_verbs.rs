@@ -9,6 +9,17 @@ impl PlayerSession {
         }
         let mut verbs = Vec::new();
         let can_act = self.hull > 0. && !self.warp.active() && self.gate_transit.is_none();
+        if let Some(peer) = self.peer_contacts.get(&self.target) {
+            // Native Player::OnTargeted advertises GROUP with unlimited range
+            // for living peers. Verb4 opens Group/Invite; action10 sends it.
+            let alive = self.hull > 0. && !peer.incapacitated;
+            verbs.push((4, if alive { 0 } else { 2 }));
+            // The follow button uses its native surface-distance threshold;
+            // keyboard follow remains handled by the existing impulse command.
+            let range =
+                (distance(self.position, peer.position) - crate::following::PLAYER_RADIUS).max(0.);
+            verbs.push((13, if alive && range <= 1500. { 0 } else { 2 }));
+        }
         if let Some(position) = self.visible_corpses.get(&self.target) {
             verbs.push((
                 3,
@@ -64,5 +75,67 @@ impl PlayerSession {
             self.pending.push(frame.clone());
             self.last_verbs = Some(frame);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn native_player_target_advertises_group_and_updates_follow_range_and_incapacity() {
+        let mut ship = super::super::tests::session();
+        ship.logged_in = true;
+        ship.position = [0.; 3];
+        let mut peer = ship.peer_snapshot().unwrap();
+        peer.profile.game_id += 1;
+        peer.position = [2000., 0., 0.];
+        ship.target = peer.profile.game_id;
+        ship.update_peer_view(&[peer.clone()], &[]);
+        ship.refresh_target_verbs(true);
+        assert_eq!(
+            ship.last_verbs,
+            Some(packets::target_verbs(ship.target, &[(4, 0), (13, 2)]))
+        );
+        peer.position[0] = 1745.; // Native player radius245 + follow range1500.
+        ship.update_peer_view(&[peer.clone()], &[]);
+        ship.refresh_target_verbs(false);
+        assert_eq!(
+            ship.last_verbs,
+            Some(packets::target_verbs(ship.target, &[(4, 0), (13, 0)]))
+        );
+        peer.hull = 0.;
+        ship.update_peer_view(&[peer], &[]);
+        ship.refresh_target_verbs(false);
+        assert_eq!(
+            ship.last_verbs,
+            Some(packets::target_verbs(ship.target, &[(4, 2), (13, 2)]))
+        );
+    }
+
+    #[test]
+    fn hidden_or_departed_peer_does_not_retain_native_group_actions() {
+        let mut ship = super::super::tests::session();
+        ship.logged_in = true;
+        let mut peer = ship.peer_snapshot().unwrap();
+        peer.profile.game_id += 1;
+        ship.target = peer.profile.game_id;
+        ship.update_peer_view(&[peer.clone()], &[]);
+        ship.refresh_target_verbs(true);
+        assert!(!ship.peer_contacts.is_empty());
+        peer.cloaked = true;
+        ship.update_peer_view(&[peer], &[]);
+        ship.refresh_target_verbs(false);
+        assert!(ship.peer_contacts.is_empty());
+        assert_eq!(
+            ship.last_verbs,
+            Some(packets::target_verbs(ship.target, &[]))
+        );
+        ship.target = ship.player_id();
+        ship.refresh_target_verbs(true);
+        assert_eq!(
+            ship.last_verbs,
+            Some(packets::target_verbs(ship.target, &[]))
+        );
     }
 }

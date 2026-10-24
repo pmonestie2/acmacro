@@ -246,6 +246,9 @@ impl PlayerSession {
         self.visible_resources = saved.resource_ids;
         self.visible_peers = saved.peer_ids.clone();
         self.peer_ids = saved.peer_ids;
+        // Rebuild action eligibility from live coordinator snapshots, never
+        // persisted health/position belonging to another authenticated session.
+        self.peer_contacts.clear();
         self.station_pose = saved.station_pose;
         self.station_peers = saved.station_peers;
         self.mining = saved.mining;

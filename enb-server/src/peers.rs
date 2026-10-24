@@ -5,6 +5,13 @@ use crate::equipment_stats::ShipStats;
 use crate::motion::Motion;
 use serde::{Deserialize, Serialize};
 
+/// Current public state needed for native actions on a visible player target.
+#[derive(Clone, Copy)]
+pub(crate) struct PeerContact {
+    pub position: [f32; 3],
+    pub incapacitated: bool,
+}
+
 /// Interior avatar coordinates are independent of the ship's sector position.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StationPose {

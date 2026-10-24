@@ -191,6 +191,7 @@ pub struct PlayerSession {
     last_checkpoint: Instant,
     last_ack_request: Instant,
     peer_ids: HashSet<u32>,
+    peer_contacts: HashMap<u32, crate::peers::PeerContact>,
     visible_peers: HashSet<u32>,
     peer_stats: HashMap<u32, crate::equipment_stats::ShipStats>,
     visible_resources: HashSet<u32>,
@@ -367,6 +368,7 @@ impl PlayerSession {
             last_checkpoint: now,
             last_ack_request: now,
             peer_ids: HashSet::new(),
+            peer_contacts: HashMap::new(),
             visible_peers: HashSet::new(),
             peer_stats: HashMap::new(),
             visible_resources: HashSet::new(),
@@ -672,6 +674,7 @@ impl PlayerSession {
                 self.station_peers.clear();
                 self.station_view_dirty = true;
                 self.peer_ids.clear();
+                self.peer_contacts.clear();
                 self.visible_peers.clear();
                 self.peer_stats.clear();
                 self.visible_resources.clear();

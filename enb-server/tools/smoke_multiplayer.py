@@ -17,6 +17,21 @@ from enb_protocol.session import SpaceSession
 from enb_protocol.wire import Frame
 
 
+def group_action_enabled(frame: Frame, target: int) -> bool:
+    """Native 0x5c has default and current attribute/verb lists, not actions."""
+    if frame.opcode != 0x5c or len(frame.body) < 12:
+        return False
+    identity, defaults = struct.unpack_from('>II', frame.body)
+    current = 8 + defaults * 4
+    if identity != target or defaults > 4 or current + 4 > len(frame.body):
+        return False
+    count = struct.unpack_from('>I', frame.body, current)[0]
+    if count > 4 or current + 4 + count * 4 != len(frame.body):
+        return False
+    return any(struct.unpack_from('<HH', frame.body, current + 4 + index * 4) == (0, 4)
+               for index in range(count))
+
+
 def pump(sessions: list[SpaceSession], until: Callable[[], bool], timeout: float,
          observed: list[tuple[int, Frame]]) -> None:
     deadline = time.monotonic() + timeout
@@ -74,6 +89,9 @@ def main() -> None:
                 print('PASS: both accounts provisioned with elite JE gear and credits; old gear preserved', flush=True)
                 follower_state = state/'session.local.json'
                 sessions[0].send(0x17, struct.pack('<II', a, b))
+                pump(sessions, lambda: any(index == 0 and group_action_enabled(frame, b)
+                    for index, frame in observed), 5, observed)
+                print('PASS: selecting a live peer advertises the enabled native Group/Invite verb', flush=True)
                 sessions[0].send(0x14, struct.pack('<IB', a, 12))
 
                 def following() -> bool:

@@ -286,3 +286,13 @@ deployed and both native sessions resumed. All ten scoped loot tests and Clippy
 pass. The UI
 agent independently confirmed a decoded Present item and cargo award through
 the C# client using the guaranteed-drop fixture, without wire changes.
+
+Original-client player selection was missing native target verbs: the server
+accepted group packets but sent an empty0x5c action list for a selected peer.
+Live public peer contacts now advertise Group/Invite (verb4) for living ships
+and Follow (verb13) within its native1500m surface range. Incapacity disables
+those actions; cloaked/departed contacts lose them. Eligibility is rebuilt from
+current coordinator snapshots rather than saved peer health. Two scoped verb
+tests and Clippy pass; the multiplayer packet smoke now requires the enabled
+Group verb before exercising invitation/acceptance. Native deployment and that
+extended smoke are pending at this checkpoint.
