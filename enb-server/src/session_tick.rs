@@ -10,10 +10,14 @@ impl PlayerSession {
         if self.logged_in {
             lock_loot(&self.loot_world)?
                 .capture_deaths(&*lock_combat(&self.combat)?, crate::resources::unix_ms())?;
+            lock_combat(&self.combat)?.bind_sector(self.sector.id)?;
             let hits = lock_combat(&self.combat)?.advance(dt, &[self.threat()])?;
             for hit in hits {
-                self.receive_hit(hit.attacker_index, hit.damage)?;
+                let reflection = self.receive_mob_hit(&hit)?;
+                lock_combat(&self.combat)?.acknowledge_mob_hit(hit.sequence, reflection)?;
+                self.forget_mob_hit_receipt(hit.sector, hit.sequence);
             }
+            let launches = lock_combat(&self.combat)?.take_mob_launch_visuals();
             let visuals = lock_combat(&self.combat)?.take_projectile_visuals();
             for visual in &visuals {
                 self.publish_projectile_visual(visual);
@@ -23,6 +27,9 @@ impl PlayerSession {
                 self.publish_weapon_damage(report);
             }
             self.publish_mobs()?;
+            for launch in &launches {
+                self.publish_mob_launch(launch);
+            }
             self.publish_resources()?;
             lock_loot(&self.loot_world)?
                 .capture_deaths(&*lock_combat(&self.combat)?, crate::resources::unix_ms())?;
@@ -119,106 +126,41 @@ impl PlayerSession {
     pub(crate) fn threat(&self) -> PlayerThreat {
         PlayerThreat {
             id: self.player_id(),
+            session_epoch: self.session_epoch,
             position: self.position,
             visible: self.logged_in && self.hull > 0. && self.skills.cloak_rank == 0,
         }
     }
 
-    pub(crate) fn receive_hit(&mut self, attacker: usize, mut damage: f32) -> io::Result<()> {
-        use crate::combat_damage::{
-            damage_control_fraction, player_damage, DamageType, PlayerDefense,
-        };
-        if !damage.is_finite() || damage < 0. {
-            return Err(invalid("Invalid incoming weapon damage."));
-        }
-        if !self.logged_in || self.hull <= 0. {
-            return Ok(());
-        }
-        let attack = lock_combat(&self.combat)?
+    /// Test convenience for direct damage-rule checks; production always uses
+    /// the frozen sector shot and its persisted acknowledgment protocol.
+    #[cfg(test)]
+    pub(crate) fn receive_hit(&mut self, attacker: usize, damage: f32) -> io::Result<()> {
+        let combat = lock_combat(&self.combat)?;
+        let mob = combat
             .actors
             .get(attacker)
-            .map(|mob| mob.combat)
             .ok_or_else(|| invalid("Unknown MOB attacker."))?;
-        let kind = DamageType::from_index(attack.damage_type)?;
-        let incoming = damage;
-        self.cancel_mining("Incoming fire interrupted prospecting.")?;
-        if self.skills.environment_rank > 0 {
-            damage *= if self.skills.environment_rank >= 3 {
-                0.9
-            } else {
-                0.95
-            };
-            if self.skills.environment_rank >= 5 {
-                let maximum = match self.skills.environment_rank {
-                    5 => 10.,
-                    6 => 25.,
-                    _ => 50.,
-                };
-                if let Some(mob) = lock_combat(&self.combat)?.actors.get_mut(attacker) {
-                    mob.damage_by(damage.min(maximum), self.player_id());
-                }
-            }
-            if self.skills.environment_rank >= 6 {
-                self.energy = (self.energy + (damage * 0.05).min(10.))
-                    .min(self.equipment.ship.energy_capacity);
-            }
-        }
-        let profile = &self.account.character;
-        let damage_control = if profile.profession == 0 && matches!(profile.race, 0 | 2) {
-            damage_control_fraction(self.skill_catalog.level(17))
-        } else {
-            0.
-        };
-        let result = player_damage(
+        let hit = crate::npc_projectiles::MobHit {
+            sector: self.sector.id,
+            sequence: self
+                .mob_damage_receipts
+                .iter()
+                .map(|receipt| receipt.sequence)
+                .max()
+                .unwrap_or(0)
+                + 1,
+            target: self.player_id(),
+            target_epoch: self.session_epoch,
+            attacker_index: attacker,
+            attacker_source: mob.definition.source_id,
+            attacker_template: mob.definition.template_id,
+            attacker_generation: mob.death_generation,
             damage,
-            kind,
-            PlayerDefense {
-                shield: self.shield,
-                hull: self.hull,
-                deflect_percent: self.equipment.ship.deflects[kind.index()],
-                damage_control,
-            },
-        )?;
-        self.shield = result.shield;
-        self.hull = result.hull;
-        self.pending.push(packets::client_damage(
-            self.player_id(),
-            MOB_ID + attacker as u32,
-            result.reported_damage,
-            result.reported_damage - incoming,
-            kind.index() as u32,
-            1,
-        ));
-        // ShipDamage cancels warp on its hull-overflow branch, including EMP
-        // spill that cannot physically reduce the hull. Shield-only hits do not.
-        if result.hull_branch && self.warp.active() {
-            let event = self.warp.finish(FinishReason::Cancelled, &mut self.motion);
-            self.emit_warp_event(event);
-        }
-        if self.hull == 0. {
-            self.stop_weapons();
-            self.stop_following();
-            self.detach_formation();
-            self.motion.stop();
-            self.pending
-                .push(packets::incapacitated(self.player_id(), true));
-        }
-        self.pending.push(packets::beam(
-            MOB_ID + attacker as u32,
-            self.player_id(),
-            attack.effect,
-            self.next_effect,
-            self.tick_ms(),
-        ));
-        self.next_effect = self.next_effect.wrapping_add(1);
-        self.pending.push(packets::ship_resources(
-            self.player_id(),
-            &self.equipment.ship,
-            Some(self.energy),
-            Some(self.shield),
-            Some(self.hull),
-        ));
-        Ok(())
+            damage_type: mob.combat.damage_type,
+        };
+        drop(combat);
+        self.receive_mob_hit(&hit).map(|_| ())
     }
 
     pub(crate) fn publish_mobs(&mut self) -> io::Result<()> {
@@ -302,6 +244,8 @@ mod damage_tests {
     fn ship(kind: usize) -> PlayerSession {
         let mut ship = super::super::tests::session();
         ship.logged_in = true;
+        ship.selected_peer = Some("127.0.0.1".parse().unwrap());
+        ship.endpoint = Some("127.0.0.1:22343".parse().unwrap());
         ship.shield = 20.;
         ship.hull = 100.;
         lock_combat(&ship.combat).unwrap().actors[0]

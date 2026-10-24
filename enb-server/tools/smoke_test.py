@@ -34,7 +34,8 @@ def read_plain(connection: socket.socket) -> Frame:
 
 
 def connect(server: str, username: str = 'local', password: str = 'local',
-            character_name: str = 'SandboxPilot', *, allow_station: bool = False) -> SpaceSession:
+            character_name: str = 'SandboxPilot', *, allow_station: bool = False,
+            session_type: type[SpaceSession] = SpaceSession) -> SpaceSession:
     comms = register_comms(server)
     global_connection: GameConnection | None = None
     try:
@@ -66,7 +67,7 @@ def connect(server: str, username: str = 'local', password: str = 'local',
         # enter() takes ownership of both the global TCP and registered UDP
         # connections; its finally path closes them if sector login fails.
         global_connection = None
-        return SpaceSession.enter(server, login, characters, 0, allow_station=allow_station)
+        return session_type.enter(server, login, characters, 0, allow_station=allow_station)
     except BaseException:
         if global_connection is not None:
             global_connection.close()

@@ -51,6 +51,14 @@ mean the corresponding gameplay system is complete.
   weapon swaps and safe unloading on removal. Ammo metadata and AUX snapshots
   persist. Player launcher travel and durable shared impacts survive owner logout
   and server replacement. Native graphical launcher playtests remain pending.
+- NPC beam/launcher launches use archived delays and frozen typed impacts.
+  Sector queues retain each hit until HP plus a player receipt is committed,
+  then acknowledge removal and shield reflection together. A session epoch
+  survives process replacement but changes on real login, preventing old shots
+  from striking a new authenticated lifetime. Queue backpressure still permits
+  acknowledgment; quiet ticks avoid full-world snapshots. See
+  [NPC projectile recovery](NPC_PROJECTILES.md). Native graphical verification
+  remains pending; NPC ammunition AI and original boss mechanics remain open.
 - Public catalog of 4,568 item templates with effects, restrictions, stacks,
   recipes/refine targets and weapon/reactor/shield/engine data. Starting mounts
   are separate from templates. Only owned item metadata is sent on login.
@@ -95,7 +103,7 @@ mean the corresponding gameplay system is complete.
    side. Vendor trade XP/acquisition history, finite shared stock, faction pricing and services
    beyond basic trade remain pending. Active item effects and remaining crafting
    behavior need implementation and native playtests.
-2. Complete active item effects, NPC projectile travel, full hull-upgrade
+2. Complete active item effects, NPC ammunition AI, full hull-upgrade
    progression and remaining imported stat effects. Player typed damage,
    miss/critical outcomes and class maximum hull capacities are implemented;
    broader native combat playtests remain pending. Native re-equipping
@@ -166,3 +174,18 @@ Disposable native-packet launcher checks passed for both missile and projectile
 weapons, including a real critical outcome, owner logout, in-flight replacement
 and another replacement after resolution. The Controller/PW fight and changed
 content-cap recovery also pass with live randomized player shots.
+
+The NPC delayed-impact and receipt integration passed 202 Rust tests and Clippy
+with warnings denied. Behavioral coverage includes archived beam/launcher timing,
+launch and acknowledgment write failures, reflection exactly once, out-of-order
+impacts, process replacement, target-sector departure and fresh-login epoch
+rejection. Cosmetic launch effects are transient across replacement. These
+results do not establish native graphical NPC projectile behavior.
+
+The disposable NPC projectile smoke also passes: it records initial login frames,
+observes a public PL effect before its frozen 12-second impact, cloaks the
+target, replaces the server in flight, and verifies one native damage report
+with no repeat after another replacement. The Controller/PW fight and refreshed
+content-cap recovery pass. After correcting first-launch actor publication order,
+all nine coordinator tests and Clippy were rerun successfully. Python tool tests
+pass at 35; scoped type checking passes for both changed smoke modules.

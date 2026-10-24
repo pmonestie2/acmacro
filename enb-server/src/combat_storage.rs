@@ -23,6 +23,10 @@ struct SavedCombat {
     accepted: BTreeMap<u32, u64>,
     #[serde(default = "initial_developer_source")]
     next_developer_spawn: u32,
+    #[serde(default)]
+    npc_shots: Vec<crate::npc_projectiles::PendingNpcShot>,
+    #[serde(default)]
+    npc_sequence: u64,
 }
 
 impl SectorCombat {
@@ -38,6 +42,7 @@ impl SectorCombat {
                     || saved.sector != sector
                     || saved.actors.len() > 256
                     || saved.projectiles.len() > 16384
+                    || saved.npc_shots.len() > 16384
                     || saved.accepted.len() > 65535
                     || saved.accepted.iter().any(|(owner, sequence)| {
                         !(0x40000001..=0x4000ffff).contains(owner) || *sequence == 0
@@ -69,6 +74,17 @@ impl SectorCombat {
                     }
                 }
                 world.next_developer_spawn = saved.next_developer_spawn;
+                let mut npc_sequences = HashSet::new();
+                if saved.npc_shots.iter().any(|shot| {
+                    !shot.valid()
+                        || shot.hit.sector != sector
+                        || shot.hit.sequence > saved.npc_sequence
+                        || !npc_sequences.insert(shot.hit.sequence)
+                }) {
+                    return Err(invalid("Invalid saved NPC projectile identity."));
+                }
+                world.npc_sequence = saved.npc_sequence;
+                world.npc_shots = saved.npc_shots;
                 for actor in &world.actors {
                     if actor.definition.source_id >= DEVELOPER_SOURCE_BASE {
                         world.next_developer_spawn = world.next_developer_spawn.max(
@@ -256,6 +272,53 @@ impl SectorCombat {
         std::mem::take(&mut self.effects)
     }
 
+    pub fn pending_mob_shots(&self) -> &[crate::npc_projectiles::PendingNpcShot] {
+        &self.npc_shots
+    }
+
+    pub fn take_mob_launch_visuals(&mut self) -> Vec<crate::npc_projectiles::MobLaunchVisual> {
+        std::mem::take(&mut self.npc_visuals)
+    }
+
+    /// The player first commits HP plus this receipt to its checkpoint. Only
+    /// then may the coordinator retire the world shot and apply frozen shield
+    /// reflection. Retrying a successful ack cannot reflect a second time.
+    pub fn acknowledge_mob_hit(&mut self, sequence: u64, reflection: f32) -> io::Result<()> {
+        if sequence == 0 || !reflection.is_finite() || reflection < 0. {
+            return Err(invalid("Invalid NPC projectile acknowledgment."));
+        }
+        let Some(index) = self
+            .npc_shots
+            .iter()
+            .position(|shot| shot.hit.sequence == sequence)
+        else {
+            return Ok(());
+        };
+        let shot = self.npc_shots.remove(index);
+        let reflected_actor = if reflection > 0. {
+            self.actors.iter().position(|mob| {
+                mob.definition.source_id == shot.hit.attacker_source
+                    && mob.definition.template_id == shot.hit.attacker_template
+                    && mob.death_generation == shot.hit.attacker_generation
+                    && mob.state != crate::mob::MobState::Dead
+            })
+        } else {
+            None
+        };
+        let previous_actor = reflected_actor.map(|index| (index, self.actors[index].clone()));
+        if let Some(index) = reflected_actor {
+            self.actors[index].damage_by(reflection, shot.hit.target);
+        }
+        if let Err(error) = self.persist() {
+            self.npc_shots.insert(index, shot);
+            if let Some((index, actor)) = previous_actor {
+                self.actors[index] = actor;
+            }
+            return Err(error);
+        }
+        Ok(())
+    }
+
     pub fn persist(&mut self) -> io::Result<()> {
         if let Some(path) = &self.path {
             crate::durable_json::replace(
@@ -267,6 +330,8 @@ impl SectorCombat {
                     projectiles: self.projectiles.clone(),
                     accepted: self.accepted.clone(),
                     next_developer_spawn: self.next_developer_spawn,
+                    npc_shots: self.npc_shots.clone(),
+                    npc_sequence: self.npc_sequence,
                 },
             )?;
         }

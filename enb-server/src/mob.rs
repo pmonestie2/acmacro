@@ -370,6 +370,19 @@ impl Mob {
         self.aggro.subtract(player.id, damage);
         damage
     }
+    /// Conservative preflight for a world rollback snapshot. Target/hate
+    /// selection still runs in the normal tick; this only proves that no shot
+    /// can be produced while every player is outside the firing/leash bounds.
+    pub(crate) fn may_fire_this_tick(&self, dt: f32, players: &[PlayerThreat]) -> bool {
+        self.state != MobState::Dead
+            && self.disabled_seconds <= 0.
+            && self.cooldown <= dt
+            && players.iter().any(|player| {
+                player.visible
+                    && distance(self.position, player.position) <= self.combat.range
+                    && distance(self.definition.spawn, player.position) <= 15000.
+            })
+    }
     pub fn tick(&mut self, dt: f32, player: [f32; 3]) -> f32 {
         self.tick_visible(dt, player, true)
     }
@@ -475,6 +488,7 @@ mod tests {
     fn threat(id: u32, x: f32) -> PlayerThreat {
         PlayerThreat {
             id,
+            session_epoch: 1,
             position: [x, 0., 0.],
             visible: true,
         }

@@ -345,6 +345,11 @@ impl GameState {
     }
 
     pub fn advance(&mut self, dt: f32) -> io::Result<()> {
+        self.advance_at(dt, crate::resources::unix_ms())
+    }
+
+    /// Explicit combat wall clock for deterministic flight-deadline tests.
+    pub fn advance_at(&mut self, dt: f32, now_ms: u64) -> io::Result<()> {
         if !dt.is_finite() || dt < 0. {
             return Err(invalid("Invalid simulation duration."));
         }
@@ -393,7 +398,7 @@ impl GameState {
                 .filter(|session| session.sector.id == sector && session.logged_in)
                 .map(PlayerSession::threat)
                 .collect();
-            match lock_combat(combat)?.advance(dt, &threats) {
+            match lock_combat(combat)?.advance_at(dt, &threats, now_ms) {
                 Ok(resolved) => hits.extend(resolved),
                 Err(error) => {
                     if first_error.is_none() {
@@ -403,8 +408,28 @@ impl GameState {
             }
         }
         for hit in hits {
-            if let Some(session) = self.sessions.get_mut(&hit.target) {
-                session.receive_hit(hit.attacker_index, hit.damage)?;
+            let reflection = match self.sessions.get_mut(&hit.target) {
+                Some(session) => session.receive_mob_hit(&hit),
+                None => Ok(0.),
+            };
+            let acknowledged = reflection.and_then(|reflection| {
+                let combat = self
+                    .combats
+                    .get(&hit.sector)
+                    .ok_or_else(|| invalid("NPC impact sector is no longer hosted."))?;
+                lock_combat(combat)?.acknowledge_mob_hit(hit.sequence, reflection)
+            });
+            match acknowledged {
+                Ok(()) => {
+                    if let Some(session) = self.sessions.get_mut(&hit.target) {
+                        session.forget_mob_hit_receipt(hit.sector, hit.sequence);
+                    }
+                }
+                Err(error) => {
+                    if first_error.is_none() {
+                        first_error = Some(error);
+                    }
+                }
             }
         }
         for (&sector, combat) in &self.combats {
@@ -433,7 +458,9 @@ impl GameState {
         }
         let mut damage_reports = Vec::new();
         let mut projectile_visuals = Vec::new();
+        let mut mob_launches = Vec::new();
         for (&sector, combat) in &self.combats {
+            mob_launches.extend(lock_combat(combat)?.take_mob_launch_visuals());
             for report in lock_combat(combat)?.take_damage_reports() {
                 damage_reports.push((sector, report));
             }
@@ -477,6 +504,11 @@ impl GameState {
                 }
             }
             session.publish_mobs()?;
+            // Publish newly visible NPCs before their first launch effect.
+            // Player shot visuals above still precede target-death removals.
+            for visual in &mob_launches {
+                session.publish_mob_launch(visual);
+            }
             session.publish_resources()?;
             session.publish_corpses()?;
             session.publish_peers(&peers);

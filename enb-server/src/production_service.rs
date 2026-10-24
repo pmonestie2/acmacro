@@ -272,7 +272,7 @@ impl PlayerSession {
         };
         recipe.apply(&self.inventory, count, REFINE_PRICE, &self.items)?;
         let request = ProductionRequest {
-            epoch: self.production_epoch,
+            epoch: self.session_epoch,
             sequence: self.inputs.back().copied().unwrap_or(0),
         };
         if !request.follows(self.inventory.last_production_request) {
@@ -408,7 +408,7 @@ impl PlayerSession {
             true
         };
         let request = ProductionRequest {
-            epoch: self.production_epoch,
+            epoch: self.session_epoch,
             sequence: self.inputs.back().copied().unwrap_or(0),
         };
         if !request.follows(self.inventory.last_production_request) {

@@ -104,6 +104,101 @@ fn advance(game: &mut GameState, seconds: f32) {
     }
 }
 
+fn land_npc_shots(game: &mut GameState) {
+    let deadline = game
+        .combats
+        .values()
+        .filter_map(|combat| {
+            lock_combat(combat)
+                .unwrap()
+                .pending_mob_shots()
+                .iter()
+                .map(|shot| shot.due_ms)
+                .max()
+        })
+        .max()
+        .expect("expected a launched NPC shot");
+    game.advance_at(0., deadline).unwrap();
+}
+
+#[test]
+fn npc_ack_failure_and_server_replacement_never_repeat_committed_player_damage() {
+    let mut game = game();
+    let player = FIRST_PLAYER_ID;
+    login(&mut game, player, 22431, "alice");
+    game.sessions.get_mut(&player).unwrap().position = [0.; 3];
+    let combat = Arc::clone(&game.sessions[&player].combat);
+    {
+        let mut world = lock_combat(&combat).unwrap();
+        world.actors[0].position = [100., 0., 0.];
+        world.actors[0].definition.spawn = [100., 0., 0.];
+    }
+    game.advance(0.1).unwrap();
+    let shot = lock_combat(&combat).unwrap().pending_mob_shots()[0].clone();
+    let before = game.sessions[&player].peer_snapshot().unwrap().shield;
+    let blocked = game.root.join("combat/1076.json.next");
+    fs::create_dir(&blocked).unwrap();
+    game.advance_at(0., shot.due_ms).unwrap();
+    assert_eq!(
+        game.sessions[&player].peer_snapshot().unwrap().shield,
+        before - shot.hit.damage
+    );
+    assert_eq!(lock_combat(&combat).unwrap().pending_mob_shots().len(), 1);
+    let root = game.root.clone();
+    let sector = game.initial_sector.clone();
+    let bind = game.bind;
+    drop(game);
+    fs::remove_dir(blocked).unwrap();
+    let mut restored = GameState::new(sector, bind, root).unwrap();
+    assert_eq!(
+        restored.sessions[&player].peer_snapshot().unwrap().shield,
+        before - shot.hit.damage
+    );
+    restored.advance_at(0., shot.due_ms).unwrap();
+    assert_eq!(
+        restored.sessions[&player].peer_snapshot().unwrap().shield,
+        before - shot.hit.damage
+    );
+    assert!(lock_combat(&restored.sessions[&player].combat)
+        .unwrap()
+        .pending_mob_shots()
+        .is_empty());
+}
+
+#[test]
+fn npc_projectile_cannot_damage_its_target_after_a_sector_handoff() {
+    let mut game = game();
+    let player = FIRST_PLAYER_ID;
+    login(&mut game, player, 22441, "alice");
+    game.sessions.get_mut(&player).unwrap().position = [0.; 3];
+    let source = Arc::clone(&game.sessions[&player].combat);
+    {
+        let mut world = lock_combat(&source).unwrap();
+        world.actors[0].position = [100., 0., 0.];
+        world.actors[0].definition.spawn = [100., 0., 0.];
+    }
+    game.advance(0.1).unwrap();
+    let shot = lock_combat(&source).unwrap().pending_mob_shots()[0].clone();
+    let before = game.sessions[&player].peer_snapshot().unwrap().shield;
+    game.handle_event(
+        player,
+        ClientEvent::Chat {
+            channel: 0,
+            text: "/d_jump Saturn".into(),
+        },
+    )
+    .unwrap();
+    game.advance_at(0., shot.due_ms).unwrap();
+    assert_eq!(game.sessions[&player].sector.id, 1071);
+    // Handoff sessions are intentionally absent from peer snapshots.
+    let checkpoint: serde_json::Value = serde_json::from_slice(
+        &fs::read(game.sessions[&player].state_dir.join("session.local.json")).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(checkpoint["shield"].as_f64().unwrap() as f32, before);
+    assert!(lock_combat(&source).unwrap().pending_mob_shots().is_empty());
+}
+
 #[test]
 fn storage_failure_for_first_character_does_not_skip_other_players_or_groups() {
     let mut game = game();
@@ -181,6 +276,11 @@ fn combat_is_shared_and_group_jumpstart_and_cloak_apply_to_other_player() {
         .spawn = [100.; 3];
     let shield_before = game.sessions[&b].peer_snapshot().unwrap().shield;
     game.advance(0.1).unwrap();
+    assert_eq!(
+        game.sessions[&b].peer_snapshot().unwrap().shield,
+        shield_before
+    );
+    land_npc_shots(&mut game);
     assert_eq!(
         game.sessions[&b].peer_snapshot().unwrap().shield,
         shield_before - 5.
@@ -401,6 +501,8 @@ fn multiplayer_hate_targets_the_attacker_and_dev_jump_clears_the_departed_identi
     let shield_a = game.sessions[&a].peer_snapshot().unwrap().shield;
     let shield_b = game.sessions[&b].peer_snapshot().unwrap().shield;
     game.advance(0.1).unwrap();
+    assert_eq!(game.sessions[&a].peer_snapshot().unwrap().shield, shield_a);
+    land_npc_shots(&mut game);
     assert_eq!(
         game.sessions[&a].peer_snapshot().unwrap().shield,
         shield_a - 5.
@@ -417,6 +519,7 @@ fn multiplayer_hate_targets_the_attacker_and_dev_jump_clears_the_departed_identi
     game.advance(0.).unwrap();
     let query = [crate::sector_combat::PlayerThreat {
         id: a,
+        session_epoch: 1,
         position: [0.; 3],
         visible: true,
     }];

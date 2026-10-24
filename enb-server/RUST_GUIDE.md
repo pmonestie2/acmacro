@@ -222,3 +222,30 @@ bounded native-style hate lists. `weapon_accuracy.rs` supplies the live firing c
 calculation. Equipment derives the signed percentage-point bonuses; the launch
 journal freezes each resulting damage amount and native outcome flag before
 resource publication.
+
+NPC attacks follow a separate durable path. `npc_projectiles.rs` defines frozen
+`MobHit`, `PendingNpcShot` and launch-visual records plus the native travel-time
+rule: beam attacks take one second; launchers and designated fallback attack
+types take range times three milliseconds. `SectorCombat::advance_at` advances
+one shared simulation, saves a new shot with its cooldown and damage RNG, then
+exposes the launch visual. A due shot stays queued until acknowledged; it is not
+removed merely because damage was returned to the coordinator.
+
+`mob_damage.rs` prepares typed player damage without side effects.
+`checkpoint_mob_damage` commits new resources and a receipt in the same session
+checkpoint before feedback or mining cancellation. `game.rs` then calls
+`acknowledge_mob_hit`, which atomically removes the shot and applies frozen
+Environment Shield reflection to the matching source life. Replayed delivery
+finds the receipt and returns the same reflection without applying damage again.
+Receipts use sector/sequence pairs, rather than a high-water mark, because a
+later short-flight shot can arrive before an earlier long-flight shot.
+
+The player's `session_epoch` identifies a real authenticated lifetime. It is
+preserved by checkpoint restore, renewed on fresh login, shared with production
+request replay protection, and frozen as `MobHit.target_epoch`. Old checkpoint
+field names `production_epoch` and `refinery_epoch` remain accepted aliases.
+An old shot is acknowledged without damage when its target leaves the sector
+or has a different epoch. Source death and target cloak after launch do not
+cancel an otherwise valid impact. See [NPC_PROJECTILES.md](docs/NPC_PROJECTILES.md)
+for ownership, failure handling and verification boundaries. The integration
+passed 202 Rust tests and Clippy; native graphical playtesting remains pending.

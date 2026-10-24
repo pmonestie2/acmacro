@@ -44,6 +44,8 @@ mod harvest_visuals;
 mod looting;
 #[path = "mining.rs"]
 mod mining;
+#[path = "mob_damage.rs"]
+mod mob_damage;
 #[path = "npc_services.rs"]
 mod npc_services;
 #[path = "production_service.rs"]
@@ -104,7 +106,7 @@ pub struct PlayerSession {
     npcs: NpcCatalog,
     inventory: Inventory,
     workbench: Option<production_service::WorkbenchWindow>,
-    production_epoch: u64,
+    session_epoch: u64,
     workbench_sync: f32,
     workbench_lab_ready: bool,
     equipment: EquipmentStats,
@@ -142,6 +144,7 @@ pub struct PlayerSession {
     next_effect: u32,
     last_motion_report: Option<Instant>,
     last_launch: u64,
+    mob_damage_receipts: Vec<mob_damage::MobDamageReceipt>,
     following: bool,
     follow_peer: Option<crate::following::FollowContact>,
     target: u32,
@@ -272,7 +275,7 @@ impl PlayerSession {
             npcs,
             inventory,
             workbench: None,
-            production_epoch: rand::random::<u64>().max(1),
+            session_epoch: rand::random::<u64>().max(1),
             workbench_sync: 0.,
             workbench_lab_ready: false,
             equipment,
@@ -310,6 +313,7 @@ impl PlayerSession {
             next_effect,
             last_motion_report: None,
             last_launch: 0,
+            mob_damage_receipts: Vec::new(),
             following: false,
             follow_peer: None,
             target: u32::MAX,
@@ -470,7 +474,7 @@ impl PlayerSession {
             return Err(invalid("the local character is already logged in"));
         }
         self.selected_peer = Some(peer);
-        self.production_epoch = rand::random::<u64>().max(1);
+        self.session_epoch = rand::random::<u64>().max(1);
         self.gate_transit = None;
         self.endpoint = None;
         self.comms = None;
@@ -578,7 +582,7 @@ impl PlayerSession {
             self.sequence = 0;
             self.replay.clear();
             self.inputs.clear();
-            self.production_epoch = rand::random::<u64>().max(1);
+            self.session_epoch = rand::random::<u64>().max(1);
             self.pending.clear();
             let mut body = Vec::from(self.bind.octets());
             body.extend_from_slice(&SECTOR_PORT.to_le_bytes());
@@ -2117,7 +2121,7 @@ mod tests {
         ship.checkpoint_session(true).unwrap();
         let mut restored =
             PlayerSession::new(ship.sector.clone(), ship.bind, ship.state_dir.clone()).unwrap();
-        assert_eq!(restored.production_epoch, ship.production_epoch);
+        assert_eq!(restored.session_epoch, ship.session_epoch);
         restored.advance_production(0.1).unwrap();
         let after = restored.inventory.clone();
         let mut repeated =

@@ -6,6 +6,7 @@ use std::io;
 #[derive(Clone, Copy, Debug)]
 pub struct PlayerThreat {
     pub id: u32,
+    pub session_epoch: u64,
     pub position: [f32; 3],
     /// The coordinator excludes incapacitated, cloaked and departing ships.
     pub visible: bool,

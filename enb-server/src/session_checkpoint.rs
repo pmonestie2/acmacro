@@ -26,7 +26,8 @@ pub(super) struct Checkpoint {
     nonce: [u8; 20],
     #[serde(default)]
     #[serde(alias = "refinery_epoch")]
-    production_epoch: u64,
+    #[serde(alias = "production_epoch")]
+    session_epoch: u64,
     #[serde(default)]
     #[serde(alias = "refinery")]
     workbench: Option<production_service::WorkbenchWindow>,
@@ -56,6 +57,8 @@ pub(super) struct Checkpoint {
     following: bool,
     #[serde(default)]
     last_launch: u64,
+    #[serde(default)]
+    mob_damage_receipts: Vec<mob_damage::MobDamageReceipt>,
     #[serde(default)]
     skills: SkillState,
     #[serde(default)]
@@ -103,6 +106,32 @@ fn full_energy() -> f32 {
 }
 
 impl PlayerSession {
+    pub(super) fn checkpoint_mob_damage(
+        &self,
+        plan: &mob_damage::DamagePlan,
+        receipt: &mob_damage::MobDamageReceipt,
+    ) -> io::Result<()> {
+        let mut saved = self.capture_checkpoint()?.ok_or_else(|| {
+            invalid("Incoming damage requires an authenticated transport checkpoint.")
+        })?;
+        saved.shield = plan.result.shield;
+        saved.hull = plan.result.hull;
+        saved.energy = plan.energy;
+        saved.motion = plan.motion.clone();
+        saved.warp = plan.warp.clone();
+        if plan.warp_event.is_some() {
+            saved.warp_effects.clear();
+        }
+        saved.mining = None;
+        if plan.result.hull == 0. {
+            saved.weapon_firing.fill(false);
+            saved.player_firing = false;
+            saved.following = false;
+        }
+        saved.mob_damage_receipts.push(receipt.clone());
+        crate::durable_json::replace(&self.state_dir.join("session.local.json"), &saved)
+    }
+
     /// The file is local operational state, never a reusable login ticket.
     /// Restore only the same account, bind address and sector for a short outage.
     pub(super) fn restore_session(&mut self) -> io::Result<bool> {
@@ -130,6 +159,7 @@ impl PlayerSession {
             || saved.mobs.len() > 256
             || saved.replay.len() > 128
             || saved.inputs.len() > 256
+            || !mob_damage::valid_receipts(&saved.mob_damage_receipts)
             || saved
                 .workbench
                 .as_ref()
@@ -179,8 +209,8 @@ impl PlayerSession {
         self.endpoint = Some(saved.endpoint);
         self.comms = saved.comms;
         self.nonce = saved.nonce;
-        if saved.production_epoch != 0 {
-            self.production_epoch = saved.production_epoch;
+        if saved.session_epoch != 0 {
+            self.session_epoch = saved.session_epoch;
         }
         self.workbench = saved.workbench;
         self.workbench_lab_ready = saved.workbench_lab_ready;
@@ -204,6 +234,7 @@ impl PlayerSession {
         self.player_firing = saved.player_firing;
         self.following = saved.following;
         self.last_launch = saved.last_launch;
+        self.mob_damage_receipts = saved.mob_damage_receipts;
         self.follow_peer = None;
         self.skills = saved.skills;
         self.handoff = saved.handoff;
@@ -369,7 +400,7 @@ impl PlayerSession {
             endpoint: self.endpoint.unwrap(),
             comms: self.comms,
             nonce: self.nonce,
-            production_epoch: self.production_epoch,
+            session_epoch: self.session_epoch,
             workbench: self.workbench.clone(),
             workbench_lab_ready: self.workbench_lab_ready,
             sequence: self.sequence,
@@ -388,6 +419,7 @@ impl PlayerSession {
             player_firing: self.player_firing,
             following: self.following,
             last_launch: self.last_launch,
+            mob_damage_receipts: self.mob_damage_receipts.clone(),
             skills: self.skills.clone(),
             handoff: self.handoff.clone(),
             docking_target: self.docking_target,

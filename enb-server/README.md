@@ -17,7 +17,9 @@ species hull/shield split, first equipped weapon and SQL combat multipliers.
 Organic/energy enemies have shields without a hull bar. Shield Leech can finish
 these enemies and preserves kill attribution. Checkpoint recovery rebinds current
 content/caps while preserving damage fractions. Four-slot damage hate is
-persistent; faction hate, boss AI and NPC projectile travel still need work; this does not reproduce every original boss mechanic.
+persistent. NPC attacks now publish launch effects and apply their frozen typed
+damage after the archived beam/launcher delay, with durable player receipts and
+world acknowledgment. Faction hate and original boss AI still need work.
 The refinery supports 207 ore/product links and single/stack jobs with atomic
 cargo/credit/XP transactions and restart recovery. Native-format protocol tests
 pass; graphical refinery use remains unverified. Analysis and manufacturing now
@@ -43,7 +45,9 @@ passive effects. Public NPC dialogue and vendor purchases/sales have runtime
 handlers with persistent credits/cargo. The native NPC panel still needs work;
 active item effects, full trade progression and crafting balance remain unfinished.
 Player missile/projectile launchers use owned ammunition, delayed impacts and
-durable shot recovery; NPC projectile travel remains unfinished.
+durable shot recovery. NPC delayed impacts also survive replacement; target
+authentication epochs prevent old shots from striking a fresh login. See
+[NPC launch and impact recovery](docs/NPC_PROJECTILES.md).
 Rebuild the public catalog with `C:\PYTHON\python.exe
 enb-server/tools/import_items.py PATH_TO_PUBLIC_SQL_DUMP`; runtime inventory
 instances remain separate from these definitions.
@@ -206,7 +210,9 @@ is not part of this milestone.
   is correlated with the selected character and used to synchronize prediction.
 - A configured skybox (`backdrop_asset`), assembled Jenquai hull/engines/wings,
   ship colors, and client clock replies for original-client rendering.
-- Shared MOB idle/chase/attack/death/respawn simulation and simplified beam combat.
+- Shared MOB idle/chase/attack/death/respawn simulation, typed player damage,
+  player launcher flight and native NPC beam/launcher delays. Durable shots and
+  player receipts prevent duplicate impacts across acknowledgment failures.
 - Max-rank development JE skills and 27 active ability variants: cloak, environment
   shields, contemplation, leech, fold, jumpstart and wormholes, including group
   support with membership/range validation.
@@ -234,8 +240,9 @@ Further station services, missions, trade progression and full loot policies
 remain unfinished. Native NPC/vendor panel interaction remains
 partially verified; disposable vendor login/buy/restart/sell tests pass.
 Crafting quality/overrides and full XP/level progression remain pending;
-refining now consumes recipe quantities and stores trade XP. MOB health/DPS/ranges and some ability timings use prototype
-balance; names/levels/models come from archived public content. Networking
+refining now consumes recipe quantities and stores trade XP. MOB health/DPS/ranges
+use archived curves and SQL modifiers; some ability timings and boss behaviors
+remain simplified. Names/levels/models come from archived public content. Networking
 and local state are bounded, but this legacy protocol prototype is not intended
 for public deployment.
 
@@ -245,8 +252,13 @@ are streamed with eligible ore contents and shared mining/depletion. Missing MOB
 are preserved; the loop gate exists only in the sandbox fixture. Flight speeds,
 capacities, recharge and beam parameters follow equipment/quality/passive stats.
 Sandbox hull capacity uses each class's archived upgrade-six value before modifiers.
-Full hull-upgrade missions and NPC projectile combat remain unfinished. Formation
+Full hull-upgrade missions and NPC ammunition AI remain unfinished. Formation
 following supports impulse flight; group warp remains unfinished.
+
+The NPC delayed-impact integration passed 202 Rust tests and Clippy with warnings
+denied. Tests cover launch deadlines, player receipt/world acknowledgment
+recovery, reflection rollback, target departure and authentication lifetime.
+Native graphical NPC projectile playtesting remains pending.
 
 Run checks from the repository root:
 

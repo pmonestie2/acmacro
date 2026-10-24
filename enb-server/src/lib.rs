@@ -43,5 +43,6 @@ pub mod projectiles;
 
 pub mod combat_damage;
 pub mod mob_aggro;
+pub mod npc_projectiles;
 pub mod ship_progression;
 pub mod weapon_accuracy;

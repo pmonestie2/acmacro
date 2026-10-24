@@ -52,6 +52,10 @@ damage-type behavior, invalid numbers and three-dimensional firing arcs.
 Session tests additionally check resource changes and native damage fields.
 Live graphical combat verification is separate from these tests.
 
+NPC damage now follows the archived delayed launch/impact path and the shared
+world/player receipt acknowledgment protocol described in
+[NPC_PROJECTILES.md](NPC_PROJECTILES.md).
+
 `src/mob_aggro.rs` now preserves the archived four-slot hate table per MOB in
 sector checkpoints. Owned weapon hits and Shield Leech add the integer part of
 their damage to that attacker's hate. Positive maximum hate selects the target;
