@@ -42,7 +42,11 @@ def exercise(binary: Path, host: str) -> None:
                 '--state-dir', str(state)], input='example\n', text=True, capture_output=True, check=True)
         universe = json.loads((ROOT/'data/universe.json').read_text())
         mob = next(mob for sector in universe for mob in sector['mobs'] if mob['template_id'] == 2010)
-        mob.update(source_id=10, spawn=[1500., 0., 0.], aggressive=False, respawn_seconds=120.)
+        # Relocate this loot fixture completely. Its public spawn region is in
+        # another sector; retaining it would make the NPC drift away while the
+        # second account logs in, turning a loot test into a moving-range race.
+        mob.update(source_id=10, spawn=[1500., 0., 0.], spawn_region=None,
+                   aggressive=False, respawn_seconds=120.)
         content = json.loads((ROOT/'data/sector.json').read_text())
         content['mobs'], content['resources'] = [mob], []
         content_file = folder/'sector.json'
@@ -81,6 +85,8 @@ def exercise(binary: Path, host: str) -> None:
             sessions[0].send(0x2c, struct.pack('<4I', a, 9, 0x10000001, 0))
             pump(sessions, lambda: bool(corpse_ids(0) & corpse_ids(1)), 8, observed)
             corpse = next(iter(corpse_ids(0) & corpse_ids(1)))
+            stock = json.loads((state/f'loot/{content["id"]}.json').read_text())['corpses'][str(corpse)]['initial']['items']
+            assert any(item is not None and item['template'] == 5931 for item in stock)
             for session in sessions: session.send(0x17, struct.pack('<II', session.ticket.player_id, corpse))
             sessions[1].send(0x51, struct.pack('<II', b, 0))
             pump(sessions, lambda: any(index == 1 and frame.opcode == 0x1d and b'reserved' in frame.body
@@ -122,6 +128,9 @@ def exercise(binary: Path, host: str) -> None:
             assert len(world['corpses']) == 1 and world['deaths']['10']['generation'] == 1
             print('PASS: depletion removes corpse for both clients; repeated replacement neither revives MOB nor awards loot again', flush=True)
         except BaseException:
+            for index, frame in observed:
+                if frame.opcode == 0x1d:
+                    print(f'Client {index} message: {frame.body!r}')
             print(log.read_text(errors='replace'))
             raise
         finally:

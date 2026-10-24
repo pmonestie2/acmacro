@@ -341,6 +341,22 @@ impl LootWorld {
         // or new stock is published if this write fails.
         self.save(&candidate)?;
         self.state = candidate;
+        let corpse = &self.state.corpses[&id];
+        let stock: Vec<String> = corpse
+            .initial
+            .items
+            .iter()
+            .enumerate()
+            .filter_map(|(slot, item)| {
+                item.as_ref()
+                    .map(|item| format!("{slot}:{}x{}", item.template, item.quantity))
+            })
+            .collect();
+        println!(
+            "Corpse created: sector={}, corpse={id}, spawn={}, generation={}, template={}, killer={}, items=[{}], credits={}",
+            self.state.sector, corpse.death.spawn, corpse.death.generation,
+            birth.template, corpse.killer, stock.join(", "), corpse.initial.credits
+        );
         Ok(Some(id))
     }
 

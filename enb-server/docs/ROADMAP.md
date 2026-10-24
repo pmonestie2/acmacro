@@ -274,3 +274,13 @@ probe exceeded its15-second startup readiness window despite logging ready;
 the owned-process helper now allows30 seconds and the rerun passed. This result
 does not establish graphical collision behavior. The Unity agent's89d730c update
 was fetched and integrated without server-source overlap.
+
+Loot investigation confirmed real drops already work; the UI smoke's Achilles
+fixture can legitimately roll no items. The corrected two-player backend smoke
+requires public template2010's guaranteed item5931, then verifies native opening,
+tractor competition, replacement, owner cargo award and durable depletion. It
+passes against the deployed radius build. The relocated fixture clears its old
+roaming region to avoid a tractor-range race. Corpse-birth diagnostics now expose
+the server's actual generated stock; see LOOT.md. Diagnostics code is awaiting
+its next build/deployment rather than being assumed loaded into the running
+server.
