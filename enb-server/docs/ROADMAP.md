@@ -224,4 +224,8 @@ The sensor integration passes219 Rust tests and Clippy with warnings denied.
 Coverage includes all nine class bases, live visibility publication/target loss,
 cloak variants/group inheritance, sensor hysteresis and checkpoint continuity.
 Sandbox track levels remain the advertised50/50/50 until XP progression owns
-levels. Disposable packet verification and local deployment follow this check.
+levels. The local server is running this build. Disposable native-packet probes pass
+for CL61 (cannot detect cloaked JE) and CL62 (detects it), including pending-shot
+impacts after cloak and server replacement without duplicate damage. The
+two-client group/cloak/follow/formation/replacement smoke also passes. Scoped
+Python type checking passes for the extended NPC smoke.

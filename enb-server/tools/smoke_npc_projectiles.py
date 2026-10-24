@@ -48,6 +48,11 @@ class ShotSnapshot(TypedDict):
 
 class WorldSnapshot(TypedDict):
     npc_shots: list[ShotSnapshot]
+    actors: list[ActorSnapshot]
+
+
+class ActorSnapshot(TypedDict):
+    state: str
 
 
 class RecordingSession(SpaceSession):
@@ -64,7 +69,7 @@ class RecordingSession(SpaceSession):
         return frames
 
 
-def exercise(binary: Path, host: str) -> None:
+def exercise(binary: Path, host: str, level: int = 20) -> None:
     with tempfile.TemporaryDirectory(prefix='enb-npc-projectile-') as temporary:
         folder = Path(temporary)
         state, log = folder / 'state', folder / 'server.log'
@@ -73,7 +78,7 @@ def exercise(binary: Path, host: str) -> None:
                        input='example\n', text=True, capture_output=True, check=True)
         content = json.loads((ROOT / 'data/sector.json').read_text())
         mob = content['mobs'][0]
-        mob.update(level=20, spawn=[4000., 0., 0.], aggressive=True)
+        mob.update(level=level, spawn=[4000., 0., 0.], aggressive=True)
         mob['weapon'] = dict(item=3022, item_type=16, damage=11., damage_type=3,
                              reload=2., effect=948)
         mob['combat_override'].update(dps=0.25, reload=20., range=5000., effect=948)
@@ -131,7 +136,11 @@ def exercise(binary: Path, host: str) -> None:
             assert not damage_reports()
             client.send(0x58, struct.pack('<3I', owner, 0, 28))
             wait(lambda: player()['skills']['cloak_rank'] == 1, timeout=6.)
+            # Trained JE Cloak7 at OL150 gives stealth185 even for variant1.
+            expected_state = 'Attacking' if level * 3 >= 185 else 'Idle'
+            wait(lambda: world()['actors'][0]['state'] == expected_state)
             assert not damage_reports()
+            print(f'PASS: CL{level} sensor state after cloak is {expected_state}', flush=True)
             epoch = player()['session_epoch']
             endpoint = client.sector.getsockname()
             sequence = client.stream.expected
@@ -176,10 +185,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--binary', type=Path, default=ROOT / 'target/debug/enb-server.exe')
     parser.add_argument('--server', default='127.0.0.15')
+    parser.add_argument('--level', type=int, default=20, choices=(20, 61, 62))
     args = parser.parse_args()
     if registered(args.server):
         raise RuntimeError('Use an unused disposable server address')
-    exercise(args.binary.resolve(), args.server)
+    exercise(args.binary.resolve(), args.server, args.level)
 
 
 if __name__ == '__main__':

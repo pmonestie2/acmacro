@@ -104,3 +104,7 @@ Consequently a level 150 JE with Cloak 7 is hidden from CL61 but detectable by
 CL62. Lost targets use the existing 100 metre/second return-home fallback; full
 native patrol/drift and faction behavior remain pending. Shots already launched
 retain their frozen impact and are unaffected by subsequent cloak changes.
+
+`smoke_npc_projectiles.py --level 61` and `--level 62` check the trained-stealth boundary
+using native packets, then replace the server while a shot is in flight.
+Both pass; group cloak/follow/formation/restart checks also pass independently.
