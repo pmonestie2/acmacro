@@ -204,6 +204,7 @@ namespace Enb.Client
             Navigation(snapshot);
             Radar(snapshot);
             Social(snapshot);
+            TargetLock(snapshot);
             if (equipmentOpen) Equipment(snapshot);
             InputFocused = GUI.GetNameOfFocusedControl() == "Group invite";
             ChatEntry();
@@ -437,6 +438,24 @@ namespace Enb.Client
             if (distance > 20000) return;
             Fill(new Rect(center.x + dx * 67 / 20000 - size * .5f,
                 center.y - dy * 67 / 20000 - size * .5f, size, size), color);
+        }
+
+        /// <summary>Keep the selected ship's range and survivability visible during flight.</summary>
+        private void TargetLock(Snapshot snapshot)
+        {
+            uint selectedId = contactId != 0 ? contactId : snapshot.SelectedTargetId;
+            ShipActor target = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(actor => actor.Id == selectedId);
+            if (target == null || !target.HasPosition) return;
+            float x = (CanvasWidth - 340) * .5f, y = CanvasHeight - 214;
+            Panel(new Rect(x, y, 340, 92));
+            GUI.Label(new Rect(x + 12, y + 8, 315, 22), target.Name, body);
+            float distance = target.Position.Distance(snapshot.Position);
+            string state = snapshot.WeaponsFiring && snapshot.SelectedTargetId == target.Id ? "  ·  FIRING" : "";
+            GUI.Label(new Rect(x + 12, y + 31, 310, 20), $"RANGE  {distance / 1000:0.00} km{state}", small);
+            if (target.Shield >= 0)
+                Meter(new Rect(x + 12, y + 57, 150, 8), "SHIELD", target.Shield, cyan);
+            if (target.MaxHull > 0)
+                Meter(new Rect(x + 178, y + 57, 150, 8), "HULL", target.Hull / target.MaxHull, gold);
         }
 
         /// <summary>Project limited markers without enlarging physical models.</summary>
