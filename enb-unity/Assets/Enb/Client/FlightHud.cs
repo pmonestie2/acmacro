@@ -15,10 +15,11 @@ namespace Enb.Client
         private float CanvasWidth => Screen.width / Scale;
         private float CanvasHeight => Screen.height / Scale;
         private readonly Color cyan = new Color(.3f, .85f, 1), white = new Color(.86f, .93f, 1), muted = new Color(.46f, .62f, .72f), gold = new Color(1, .72f, .3f);
-        private GUIStyle heading, body, small, button, selected, playerButton, hostileButton, damageStyle;
-        private Texture2D buttonTexture, selectedTexture, panelTexture, radarTexture;
+        private GUIStyle heading, body, small, section, button, selected, playerButton, hostileButton, damageStyle;
+        private Texture2D buttonTexture, selectedTexture, panelTexture, radarTexture, platingTexture;
         internal GUIStyle BodyStyle => body;
         internal GUIStyle SmallStyle => small;
+        internal GUIStyle SectionStyle => section;
         internal GUIStyle ButtonStyle => button;
         private Vector2 scroll;
         private bool navigation = true, equipmentOpen, settingsOpen;
@@ -98,6 +99,20 @@ namespace Enb.Client
         /// <summary>Bind the HUD to its concrete foreground controller.</summary>
         public FlightHud(SpaceClient client) { this.client = client; }
 
+        /// <returns>float: Compact contact panel height while retaining scroll space for larger groups.</returns>
+        private float SocialHeight(Snapshot snapshot)
+        {
+            float content = 205 + Mathf.Min(socialContacts.Length, 4) * 45;
+            if (snapshot != null)
+            {
+                if (snapshot.Group.Joined) content += 100 + snapshot.Group.Members.Length * 26;
+                if (!string.IsNullOrEmpty(snapshot.Invitation)) content += 65;
+                if (contactId != 0) content += 95;
+                if (nearbyWrecks.Length > 0) content += 52;
+            }
+            return Mathf.Clamp(content, 220, Mathf.Max(220, Mathf.Min(440, CanvasHeight - 360)));
+        }
+
         /// <returns>Whether the pointer is over foreground controls.</returns>
         public bool ContainsPointer()
         {
@@ -106,7 +121,7 @@ namespace Enb.Client
                 (equipmentOpen && EquipmentRect().Contains(p)) ||
                 ((contactId != 0 || wreckId != 0) &&
                     new Rect((CanvasWidth - 360) * .5f, CanvasHeight - 380, 360, 260).Contains(p)) ||
-                new Rect(24, 100, 280, Mathf.Clamp(CanvasHeight - 360, 200, 440)).Contains(p) ||
+                new Rect(24, 100, 280, SocialHeight(client.CurrentSnapshot)).Contains(p) ||
                 (p.x < 354 && p.y > CanvasHeight - 235) ||
                 new Rect(CanvasWidth - 320, 20, 300, CanvasHeight - 40).Contains(p) ||
                 p.y > CanvasHeight - 115 || p.y < 85;
@@ -119,7 +134,7 @@ namespace Enb.Client
             for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
             {
                 float vertical = (float)y / Mathf.Max(1, height - 1);
-                float scanline = y % 4 == 0 ? .82f : 1f;
+                float scanline = y % 4 == 0 ? .975f : 1f;
                 float edge = .96f + .04f * Mathf.Sin((float)x / width * Mathf.PI);
                 Color color = Color.Lerp(bottom, top, vertical) * scanline * edge;
                 pixels[y * width + x] = color;
@@ -133,16 +148,20 @@ namespace Enb.Client
         private void EnsureStyles()
         {
             if (heading != null) return;
-            heading = new GUIStyle(GUI.skin.label) { fontSize = 22, fontStyle = FontStyle.Bold }; heading.normal.textColor = white;
-            body = new GUIStyle(GUI.skin.label) { fontSize = 14 }; body.normal.textColor = white;
-            small = new GUIStyle(GUI.skin.label) { fontSize = 11 }; small.normal.textColor = muted;
-            damageStyle = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            heading = new GUIStyle(GUI.skin.label) { fontSize = 25, fontStyle = FontStyle.Bold }; heading.normal.textColor = white;
+            body = new GUIStyle(GUI.skin.label) { fontSize = 16, fontStyle = FontStyle.Bold }; body.normal.textColor = white;
+            small = new GUIStyle(GUI.skin.label) { fontSize = 13 }; small.normal.textColor = muted;
+            section = new GUIStyle(GUI.skin.label) { fontSize = 14, fontStyle = FontStyle.Bold }; section.normal.textColor = cyan;
+            damageStyle = new GUIStyle(GUI.skin.label) { fontSize = 20, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
             damageStyle.normal.textColor = gold;
             panelTexture = SurfaceTexture(new Color(.025f, .072f, .103f, .98f), new Color(.006f, .018f, .035f, .97f), 64, 64);
+            platingTexture = Resources.Load<Texture2D>("HullPlating");
+            if (platingTexture != null) platingTexture.wrapMode = TextureWrapMode.Repeat;
             buttonTexture = SurfaceTexture(new Color(.07f, .16f, .205f, 1), new Color(.025f, .065f, .1f, 1), 32, 32);
             selectedTexture = SurfaceTexture(new Color(.13f, .32f, .38f, 1), new Color(.06f, .18f, .235f, 1), 32, 32);
             radarTexture = RadarTexture();
-            button = new GUIStyle(GUI.skin.button) { fontSize = 13, alignment = TextAnchor.MiddleLeft, padding = new RectOffset(10, 8, 4, 4) };
+            button = new GUIStyle(GUI.skin.button) { fontSize = 15, fontStyle = FontStyle.Bold, wordWrap = true,
+                alignment = TextAnchor.MiddleLeft, padding = new RectOffset(10, 8, 4, 4) };
             button.normal.background = buttonTexture; button.normal.textColor = white;
             button.hover.background = selectedTexture; button.hover.textColor = cyan;
             selected = new GUIStyle(button); selected.normal.background = selectedTexture; selected.normal.textColor = cyan;
@@ -175,12 +194,20 @@ namespace Enb.Client
         internal void Panel(Rect rect)
         {
             GUI.DrawTexture(rect, panelTexture);
-            Fill(new Rect(rect.x, rect.y, rect.width, 1), new Color(.32f, .75f, .84f, .9f));
-            Fill(new Rect(rect.x, rect.y + rect.height - 1, rect.width, 1), new Color(.14f, .35f, .45f, .8f));
-            Fill(new Rect(rect.x, rect.y + 2, rect.width, 8), new Color(.08f, .36f, .46f, .24f));
-            Fill(new Rect(rect.x, rect.y, 2, 15), cyan);
-            Fill(new Rect(rect.x + rect.width - 2, rect.y + rect.height - 15, 2, 15), cyan);
-            Fill(new Rect(rect.x + rect.width - 15, rect.y + rect.height - 2, 15, 2), cyan);
+            if (platingTexture != null)
+            {
+                Color previous = GUI.color;
+                GUI.color = new Color(.5f, .7f, .8f, .23f);
+                GUI.DrawTextureWithTexCoords(rect, platingTexture,
+                    new Rect(0, 0, rect.width / 310f, rect.height / 310f));
+                GUI.color = previous;
+            }
+            Fill(new Rect(rect.x, rect.y, rect.width, 2), new Color(.35f, .77f, .85f, .75f));
+            Fill(new Rect(rect.x, rect.y + 2, rect.width, 12), new Color(.045f, .16f, .23f, .55f));
+            Fill(new Rect(rect.x, rect.y + rect.height - 2, rect.width, 2), new Color(.15f, .43f, .5f, .75f));
+            Fill(new Rect(rect.x, rect.y, 3, 22), cyan);
+            Fill(new Rect(rect.x + rect.width - 3, rect.y + rect.height - 22, 3, 22), cyan);
+            Fill(new Rect(rect.x + rect.width - 22, rect.y + rect.height - 3, 22, 3), cyan);
         }
 
         /// <summary>Draw a shield, energy or hull gauge over a dim track.</summary>
@@ -239,7 +266,8 @@ namespace Enb.Client
             GUI.Label(new Rect(375, CanvasHeight - 46, CanvasWidth - 720, 40),
                 $"{keys.Display(ControlAction.Forward)} / {keys.Display(ControlAction.Reverse)} thrust   ·   {keys.Display(ControlAction.TurnLeft)} / {keys.Display(ControlAction.TurnRight)} turn   ·   {keys.Display(ControlAction.Brake)} brake\n" +
                 $"{keys.Display(ControlAction.NextHostile)} hostile   ·   {keys.Display(ControlAction.Follow)} follow   ·   {keys.Display(ControlAction.Fire)} fire   ·   RMB orbit", small);
-            if (GUI.Button(new Rect(CanvasWidth - 160, 25, 136, 28), keys.Display(ControlAction.Chart) + (client.Chart ? "  Flight view" : "  Sector chart"), button)) client.SetChart(!client.Chart);
+            if (GUI.Button(new Rect(CanvasWidth - 160, 25, 136, 28),
+                keys.Display(ControlAction.Chart) + (client.Chart ? "  Flight" : "  Chart"), button)) client.SetChart(!client.Chart);
             if (GUI.Button(new Rect(CanvasWidth - 300, 25, 130, 28), "Disconnect", button)) { client.Disconnect(); return; }
             if (snapshot == null) return;
             if (Time.unscaledTime >= refreshAt || sector != snapshot.Sector)
@@ -483,13 +511,16 @@ namespace Enb.Client
             if (GUI.Button(new Rect(x, 68, 296, 30), navigation ? "NAVIGATION   −" : "NAVIGATION   +", button)) navigation = !navigation;
             if (!navigation) return;
             float height = Mathf.Clamp(CanvasHeight - 510, 200, 370); Panel(new Rect(x, 100, 296, height));
-            GUILayout.BeginArea(new Rect(x + 8, 108, 280, height - 16)); scroll = GUILayout.BeginScrollView(scroll);
+            GUILayout.BeginArea(new Rect(x + 8, 108, 280, height - 16));
+            scroll.x = 0;
+            scroll = GUILayout.BeginScrollView(scroll);
             MapObject selectedTarget = client.Target;
             foreach (MapObject item in destinations)
             {
                 string kind = item.Kind == 11 ? "GATE" : item.Kind == 12 ? "PORT" : "NAV";
                 string text = $"{item.Name}\n{kind}   {item.Position.Distance(snapshot.Position) / 1000:0.0} km";
-                if (GUILayout.Button(text, selectedTarget?.Id == item.Id ? selected : button, GUILayout.Height(43))) client.Select(item.Id);
+                if (GUILayout.Button(text, selectedTarget?.Id == item.Id ? selected : button,
+                    GUILayout.Width(250), GUILayout.Height(54))) client.Select(item.Id);
             }
             GUILayout.EndScrollView(); GUILayout.EndArea(); float top = height + 112; MapObject target = client.Target;
             Panel(new Rect(x, top, 296, 145)); GUI.Label(new Rect(x + 12, top + 9, 270, 24), target?.Name ?? "Select a destination", body);
@@ -661,10 +692,10 @@ namespace Enb.Client
                 Fill(new Rect(point.x + radius - 9, point.y + radius, 9, 2), color);
                 Fill(new Rect(point.x + radius - 1, point.y + radius - 7, 2, 9), color);
                 float labelX = point.x + radius + 6, labelY = point.y - 16;
-                Fill(new Rect(labelX, labelY, 188, active ? 58 : 41), new Color(.005f, .018f, .032f, .88f));
+                Fill(new Rect(labelX, labelY, 250, active ? 58 : 41), new Color(.005f, .018f, .032f, .88f));
                 Fill(new Rect(labelX, labelY, 3, active ? 58 : 41), color);
-                GUI.Label(new Rect(labelX + 9, labelY + 3, 175, 19), player.Name, body);
-                GUI.Label(new Rect(labelX + 9, labelY + 22, 175, 17),
+                GUI.Label(new Rect(labelX + 9, labelY + 3, 237, 19), player.Name, body);
+                GUI.Label(new Rect(labelX + 9, labelY + 22, 237, 17),
                     (player.IsPlayer ? "PLAYER" : player.Hostile ? "HOSTILE" : "MOB") +
                     "   ·   " + (player.Position.Distance(snapshot.Position) / 1000).ToString("0.00") + " km", small);
                 if (active)
@@ -725,11 +756,11 @@ namespace Enb.Client
         /// <summary>Offer authoritative group controls and a selectable nearby-contact roster.</summary>
         private void Social(Snapshot snapshot)
         {
-            float height = Mathf.Clamp(CanvasHeight - 360, 200, 440);
+            float height = SocialHeight(snapshot);
             Panel(new Rect(24, 100, 280, height));
             GUILayout.BeginArea(new Rect(34, 108, 260, height - 16));
             contactsScroll = GUILayout.BeginScrollView(contactsScroll);
-            GUILayout.Label(snapshot.Group.Joined ? "GROUP" + (snapshot.Group.IsLeader ? " · LEADER" : "") : "GROUP · SOLO", body);
+            GUILayout.Label(snapshot.Group.Joined ? "CREW" + (snapshot.Group.IsLeader ? "  /  LEADER" : "") : "CREW  /  SOLO", section);
             GUILayout.Label("Invite any online toon by name", small);
             GUI.SetNextControlName("Group invite");
             inviteName = GUILayout.TextField(inviteName, 20);
@@ -780,13 +811,13 @@ namespace Enb.Client
                 if (snapshot.Group.IsLeader && GUILayout.Button("Disband", button)) client.SendChat("/disband");
                 GUILayout.EndHorizontal();
             }
-            GUILayout.Space(12); GUILayout.Label("CONTACTS", body);
+            GUILayout.Space(12); GUILayout.Label($"CONTACTS  /  {socialContacts.Length}", section);
             foreach (ShipActor actor in socialContacts)
             {
                 string kind = actor.IsPlayer ? "PLAYER" : actor.Hostile ? "HOSTILE" : "NPC";
                 GUIStyle contactStyle = contactId == actor.Id ? selected : actor.IsPlayer ? playerButton : actor.Hostile ? hostileButton : button;
-                if (GUILayout.Button($"{kind}   {actor.Name}\n{actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
-                    contactStyle, GUILayout.Height(40)))
+                if (GUILayout.Button($"{actor.Name}\n{kind}   ·   {actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
+                    contactStyle, GUILayout.Height(46)))
                     SelectContact(actor.Id);
             }
             ShipActor contact = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(a => a.Id == contactId);

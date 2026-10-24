@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Enb.Client;
+using Enb.Protocol;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Enb.Editor
         private static double deadline, captureAt;
         private static bool connected;
         private static int stage;
+        private static ClientWorker peer;
 
         /// <summary>Resume the smoke driver after the Play-mode domain reload.</summary>
         static VisualSmoke()
@@ -49,6 +51,12 @@ namespace Enb.Editor
             if (client.CurrentSnapshot == null || !client.CurrentSnapshot.Ready || !client.CurrentSnapshot.HasPosition || client.CurrentSnapshot.Objects.Length == 0) return;
             if (stage == 0)
             {
+                if (peer == null) peer = new ClientWorker("127.0.0.1", "peer", "pass");
+                if (peer.Error != null) { Fail("Peer client: " + peer.Error); return; }
+                if (peer.Latest?.Ready != true ||
+                    !client.CurrentSnapshot.Players.Any(player => player.HasPosition) ||
+                    !client.CurrentSnapshot.Mobs.Any(mob => mob.HasPosition &&
+                        mob.Position.Distance(client.CurrentSnapshot.Position) < 5000)) return;
                 if (client.RenderedBodyCount < 200) { Fail("Static scenery was not instantiated."); return; }
                 Directory.CreateDirectory("Builds/verification");
                 captureAt = EditorApplication.timeSinceStartup + 3; stage = 1;
@@ -119,12 +127,20 @@ namespace Enb.Editor
             foreach (string name in new[] { "chase", "chart", "asteroid", "station", "gate" })
                 if (!File.Exists("Builds/verification/" + name + ".png")) { Fail("Missing capture: " + name); return; }
             Debug.Log("PASS: 3D scenery, flight/chart rendering, asteroid/station/gate approaches and actual sector travel to " + client.CurrentSnapshot.Sector);
+            ClosePeer();
             EditorApplication.update -= Tick;
             EditorApplication.Exit(0);
         }
 
+        /// <summary>Close the disposable second client before leaving Play mode.</summary>
+        private static void ClosePeer()
+        {
+            peer?.Dispose();
+            peer = null;
+        }
+
         /// <summary>Make failed graphical checks visible to the calling harness.</summary>
         private static void Fail(string message)
-        { Debug.LogError(message); EditorApplication.update -= Tick; EditorApplication.Exit(1); }
+        { Debug.LogError(message); ClosePeer(); EditorApplication.update -= Tick; EditorApplication.Exit(1); }
     }
 }

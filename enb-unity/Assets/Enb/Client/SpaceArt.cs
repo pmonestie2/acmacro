@@ -13,7 +13,7 @@ namespace Enb.Client
         private readonly List<Mesh> meshes = new List<Mesh>();
         private readonly Mesh[] rocks = new Mesh[8];
         private readonly Mesh ring, shipHull;
-        private readonly Material hull, trim, dark, glass, glow, amber, hostile, mineral, rock, field;
+        private readonly Material hull, trim, dark, glass, glow, amber, hostile, mineral, rock, oreRock, field;
         public Material Sky { get; }
 
         /// <summary>Create shared assets once rather than allocating them per object or frame.</summary>
@@ -23,6 +23,9 @@ namespace Enb.Client
             trim = Surface(new Color(.08f, .15f, .2f), .8f, .5f);
             dark = Surface(new Color(.025f, .035f, .05f), .6f, .3f);
             hull.SetFloat("_Panels", 1); trim.SetFloat("_Panels", .65f); dark.SetFloat("_Panels", .5f);
+            Texture2D plating = LoadDetail("HullPlating");
+            foreach (Material surface in new[] { hull, trim, dark })
+            { surface.SetTexture("_DetailTex", plating); surface.SetFloat("_TextureStrength", .8f); }
             glass = Surface(new Color(.015f, .12f, .18f), .8f, .85f);
             glow = Surface(new Color(.05f, .6f, .85f), .2f, .5f, new Color(.1f, 1.4f, 2.1f));
             amber = Surface(new Color(.8f, .35f, .06f), .4f, .3f, new Color(1.3f, .35f, .04f));
@@ -30,6 +33,9 @@ namespace Enb.Client
             mineral = Surface(new Color(.04f, .62f, .72f), .35f, .65f, new Color(.08f, 1.15f, 1.4f));
             rock = Surface(new Color(.24f, .21f, .19f), .08f, .12f);
             rock.SetFloat("_Grain", 1);
+            oreRock = Surface(new Color(.56f, .61f, .64f), .15f, .18f);
+            oreRock.SetTexture("_DetailTex", LoadDetail("OreRock"));
+            oreRock.SetFloat("_TextureStrength", .95f);
             field = ShaderMaterial("ENB/GateField");
             Sky = ShaderMaterial("ENB/SpaceSky");
             ring = Torus(1, .12f, 48, 8); meshes.Add(ring);
@@ -51,6 +57,15 @@ namespace Enb.Client
             Shader shader = Shader.Find(name);
             if (shader == null) throw new InvalidOperationException("Missing shader: " + name);
             var material = new Material(shader); materials.Add(material); return material;
+        }
+
+        /// <returns>Texture2D: A Unity-owned bitmap detail texture included with the client.</returns>
+        private static Texture2D LoadDetail(string name)
+        {
+            Texture2D texture = Resources.Load<Texture2D>(name);
+            if (texture == null) throw new InvalidOperationException("Missing surface texture: " + name);
+            texture.wrapMode = TextureWrapMode.Repeat;
+            return texture;
         }
 
         /// <returns>A parented model root in local coordinates.</returns>
@@ -139,16 +154,16 @@ namespace Enb.Client
             return root;
         }
 
-        /// <summary>Add a fixed-size scanner outline so distant ships remain distinguishable in the world.</summary>
+        /// <summary>Add a compact scanner outline without obscuring nearby ships.</summary>
         public void ContactMarker(Transform ship, bool isPlayer, bool isHostile)
         {
             Transform marker = Root(ship, isPlayer ? "Player scanner outline" : "Mob scanner outline");
             marker.localScale = Vector3.one / Mathf.Max(.01f, ship.localScale.x);
             Material signal = isPlayer ? glow : isHostile ? hostile : amber;
-            Model(marker, ring, signal, Vector3.zero, Vector3.one * 1.35f);
+            Model(marker, ring, signal, Vector3.zero, Vector3.one * .22f);
             for (int side = -1; side <= 1; side += 2)
-                Part(marker, PrimitiveType.Cube, new Vector3(side * 1.48f, 0, 0),
-                    new Vector3(.22f, .045f, .045f), signal);
+                Part(marker, PrimitiveType.Cube, new Vector3(side * .29f, 0, 0),
+                    new Vector3(.08f, .02f, .02f), signal);
         }
 
         /// <returns>A solid replacement model for a server object, or null for invisible boundary markers.</returns>
@@ -185,7 +200,7 @@ namespace Enb.Client
         /// <summary>Expose bright mineral seams and facets on mineable asteroids.</summary>
         private void ResourceRock(Transform root, uint id)
         {
-            Model(root, rocks[(int)(id % (uint)rocks.Length)], rock, Vector3.zero, new Vector3(2.1f, 1.5f, 1.9f));
+            Model(root, rocks[(int)(id % (uint)rocks.Length)], oreRock, Vector3.zero, new Vector3(2.1f, 1.5f, 1.9f));
             for (int i = 0; i < 5; i++)
             {
                 float angle = (i * 72 + id % 31) * Mathf.Deg2Rad;

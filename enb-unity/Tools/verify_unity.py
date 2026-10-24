@@ -36,10 +36,26 @@ def main() -> None:
     subprocess.run([cargo, 'build', '--locked', '--manifest-path', str(root / 'enb-server/Cargo.toml')], check=True)
     with tempfile.TemporaryDirectory(prefix='enb-unity-visual-') as temporary:
         state = Path(temporary)
+        executable = root / 'enb-server/target/debug/enb-server'
+        for account, character, password in (
+            ('local', 'SandboxPilot', 'local'), ('peer', 'Visitor', 'pass')
+        ):
+            subprocess.run([
+                str(executable), '--state-dir', str(state), '--create-account', account,
+                '--character', character,
+            ], input=password + '\n', text=True, check=True, stdout=subprocess.DEVNULL)
+        sector = json.loads((root / 'enb-server/data/asteroid_belt_alpha.json').read_text())
+        sector['mobs'][0]['spawn'] = [1000.0, 0.0, 0.0]
+        hostile = next(mob for mob in sector['mobs'] if mob['aggressive'])
+        hostile['spawn'] = [2400.0, 0.0, 0.0]
+        hostile['aggressive'] = False
+        hostile['aggression'] = 0
+        visual_sector = state / 'visual-sector.json'
+        visual_sector.write_text(json.dumps(sector))
         with (output / 'server.log').open('w') as log:
             server = subprocess.Popen([
-                str(root / 'enb-server/target/debug/enb-server'), '--bind', '127.0.0.1',
-                '--state-dir', str(state), '--content', str(root / 'enb-server/data/asteroid_belt_alpha.json'),
+                str(executable), '--bind', '127.0.0.1',
+                '--state-dir', str(state), '--content', str(visual_sector),
             ], stdout=log, stderr=subprocess.STDOUT)
             try:
                 deadline = time.monotonic() + 15

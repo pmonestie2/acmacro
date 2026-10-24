@@ -60,6 +60,8 @@ namespace Enb.Client
             if (key == KeyCode.Space) return "Space";
             if (key == KeyCode.UpArrow) return "↑";
             if (key == KeyCode.DownArrow) return "↓";
+            if (key >= KeyCode.Alpha0 && key <= KeyCode.Alpha9)
+                return ((int)key - (int)KeyCode.Alpha0).ToString();
             return key.ToString();
         }
 

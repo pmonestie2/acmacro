@@ -108,15 +108,17 @@ namespace Enb.Client
                 int id = slots[i];
                 AbilityDefinition ability = catalog.FirstOrDefault(item => item.id == id);
                 string key = client.Bindings.Display((ControlAction)((int)ControlAction.AbilityOne + i));
-                string name = ability == null ? "Assign" : ability.name.Length > 12 ?
-                    ability.name.Substring(0, 12) + "…" : ability.name;
-                string label = key + "  " + name;
-                if (GUI.Button(new Rect(bar.x + 9 + i * 90, bar.y + 10, 84, 40), label,
-                    flightHud.ButtonStyle))
+                string name = ability == null ? "ASSIGN" : ability.name.Length > 9 ?
+                    ability.name.Substring(0, 8) + "…" : ability.name;
+                Rect slot = new Rect(bar.x + 9 + i * 90, bar.y + 10, 84, 40);
+                if (GUI.Button(slot, GUIContent.none, flightHud.ButtonStyle))
                 {
                     if (ability == null) { open = true; assigningSlot = i; }
                     else ActivateSlot(i, snapshot);
                 }
+                GUI.Label(new Rect(slot.x + 7, slot.y + 1, 70, 19), key, flightHud.BodyStyle);
+                GUI.Label(new Rect(slot.x + 7, slot.y + 20, 72, 17), name,
+                    ability == null ? flightHud.SmallStyle : flightHud.SectionStyle);
             }
         }
 
