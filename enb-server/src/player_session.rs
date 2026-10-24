@@ -3421,7 +3421,7 @@ mod tests {
         for _ in 0..80 {
             ship.advance(0.1).unwrap();
         }
-        assert_eq!(ship.hull, ship.equipment.ship.hull_capacity * 0.49);
+        assert_eq!(ship.hull, ship.equipment.ship.hull_capacity * 0.7);
         assert!(ship.shield > 0. && ship.shield <= ship.equipment.ship.shield_capacity);
         assert!(ship.tow_to_station().is_err());
         ship.hull = 0.;

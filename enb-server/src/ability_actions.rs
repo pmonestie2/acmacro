@@ -55,7 +55,18 @@ impl PlayerSession {
             return Err(invalid("This skill is recovering."));
         }
         let target = self.ability_target(&ability, requested_target)?;
-        if self.energy < ability.energy {
+        let jumpstart = if ability.kind == AbilityKind::Jumpstart {
+            Some(self.prepare_jumpstart_plan(target)?)
+        } else {
+            None
+        };
+        let energy = jumpstart
+            .as_ref()
+            .map_or(ability.energy, |plan| plan.energy);
+        let charge = jumpstart
+            .as_ref()
+            .map_or(ability.charge, |plan| plan.charge_seconds);
+        if self.energy < energy {
             return Err(invalid("Insufficient reactor energy."));
         }
         if ability.kind == AbilityKind::Wormhole {
@@ -64,7 +75,7 @@ impl PlayerSession {
         if ability.kind == AbilityKind::Cloak && ability.rank < 5 && self.motion.speed.abs() > 0.1 {
             return Err(invalid("Stop the ship before using this cloak rank."));
         }
-        self.energy -= ability.energy;
+        self.energy -= energy;
         let effect = self.next_effect;
         self.next_effect = self.next_effect.wrapping_add(1);
         let asset = match ability.kind {
@@ -74,19 +85,36 @@ impl PlayerSession {
             AbilityKind::Wormhole => 689,
             AbilityKind::Environment => 719,
             AbilityKind::Fold => 202,
-            AbilityKind::Jumpstart => 411,
+            AbilityKind::Jumpstart => {
+                if target == self.player_id() {
+                    411
+                } else {
+                    414
+                }
+            }
             AbilityKind::Leech => 1059,
         };
-        self.pending.push(packets::object_effect(
-            self.player_id(),
-            effect,
-            asset,
-            self.tick_ms(),
-        ));
+        if ability.kind == AbilityKind::Jumpstart {
+            self.pending.push(packets::weapon_effect(
+                self.player_id(),
+                target,
+                asset,
+                effect,
+                self.tick_ms(),
+                500,
+            ));
+        } else {
+            self.pending.push(packets::object_effect(
+                self.player_id(),
+                effect,
+                asset,
+                self.tick_ms(),
+            ));
+        }
         self.pending.push(packets::ability_progress(
             Some(index),
             self.tick_ms(),
-            self.tick_ms().wrapping_add((ability.charge * 1000.) as u32),
+            self.tick_ms().wrapping_add((charge * 1000.) as u32),
         ));
         self.pending.push(packets::ship_resources(
             self.player_id(),
@@ -98,8 +126,9 @@ impl PlayerSession {
         self.skills.cast = Some(Cast {
             ability: index,
             target,
-            remaining: ability.charge,
+            remaining: charge,
             effect,
+            jumpstart,
         });
         println!(
             "Ability charging: {}; {} ({index}); target={target}",
@@ -207,8 +236,16 @@ impl PlayerSession {
             let self_jumpstart =
                 definition.kind == AbilityKind::Jumpstart && cast.target == self.player_id();
             let invalid_jumpstart = definition.kind == AbilityKind::Jumpstart
-                && (self.jumpstart_definition().is_err()
-                    || self.jumpstart_target(&definition, cast.target).is_err()
+                && (cast.jumpstart.as_ref().is_some_and(|plan| !plan.valid())
+                    || cast.jumpstart.is_none() && self.jumpstart_definition().is_err()
+                    || self
+                        .jumpstart_target_in_range(
+                            cast.target,
+                            cast.jumpstart
+                                .as_ref()
+                                .map_or(definition.range as f32, |plan| plan.range),
+                        )
+                        .is_err()
                     || self.warp.active()
                     || self.gate_transit.is_some()
                     || !self.logged_in
@@ -231,15 +268,23 @@ impl PlayerSession {
                 self.remove_effect(cast.effect);
                 self.pending.push(packets::ability_progress(None, 0, 0));
                 let ability = self.skill_catalog.ability(cast.ability)?;
-                self.skills
-                    .cooldowns
-                    .insert(ability.skill, ability.cooldown);
+                let cooldown = cast
+                    .jumpstart
+                    .as_ref()
+                    .map_or(ability.cooldown, |plan| plan.cooldown_seconds);
+                if cooldown > 0. {
+                    self.skills.cooldowns.insert(ability.skill, cooldown);
+                } else {
+                    self.skills.cooldowns.remove(&ability.skill);
+                }
                 self.pending.push(packets::skill_cooldown(
                     ability.skill,
                     self.tick_ms(),
-                    (ability.cooldown * 1000.) as u32,
+                    (cooldown * 1000.) as u32,
                 ));
-                if let Err(error) = self.apply_ability(&ability, cast.target) {
+                if let Err(error) =
+                    self.apply_ability(&ability, cast.target, cast.jumpstart.as_ref())
+                {
                     self.pending.push(packets::message(&error.to_string()));
                 } else {
                     println!(
@@ -252,7 +297,12 @@ impl PlayerSession {
         Ok(())
     }
 
-    fn apply_ability(&mut self, ability: &AbilityDefinition, target: u32) -> io::Result<()> {
+    fn apply_ability(
+        &mut self,
+        ability: &AbilityDefinition,
+        target: u32,
+        jumpstart: Option<&crate::skills::JumpstartPlan>,
+    ) -> io::Result<()> {
         let shared = Arc::clone(&self.combat);
         let mut combat = lock_combat(&shared)?;
         match ability.kind {
@@ -339,11 +389,16 @@ impl PlayerSession {
                 }
             }
             AbilityKind::Jumpstart => {
+                // Missing plans exist only on pre-native in-flight checkpoints.
+                let action = SupportAction::Jumpstart {
+                    target,
+                    repair_fraction: jumpstart.map_or(0.49, |plan| plan.repair_fraction),
+                    range: jumpstart.map_or(ability.range as f32, |plan| plan.range),
+                };
                 if target == self.player_id() {
-                    self.receive_support(self.player_id(), &SupportAction::Jumpstart { target })?;
+                    self.receive_support(self.player_id(), &action)?;
                 } else {
-                    self.support_actions
-                        .push(SupportAction::Jumpstart { target });
+                    self.support_actions.push(action);
                 }
             }
             AbilityKind::Leech => {

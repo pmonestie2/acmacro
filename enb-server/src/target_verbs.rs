@@ -45,10 +45,18 @@ impl PlayerSession {
                 ));
             }
         }
-        if let Some(position) = self.visible_corpses.get(&self.target) {
+        if self.visible_corpses.contains_key(&self.target) {
             verbs.push((
                 3,
-                if can_act && distance(self.position, *position) <= 6000. {
+                if can_act
+                    && lock_loot(&self.loot_world).is_ok_and(|world| {
+                        world.get(self.target).is_ok_and(|corpse| {
+                            corpse
+                                .range_to(self.position)
+                                .is_ok_and(|range| range <= 6000.)
+                        })
+                    })
+                {
                     0
                 } else {
                     2
@@ -86,7 +94,7 @@ impl PlayerSession {
                 let attribute = if can_act
                     && available
                     && self.skills.cloak_rank == 0
-                    && distance(self.position, resource.object.position) <= self.prospect_range()
+                    && resource.object.range_to(self.position) <= self.prospect_range()
                 {
                     0
                 } else {

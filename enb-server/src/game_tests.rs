@@ -363,7 +363,7 @@ fn combat_is_shared_and_group_jumpstart_and_cloak_apply_to_other_player() {
     advance(&mut game, 7.2);
     assert_eq!(
         game.sessions[&b].peer_snapshot().unwrap().hull,
-        hull_capacity * 0.49
+        hull_capacity * 0.7
     );
     activate(&mut game, a, a, 51);
     advance(&mut game, 3.2);

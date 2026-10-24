@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from import_asset_radii import export, load_radii, parse_radii
+from import_asset_radii import export, load_radii, load_resource_radii, parse_radii
 
 
 class AssetRadiusTests(unittest.TestCase):
@@ -21,6 +21,13 @@ class AssetRadiusTests(unittest.TestCase):
             self.assertEqual(document['source'], 'cbasset.ini')
             self.assertEqual(len(document['sha256']), 64)
             self.assertNotIn('Mount0', target.read_text())
+            geometry = load_resource_radii(target)
+            self.assertEqual(geometry[2], 12.5)
+            self.assertEqual(geometry[1822], 800.)
+            self.assertEqual(geometry[1827], 630.)
+            self.assertEqual(geometry[1830], 510.)
+            self.assertEqual(geometry[1833], 750.)
+            self.assertEqual(geometry[1834], 0.)
 
     def test_bad_geometry_and_conflicting_duplicates_are_rejected(self) -> None:
         for source in ['[BASE-1]\nRadius=nan', '[BASE-1]\nRadius=-1',

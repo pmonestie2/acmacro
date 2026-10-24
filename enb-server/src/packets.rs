@@ -1028,6 +1028,7 @@ pub fn corpse_create(corpse: &crate::loot_world::Corpse) -> Frame {
         name: corpse.name.clone(),
         object_type: 25,
         asset: corpse.initial.asset,
+        radius: 0., // This map packet carries no collision geometry field.
         position: corpse.position,
         scale: 20.,
         orientation: [0., 0., 0., 1.],

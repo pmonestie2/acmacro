@@ -37,10 +37,12 @@ class ResourceImportTests(unittest.TestCase):
         self.assertEqual(len(nodes), 5)
         self.assertEqual(len({node['id'] for node in nodes}), 5)
         self.assertEqual(nodes[0]['level'], 3)
+        self.assertEqual(nodes[0]['radius'], 800.)
         self.assertAlmostEqual(nodes[0]['position'][0], 1000)
         self.assertAlmostEqual(nodes[0]['position'][1], 2100)
         self.assertEqual(nodes[0]['ore_items'], [{'item_id': 50, 'frequency': 25}])
         self.assertEqual(nodes[-1]['name'], 'Hulk (L2)')
+        self.assertGreater(nodes[-1]['radius'], 0.)
         self.assertTrue(all(node['object_type'] == 38 for node in nodes))
 
     def test_ore_candidates_preserve_legacy_zero_weights_and_filter_items(self) -> None:

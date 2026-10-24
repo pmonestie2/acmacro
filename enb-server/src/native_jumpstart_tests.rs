@@ -41,18 +41,17 @@ fn incapacitated_native_self_verb_and_action_use_catalog_cast_without_changing_s
     assert_eq!(cast.ability, 65);
     assert_eq!(cast.target, ship.player_id());
     assert_eq!(ship.target, selected);
-    assert_eq!(
-        ship.energy,
-        energy - ship.skill_catalog.ability(65).unwrap().energy
-    );
-    ship.advance_abilities(8.).unwrap();
+    assert_eq!(ship.energy, energy - 120.);
+    assert_eq!(cast.remaining, 5.);
+    assert_eq!(cast.jumpstart.as_ref().unwrap().repair_fraction, 0.7);
+    ship.advance_abilities(4.9).unwrap();
+    assert_eq!(ship.hull, 0.);
+    ship.advance_abilities(0.2).unwrap();
     assert!(ship.hull > 0.);
     assert!(ship.skills.cast.is_none());
-    assert!(ship
-        .skills
-        .cooldowns
-        .get(&31)
-        .is_some_and(|cooldown| *cooldown > 0.));
+    assert!(!ship.skills.cooldowns.contains_key(&31));
+    assert_eq!(ship.hull, ship.equipment.ship.hull_capacity * 0.7);
+    assert_eq!(ship.shield, 0.);
 }
 
 #[test]
@@ -69,15 +68,15 @@ fn nongroup_incapped_peer_is_eligible_and_packet_target_stays_frozen_during_cast
     assert_eq!(ship.target, ship.player_id());
     ship.advance_abilities(8.).unwrap();
     assert!(
-        matches!(ship.support_actions.last(), Some(SupportAction::Jumpstart { target }) if *target == peer.profile.game_id)
+        matches!(ship.support_actions.last(), Some(SupportAction::Jumpstart { target, repair_fraction, range }) if *target == peer.profile.game_id && *repair_fraction == 0.7 && *range == 2750.)
     );
-    assert!(ship.can_deliver_jumpstart(&peer));
+    assert!(ship.can_deliver_jumpstart(&peer, 2750.));
     let mut departed = peer.clone();
     departed.sector += 1;
-    assert!(!ship.can_deliver_jumpstart(&departed));
+    assert!(!ship.can_deliver_jumpstart(&departed, 2750.));
     departed = peer;
     departed.hull = 1.;
-    assert!(!ship.can_deliver_jumpstart(&departed));
+    assert!(!ship.can_deliver_jumpstart(&departed, 2750.));
 }
 
 #[test]
@@ -186,4 +185,178 @@ fn peer_departure_revival_or_warp_cancels_cast_and_other_support_stays_group_onl
     assert!(ship.begin_jumpstart(ship.player_id()).is_err()); // living self
     ship.hull = 0.;
     assert!(ship.begin_jumpstart(u32::MAX).is_err()); // native action needs an object
+}
+
+#[test]
+fn frozen_native_plan_survives_process_replacement_without_recharging_or_repair_reroll() {
+    let mut original = super::super::tests::journal_ship();
+    original.hull = 0.;
+    original.energy = original.equipment.ship.energy_capacity;
+    original.begin_jumpstart(original.player_id()).unwrap();
+    original.advance_abilities(2.).unwrap();
+    let energy = original.energy;
+    let plan = original.skills.cast.as_ref().unwrap().jumpstart.clone();
+    original.checkpoint_session(true).unwrap();
+    let mut resumed = PlayerSession::new(
+        original.sector.clone(),
+        original.bind,
+        original.state_dir.clone(),
+    )
+    .unwrap();
+    assert!(resumed.logged_in);
+    let cast = resumed.skills.cast.as_ref().unwrap();
+    assert_eq!(cast.remaining, 3.);
+    assert_eq!(cast.jumpstart, plan);
+    assert_eq!(resumed.energy, energy);
+    // The source level was frozen when Execute committed, not at Update.
+    resumed
+        .skill_catalog
+        .skills
+        .iter_mut()
+        .find(|skill| skill.id == 31)
+        .unwrap()
+        .level = 4;
+    resumed.advance_abilities(2.9).unwrap();
+    assert_eq!(resumed.hull, 0.);
+    resumed.advance_abilities(0.2).unwrap();
+    assert_eq!(resumed.hull, resumed.equipment.ship.hull_capacity * 0.7);
+    assert_eq!(resumed.energy, energy);
+    assert!(!resumed.skills.cooldowns.contains_key(&31));
+}
+
+#[test]
+fn legacy_checkpoint_preserves_its_paid_cost_remaining_time_and_repair_until_completion() {
+    let mut original = super::super::tests::journal_ship();
+    original.hull = 0.;
+    original.energy = original.equipment.ship.energy_capacity;
+    original.begin_jumpstart(original.player_id()).unwrap();
+    original.checkpoint_session(true).unwrap();
+    let path = original.state_dir.join("session.local.json");
+    let mut saved: serde_json::Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    saved["skills"]["cast"]
+        .as_object_mut()
+        .unwrap()
+        .remove("jumpstart");
+    saved["skills"]["cast"]["remaining"] = 3.25.into();
+    let paid_energy = original.equipment.ship.energy_capacity - 140.;
+    saved["energy"] = paid_energy.into();
+    fs::write(&path, serde_json::to_vec(&saved).unwrap()).unwrap();
+    let mut resumed = PlayerSession::new(
+        original.sector.clone(),
+        original.bind,
+        original.state_dir.clone(),
+    )
+    .unwrap();
+    assert!(resumed.logged_in);
+    assert_eq!(resumed.energy, paid_energy);
+    assert_eq!(resumed.skills.cast.as_ref().unwrap().remaining, 3.25);
+    assert!(resumed.skills.cast.as_ref().unwrap().jumpstart.is_none());
+    resumed.advance_abilities(3.).unwrap();
+    assert_eq!(resumed.hull, 0.);
+    resumed.advance_abilities(0.3).unwrap();
+    assert_eq!(resumed.hull, resumed.equipment.ship.hull_capacity * 0.49);
+    assert_eq!(resumed.energy, paid_energy);
+    assert_eq!(resumed.skills.cooldowns[&31], 10.);
+    resumed.hull = 0.;
+    resumed.energy = resumed.equipment.ship.energy_capacity;
+    resumed.skills.cooldowns.remove(&31);
+    resumed.begin_jumpstart(resumed.player_id()).unwrap();
+    assert!(resumed.skills.cast.as_ref().unwrap().jumpstart.is_some());
+}
+
+#[test]
+fn native_effects_and_frozen_recipient_fraction_use_the_real_peer_target() {
+    for own in [false, true] {
+        let mut ship = ship();
+        let target = if own {
+            ship.hull = 0.;
+            ship.player_id()
+        } else {
+            peer(&mut ship, 500.).profile.game_id
+        };
+        ship.begin_jumpstart(target).unwrap();
+        let effect = ship
+            .pending
+            .iter()
+            .rev()
+            .find(|frame| frame.opcode == 0x0b)
+            .unwrap();
+        assert_eq!(
+            u32::from_le_bytes(effect.body[6..10].try_into().unwrap()),
+            target
+        );
+        assert_eq!(
+            u16::from_le_bytes(effect.body[10..12].try_into().unwrap()),
+            if own { 411 } else { 414 }
+        );
+    }
+    let mut receiver = ship();
+    receiver.hull = 0.;
+    receiver.shield = 10.;
+    let action = SupportAction::Jumpstart {
+        target: receiver.player_id(),
+        repair_fraction: 0.4,
+        range: 2000.,
+    };
+    receiver
+        .receive_support(receiver.player_id() + 1, &action)
+        .unwrap();
+    assert_eq!(receiver.hull, receiver.equipment.ship.hull_capacity * 0.4);
+    assert_eq!(receiver.shield, 0.);
+    receiver.hull = 0.;
+    for fraction in [0., -1., 1.1, f32::NAN, f32::INFINITY] {
+        assert!(receiver
+            .receive_support(
+                receiver.player_id() + 1,
+                &SupportAction::Jumpstart {
+                    target: receiver.player_id(),
+                    repair_fraction: fraction,
+                    range: 2000.,
+                }
+            )
+            .is_err());
+        assert_eq!(receiver.hull, 0.);
+    }
+}
+
+#[test]
+fn failed_native_skill_requirement_has_no_cost_and_checkpoint_plans_bind_to_jumpstart() {
+    let mut ship = ship();
+    ship.hull = 0.;
+    ship.skill_catalog
+        .skills
+        .iter_mut()
+        .find(|skill| skill.id == 31)
+        .unwrap()
+        .level = 3;
+    let energy = ship.energy;
+    assert!(ship.begin_jumpstart(ship.player_id()).is_err()); // hull6 > trained3 +2
+    assert_eq!(ship.energy, energy);
+    assert!(ship.skills.cast.is_none());
+    ship.skill_catalog
+        .skills
+        .iter_mut()
+        .find(|skill| skill.id == 31)
+        .unwrap()
+        .level = 7;
+    ship.begin_jumpstart(ship.player_id()).unwrap();
+    let mut cast = ship.skills.cast.clone().unwrap();
+    assert!(cast.valid());
+    cast.ability = 28;
+    assert!(!cast.valid());
+    cast.ability = 65;
+    cast.remaining = 6.;
+    assert!(!cast.valid());
+    ship.selected_peer = Some("127.0.0.1".parse().unwrap());
+    ship.endpoint = Some("127.0.0.1:22343".parse().unwrap());
+    ship.save().unwrap();
+    ship.checkpoint_session(true).unwrap();
+    let path = ship.state_dir.join("session.local.json");
+    let mut saved: serde_json::Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    saved["skills"]["cast"]["ability"] = 28.into();
+    fs::write(&path, serde_json::to_vec(&saved).unwrap()).unwrap();
+    let paid_energy = ship.energy;
+    assert!(ship.restore_session().is_err());
+    assert_eq!(ship.energy, paid_energy);
+    assert_eq!(ship.hull, 0.);
 }

@@ -16,6 +16,7 @@ import time
 
 from build import ROOT
 from smoke_multiplayer import pump
+from smoke_multiplayer import target_verb_enabled
 from smoke_support import start_server
 from smoke_test import connect
 from start_proxy import registered, sandbox_address
@@ -23,7 +24,7 @@ from enb_protocol.session import SpaceSession
 from enb_protocol.wire import Frame
 
 
-def exercise(binary: Path, host: str) -> None:
+def exercise(binary: Path, host: str, *, surface_boundary: bool = False) -> None:
     with tempfile.TemporaryDirectory(prefix='enb-mining-') as temporary:
         folder = Path(temporary)
         state, log = folder/'state', folder/'server.log'
@@ -35,7 +36,9 @@ def exercise(binary: Path, host: str) -> None:
         # Retain the real generated node identity, model and ore pool, but move
         # it near both starting ships and omit combat from this focused test.
         position = [0., 0., 0.]
-        node['position'] = [100., 0., 0.]
+        if surface_boundary:
+            assert node['radius'] > 0.
+        node['position'] = [2499. + node['radius'] if surface_boundary else 100., 0., 0.]
         content['resources'], content['mobs'] = [node], []
         content_file = folder/'sector.json'
         content_file.write_text(json.dumps(content))
@@ -66,6 +69,10 @@ def exercise(binary: Path, host: str) -> None:
                 session.send(0x17, struct.pack('<II', owner, node['id']))
                 session.send(0x2c, struct.pack('<4I', owner, 17, node['id'], 0))
             pump(sessions, lambda: seen(0, 0x66) and seen(1, 0x66), 5, observed)
+            if surface_boundary:
+                assert any(index == 0 and target_verb_enabled(frame, node['id'], 9)
+                           for index, frame in observed)
+                print('PASS: native Prospect verb and window enabled at resource surface beyond center range', flush=True)
             observed.clear()
             sessions[0].send(0x27, struct.pack('>6I', sessions[0].ticket.player_id, 18, 0, 0, 0, 0))
             pump(sessions, lambda: seen(0, 0x2012) and seen(1, 0x2012), 5, observed)
@@ -111,10 +118,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--binary', type=Path, default=ROOT/'target/debug'/('enb-server.exe' if os.name == 'nt' else 'enb-server'))
     parser.add_argument('--server', default='127.0.0.10')
+    parser.add_argument('--surface-boundary', action='store_true',
+                        help='Mine near the native surface limit while outside center-distance range')
     args = parser.parse_args()
     host = sandbox_address(args.server)
     if registered(host): raise SystemExit('Use an unused disposable server address')
-    exercise(args.binary.resolve(), host)
+    exercise(args.binary.resolve(), host, surface_boundary=args.surface_boundary)
 
 
 if __name__ == '__main__': main()

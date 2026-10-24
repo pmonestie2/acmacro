@@ -328,7 +328,7 @@ impl GameState {
                 // independently of group membership. Other support stays scoped
                 // to the source's actual group.
                 let recipients = match action {
-                    SupportAction::Jumpstart { target } => vec![target],
+                    SupportAction::Jumpstart { target, .. } => vec![target],
                     _ => self.groups.members(source),
                 };
                 for id in recipients {
@@ -359,8 +359,9 @@ impl GameState {
                                 && peer.sector == sector
                                 && distance(peer.position, position) <= 3000.
                         }
-                        SupportAction::Jumpstart { target } => {
-                            target == id && self.sessions[&source].can_deliver_jumpstart(&peer)
+                        SupportAction::Jumpstart { target, range, .. } => {
+                            target == id
+                                && self.sessions[&source].can_deliver_jumpstart(&peer, range)
                         }
                         SupportAction::Fold { target } => {
                             target == id

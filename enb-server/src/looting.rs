@@ -4,6 +4,10 @@
 use super::*;
 use crate::resources::unix_ms;
 
+#[cfg(test)]
+#[path = "loot_geometry_tests.rs"]
+mod geometry_tests;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub(super) struct LootCast {
     corpse: u32,
@@ -78,7 +82,7 @@ impl PlayerSession {
         }
         let world = lock_loot(&self.loot_world)?;
         if !world.get(corpse)?.available(unix_ms())?
-            || distance(self.position, world.get(corpse)?.position) > range
+            || world.get(corpse)?.range_to(self.position)? > range
         {
             return Err(invalid("Corpse is empty, expired or outside loot range."));
         }
@@ -332,7 +336,7 @@ impl PlayerSession {
         let world = lock_loot(&self.loot_world)?;
         let mut wanted = HashMap::new();
         for corpse in world.corpses() {
-            if distance(self.position, corpse.position) <= 20_000. && corpse.available(unix_ms())? {
+            if corpse.range_to(self.position)? <= 20_000. && corpse.available(unix_ms())? {
                 wanted.insert(corpse.id, corpse.position);
                 if !self.visible_corpses.contains_key(&corpse.id) {
                     self.pending.push(packets::corpse_create(corpse));

@@ -5,6 +5,10 @@ use crate::resources::{unix_ms, MiningClaim};
 
 const PROSPECT_SKILL: u32 = 41;
 
+#[cfg(test)]
+#[path = "mining_geometry_tests.rs"]
+mod geometry_tests;
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub(super) enum MiningPhase {
     Prospect,
@@ -156,7 +160,7 @@ impl PlayerSession {
             .iter()
             .find(|node| node.object.id == id)
             .ok_or_else(|| invalid("Select a resource node first."))?;
-        if distance(self.position, definition.object.position) > self.prospect_range() {
+        if definition.object.range_to(self.position) > self.prospect_range() {
             return Err(invalid("Resource is outside prospecting range."));
         }
         Ok(())

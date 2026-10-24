@@ -4,6 +4,9 @@ use crate::protocol::invalid;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::io;
+#[path = "jumpstart_rules.rs"]
+mod jumpstart_rules;
+pub use jumpstart_rules::JumpstartPlan;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct SkillDefinition {
@@ -117,6 +120,21 @@ pub struct Cast {
     pub target: u32,
     pub remaining: f32,
     pub effect: u32,
+    /// Absent only for old checkpoints or other abilities. Old in-flight
+    /// Jumpstarts retain their committed cost, remaining time and legacy repair.
+    #[serde(default)]
+    pub jumpstart: Option<JumpstartPlan>,
+}
+
+impl Cast {
+    pub fn valid(&self) -> bool {
+        self.ability < 170
+            && self.remaining.is_finite()
+            && self.remaining >= 0.
+            && self.jumpstart.as_ref().is_none_or(|plan| {
+                self.ability == 65 && plan.valid() && self.remaining <= plan.charge_seconds
+            })
+    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -158,6 +176,8 @@ pub enum SupportAction {
     },
     Jumpstart {
         target: u32,
+        repair_fraction: f32,
+        range: f32,
     },
     Fold {
         target: u32,

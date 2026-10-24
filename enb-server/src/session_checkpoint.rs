@@ -175,6 +175,7 @@ impl PlayerSession {
             || !saved.hull.is_finite()
             || !saved.energy.is_finite()
             || saved.mining.as_ref().is_some_and(|cast| !cast.valid())
+            || saved.skills.cast.as_ref().is_some_and(|cast| !cast.valid())
             || saved.loot_cast.as_ref().is_some_and(|cast| !cast.valid())
             || saved.corpse_ids.len() > 4096
             || saved.corpse_ids.iter().any(|(id, position)| {

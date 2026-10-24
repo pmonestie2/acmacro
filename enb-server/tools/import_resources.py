@@ -11,6 +11,8 @@ import math
 from pathlib import Path
 from typing import TypedDict
 
+from build import ROOT
+from import_asset_radii import load_resource_radii
 from import_sector import SqlRow, number, public_rows
 
 
@@ -27,6 +29,7 @@ class ResourceNode(TypedDict):
     name: str
     object_type: int
     asset: int
+    radius: float
     position: list[float]
     scale: float
     hsv: list[float]
@@ -40,7 +43,8 @@ class ResourceNode(TypedDict):
 
 
 class PublicResources:
-    def __init__(self, dump: Path) -> None:
+    def __init__(self, dump: Path, *, asset_radii: Path = ROOT / 'data/asset_radii.json') -> None:
+        self.radii = load_resource_radii(asset_radii)
         self.objects: defaultdict[int, list[SqlRow]] = defaultdict(list)
         self.rules: dict[int, SqlRow] = {}
         self.models: defaultdict[int, list[int]] = defaultdict(list)
@@ -87,6 +91,8 @@ class PublicResources:
             level = max(1, min(9, int(number(rule, 'level'))))
             for index in range(count):
                 asset = models[index % len(models)]
+                if asset not in self.radii:
+                    raise ValueError(f'Resource asset {asset} has no native radius')
                 name = self.resource_name(asset)
                 resource_type = self.resource_type(asset)
                 offset = self.offset(shape, index, count, radius)
@@ -94,6 +100,7 @@ class PublicResources:
                 result.append({'id': 0x20000000 + identity * 4096 + index, 'field_id': identity,
                     'level': level, 'resource_type': resource_type,
                     'name': f'{name} (L{level})', 'object_type': 38, 'asset': asset,
+                    'radius': self.radii[asset],
                     'position': [center[axis] + rotated[axis] for axis in range(3)],
                     'scale': 3. if name == 'Hulk' else 1.,
                     'hsv': [[180., 120., 30., 20., 10., 0., -60., -70., -100.][level-1], 0., 0.],

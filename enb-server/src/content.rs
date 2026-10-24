@@ -27,6 +27,8 @@ pub struct NavPoint {
     pub name: String,
     pub object_type: u8,
     pub asset: u16,
+    #[serde(default)]
+    pub radius: f32,
     pub position: [f32; 3],
     #[serde(default = "one")]
     pub scale: f32,
@@ -44,6 +46,19 @@ pub struct NavPoint {
     pub huge: bool,
     #[serde(default)]
     pub gate_destination: Option<u32>,
+}
+
+impl NavPoint {
+    /// Native RangeFrom's unscaled receiver radius. Facing and explicitly
+    /// absolute travel/animation distances still use the object center.
+    pub fn range_to(&self, position: [f32; 3]) -> f32 {
+        let range = crate::mob::distance(self.position, position) - self.radius;
+        if range < 0. {
+            0.
+        } else {
+            range
+        }
+    }
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Sector {
@@ -176,6 +191,8 @@ impl Sector {
                 // Signed scale is present in archived content (mirrored meshes).
                 // Zero is normalized to 1 by the importer, as Object::SetScale did.
                 || point.scale == 0.
+                || !point.radius.is_finite()
+                || !(0. ..=2_000_000.).contains(&point.radius)
                 || point
                     .orientation
                     .iter()

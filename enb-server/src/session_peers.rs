@@ -252,11 +252,16 @@ impl PlayerSession {
                     None,
                 ));
             }
-            SupportAction::Jumpstart { .. } => {
+            SupportAction::Jumpstart {
+                repair_fraction, ..
+            } => {
+                if !repair_fraction.is_finite() || repair_fraction <= 0. || repair_fraction > 1. {
+                    return Err(invalid("Invalid frozen Jumpstart repair fraction."));
+                }
                 if self.hull > 0. {
                     return Ok(());
                 }
-                self.hull = self.equipment.ship.hull_capacity * 0.49;
+                self.hull = self.equipment.ship.hull_capacity * repair_fraction;
                 self.shield = 0.;
                 self.apply_equipment_parameters();
                 self.pending

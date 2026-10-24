@@ -22,6 +22,14 @@ class RadiiDocument(TypedDict):
     source: str
     sha256: str
     radii: dict[str, float]
+    resource_overrides: dict[str, float]
+
+
+# Active Resource::SetBasset and Husk::SetBasset cases, independently of scale.
+RESOURCE_OVERRIDES = {**dict.fromkeys(range(1822, 1825), 800.),
+                      **dict.fromkeys(range(1825, 1828), 630.),
+                      **dict.fromkeys(range(1828, 1831), 510.),
+                      **dict.fromkeys(range(1831, 1834), 750.), 1834: 0.}
 
 
 def valid_radius(value: object) -> bool:
@@ -55,11 +63,7 @@ def parse_radii(source: str) -> dict[int, float]:
     return dict(sorted(radii.items()))
 
 
-def load_radii(path: Path) -> dict[int, float]:
-    raw: object = json.loads(path.read_text(encoding='utf8'))
-    if not isinstance(raw, dict) or raw.get('version') != 1:
-        raise ValueError('Unsupported asset radii document')
-    values = raw.get('radii')
+def radius_map(values: object) -> dict[int, float]:
     if not isinstance(values, dict) or not values:
         raise ValueError('Asset radii document has no radii')
     radii: dict[int, float] = {}
@@ -73,12 +77,29 @@ def load_radii(path: Path) -> dict[int, float]:
     return radii
 
 
+def load_radii(path: Path) -> dict[int, float]:
+    raw: object = json.loads(path.read_text(encoding='utf8'))
+    if not isinstance(raw, dict) or raw.get('version') != 1:
+        raise ValueError('Unsupported asset radii document')
+    return radius_map(raw.get('radii'))
+
+
+def load_resource_radii(path: Path) -> dict[int, float]:
+    radii = load_radii(path)
+    raw: object = json.loads(path.read_text(encoding='utf8'))
+    if not isinstance(raw, dict):
+        raise ValueError('Invalid asset radii document')
+    radii.update(radius_map(raw.get('resource_overrides')))
+    return radii
+
+
 def export(source: Path, output: Path) -> None:
     content = source.read_bytes()
     radii = parse_radii(content.decode('utf-8-sig'))
     document: RadiiDocument = dict(version=1, source=source.name,
                                   sha256=hashlib.sha256(content).hexdigest(),
-                                  radii={str(asset): radius for asset, radius in radii.items()})
+                                  radii={str(asset): radius for asset, radius in radii.items()},
+                                  resource_overrides={str(asset): radius for asset, radius in RESOURCE_OVERRIDES.items()})
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(document, indent=2) + '\n', encoding='utf8')
     print(f'Exported {len(radii)} numeric asset radii to {output}')

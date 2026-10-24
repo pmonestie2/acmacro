@@ -70,6 +70,12 @@ pub struct Corpse {
 }
 
 impl Corpse {
+    pub fn range_to(&self, position: [f32; 3]) -> io::Result<f32> {
+        let radius =
+            crate::asset_geometry::AssetGeometry::load()?.resource_radius(self.initial.asset)?;
+        let range = crate::mob::distance(self.position, position) - radius;
+        Ok(if range < 0. { 0. } else { range })
+    }
     pub fn remaining(&self) -> io::Result<CorpseContents> {
         let mut remaining = self.initial.clone();
         for receipt in self.receipts.values() {
