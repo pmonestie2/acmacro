@@ -354,6 +354,15 @@ namespace Enb.Protocol
             Status = "Selecting ship to follow";
         }
 
+        /// <summary>Invite one visible online player through the native group action.</summary>
+        public void InvitePlayer(uint target)
+        {
+            if (!Ready || gate != 0 || !World.Players.ContainsKey(target)) return;
+            Send(0x2c, Wire.Body(w =>
+            { w.Write(Player); w.Write(10u); w.Write(target); w.Write(0u); }));
+            Status = "Requesting group invitation";
+        }
+
         /// <summary>Stop active weapons even after the target leaves visibility.</summary>
         public void StopWeapons()
         {

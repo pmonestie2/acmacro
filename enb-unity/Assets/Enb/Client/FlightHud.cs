@@ -64,6 +64,8 @@ namespace Enb.Client
         public bool InputFocused { get; private set; }
         private bool groupChat;
         private uint contactId, wreckId;
+        private uint invitePendingId;
+        private float invitePendingAt;
         private Vector2 contactsScroll;
         private Vector2 npcScroll, dialogueScroll;
         private Vector2 vendorScroll, saleScroll;
@@ -511,8 +513,9 @@ namespace Enb.Client
             uint selectedId = contactId != 0 ? contactId : snapshot.SelectedTargetId;
             ShipActor target = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(actor => actor.Id == selectedId);
             if (target == null || !target.HasPosition) return;
-            float x = (CanvasWidth - 340) * .5f, y = CanvasHeight - 214;
-            Panel(new Rect(x, y, 340, 92));
+            float height = target.IsPlayer ? 150 : 92;
+            float x = (CanvasWidth - 340) * .5f, y = CanvasHeight - height - 122;
+            Panel(new Rect(x, y, 340, height));
             GUI.Label(new Rect(x + 12, y + 8, 315, 22), target.Name, body);
             float distance = target.Position.Distance(snapshot.Position);
             string state = snapshot.WeaponsFiring && snapshot.SelectedTargetId == target.Id ? "  ·  FIRING" : "";
@@ -521,6 +524,26 @@ namespace Enb.Client
                 Meter(new Rect(x + 12, y + 57, 150, 8), "SHIELD", target.Shield, cyan);
             if (target.MaxHull > 0)
                 Meter(new Rect(x + 178, y + 57, 150, 8), "HULL", target.Hull / target.MaxHull, gold);
+            if (target.IsPlayer)
+            {
+                bool member = snapshot.Group.Members.Any(item => item.Id == target.Id);
+                bool leader = !snapshot.Group.Joined || snapshot.Group.IsLeader;
+                bool pending = invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 5 &&
+                    (Time.unscaledTime - invitePendingAt < .2f || client.Status == "Requesting group invitation");
+                bool sentRecently = invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 5 &&
+                    client.Status == "Group invitation sent.";
+                GUI.enabled = leader && !member && !pending && !sentRecently;
+                if (GUI.Button(new Rect(x + 12, y + 82, 316, 30),
+                    member ? "ALREADY IN YOUR GROUP" : !leader ? "ONLY YOUR LEADER CAN INVITE" :
+                    pending ? "WAITING FOR SERVER…" : sentRecently ? "INVITATION SENT" :
+                    "INVITE " + target.Name.ToUpperInvariant() + " TO GROUP", button))
+                { client.InvitePlayer(target.Id); invitePendingId = target.Id; invitePendingAt = Time.unscaledTime; }
+                GUI.enabled = true;
+                if (pending) GUI.Label(new Rect(x + 12, y + 118, 316, 20), "Invitation request pending", small);
+                else if (invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 8 &&
+                    client.Status != "Requesting group invitation")
+                    GUI.Label(new Rect(x + 12, y + 118, 316, 20), client.Status, small);
+            }
         }
 
         /// <summary>Project limited markers without enlarging physical models.</summary>
@@ -688,7 +711,7 @@ namespace Enb.Client
                 if (contact.Shield >= 0) GUILayout.Label($"Shield  {contact.Shield * 100:0}%", small);
                 if (contact.MaxHull > 0) GUILayout.Label($"Hull  {contact.Hull:0} / {contact.MaxHull:0}", small);
                 if (GUILayout.Button("Follow target  ·  " + client.Bindings.Display(ControlAction.Follow), button)) client.FollowSelected();
-                if (contact.IsPlayer && GUILayout.Button("Invite to group", button)) client.SendChat("/invite " + contact.Name);
+                if (contact.IsPlayer && GUILayout.Button("Invite to group", button)) client.InvitePlayer(contact.Id);
                 if (!contact.IsPlayer && GUILayout.Button((snapshot.WeaponsFiring ? "Stop weapons  ·  " : "Fire weapons  ·  ") +
                     client.Bindings.Display(ControlAction.Fire), button))
                 { if (snapshot.WeaponsFiring) client.StopWeapons(); else client.ToggleWeapons(contact.Id); }

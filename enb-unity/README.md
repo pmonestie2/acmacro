@@ -123,8 +123,9 @@ is next.
 ## Players, groups and mobs
 
 The left **Contacts** list shows visible players and mobs. Type an online toon
-name to invite somebody anywhere, or select a nearby player and choose **Invite
-to group**. **Who is online** prints the available names in the message history.
+name to invite somebody anywhere, or click a nearby player and use **Invite to
+group** in the fixed target panel. That button sends the native group invitation
+to the selected player ID. **Who is online** prints the available names in the message history.
 The invited client can accept or decline; the group
 panel reflects the server roster and leader role. Members can leave; leaders can
 kick members or disband. Invitations expire after the server's 30-second window.

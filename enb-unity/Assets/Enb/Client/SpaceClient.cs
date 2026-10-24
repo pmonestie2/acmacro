@@ -430,6 +430,13 @@ namespace Enb.Client
                 worker.Submit(new ClientCommand(CommandKind.FollowTarget, id));
         }
 
+        /// <summary>Invite one currently visible player by server identity.</summary>
+        public void InvitePlayer(uint id)
+        {
+            if (Ready && snapshot.Players.Any(actor => actor.Id == id))
+                worker.Submit(new ClientCommand(CommandKind.InvitePlayer, id));
+        }
+
         /// <summary>Cycle through server-visible hostile ships in distance order.</summary>
         private void TargetNextHostile()
         {

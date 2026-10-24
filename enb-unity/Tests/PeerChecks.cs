@@ -106,7 +106,7 @@ internal static class PeerChecks
                 Wait(observer, visitor, () => Math.Abs(visitor.World.Speed) < 1,
                     "Manual braking did not cancel follow.");
                 Console.WriteLine("PASS: correlated native follow and manual-flight cancellation");
-                observer.Chat("/invite Visitor");
+                observer.InvitePlayer(peerId);
                 Wait(observer, visitor, () => visitor.World.Invitation.Contains("SandboxPilot"), "Group invitation did not arrive.");
                 visitor.Chat("/decline");
                 Wait(observer, visitor, () => visitor.World.Invitation == "", "Declined invitation remained visible.");
