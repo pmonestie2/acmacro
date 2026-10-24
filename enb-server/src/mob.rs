@@ -2,7 +2,10 @@
 //! Archived level/weapon stats drive combat; faction matrices and group hate remain unfinished.
 use crate::mob_aggro::{MobAggro, PlayerThreat};
 use crate::mob_stats::{MobStats, MobWeapon};
+use crate::motion::Motion;
 use serde::{Deserialize, Serialize};
+#[path = "mob_motion.rs"]
+mod movement;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MobDefinition {
@@ -96,6 +99,10 @@ pub struct Mob {
     pub position: [f32; 3],
     #[serde(default)]
     pub speed: f32,
+    /// Native render motion follows authoritative MOB movement. The AI's
+    /// displacement remains authoritative; this is not a second flight solver.
+    #[serde(default)]
+    pub motion: Motion,
     pub health: f32,
     pub max_health: f32,
     #[serde(default)]
@@ -151,6 +158,7 @@ impl Mob {
         Self {
             position: definition.spawn,
             speed: 0.,
+            motion: Motion::default(),
             definition,
             state: MobState::Idle,
             health: max_health,
@@ -178,6 +186,13 @@ impl Mob {
             return Ok(());
         }
         saved.aggro.validate()?;
+        saved.validate_motion()?;
+        // Older simulation ticks let an elapsed respawn countdown run just
+        // below zero before setting Idle. Those are valid expired timers, not
+        // negative health. Normalize them without hiding non-finite corruption.
+        if saved.respawn_remaining.is_finite() && saved.respawn_remaining < 0. {
+            saved.respawn_remaining = 0.;
+        }
         if [
             saved.health,
             saved.max_health,
@@ -243,7 +258,7 @@ impl Mob {
         self.shield -= absorbed;
         self.health = (self.health - (damage - absorbed)).max(0.);
         if self.health == 0. && self.shield == 0. {
-            self.speed = 0.;
+            self.stop_motion();
             self.state = MobState::Dead;
             self.respawn_remaining = self.definition.respawn_seconds;
             self.death_generation = self.death_generation.saturating_add(1);
@@ -271,6 +286,7 @@ impl Mob {
                 self.health = 0.;
                 self.shield = 0.;
                 self.respawn_remaining = remaining;
+                self.stop_motion();
             } else if self.state == MobState::Dead {
                 // A stale transport checkpoint must not restart an already
                 // elapsed respawn timer. Let the next simulation tick respawn.
@@ -300,6 +316,7 @@ impl Mob {
             return;
         }
         self.disabled_seconds = seconds.max(0.);
+        self.stop_motion();
         self.state = MobState::Idle;
         self.provoked = false;
         self.unowned_provoked = false;
@@ -395,11 +412,12 @@ impl Mob {
         } else {
             0.
         };
+        self.synchronize_motion(before, player, visible, was_dead);
         damage
     }
     fn advance_state(&mut self, dt: f32, player: [f32; 3], visible: bool) -> f32 {
         if self.state == MobState::Dead {
-            self.respawn_remaining -= dt;
+            self.respawn_remaining = (self.respawn_remaining - dt).max(0.);
             if self.respawn_remaining <= 0. {
                 self.health = self.max_health;
                 self.shield = self.max_shield;

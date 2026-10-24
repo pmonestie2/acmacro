@@ -125,10 +125,36 @@ pub fn map_object(nav: &NavPoint) -> Frame {
     float(&mut data, 53, nav.signature);
     data[57] = nav.navigation_type
         | if nav.navigation_present { 0x90 } else { 0 }
+        // Proxy flag5 becomes AuxNameSignature.IsNav. Navigation presence
+        // (flag4) alone emits0x99 but leaves generic Type37 actors non-navs.
+        | if nav.navigation_type > 0 { 0x20 } else { 0 }
         | if nav.huge { 0x40 } else { 0 };
     data[58..60].copy_from_slice(&(nav.name.len() as u16).to_le_bytes());
     data.extend_from_slice(nav.name.as_bytes());
     Frame::new(0x2018, data)
+}
+
+/// Refresh known static actors without sending another Create. The proxy's
+/// compact map packet expands into this native name/signature AUX plus0x99.
+/// Resume uses the native updates to repair an old client's cached nav flags.
+pub fn static_navigation_refresh(nav: &NavPoint) -> Vec<Frame> {
+    let mut frames = Vec::new();
+    if !matches!(nav.object_type, 3 | 11 | 12 | 25 | 38) {
+        let mut record = vec![0x72];
+        record.extend(text(&nav.name));
+        record.push(u8::from(nav.navigation_type > 0));
+        record.extend_from_slice(&nav.signature.to_le_bytes());
+        frames.push(aux_frame(nav.id, record));
+    }
+    if nav.navigation_present && nav.navigation_type > 0 {
+        let mut body = Vec::from(nav.id.to_le_bytes());
+        body.extend_from_slice(&nav.signature.to_le_bytes());
+        body.push(1); // Current sandbox publishes static navs as visited.
+        body.extend_from_slice(&u32::from(nav.navigation_type).to_le_bytes());
+        body.push(u8::from(nav.huge));
+        frames.push(Frame::new(0x99, body));
+    }
+    frames
 }
 
 pub fn create(id: u32, asset: u16) -> Frame {
@@ -789,9 +815,14 @@ pub fn mob_spawn(id: u32, mob: &Mob, tick: u32) -> Vec<Frame> {
     vec![
         model,
         Frame::new(0x89, relation),
-        movement(id, mob.position, tick),
+        mob_movement(id, mob, tick),
         mob_status(id, mob),
     ]
+}
+
+/// NPCs use the native velocity/quaternion fields just like player ships.
+pub fn mob_movement(id: u32, mob: &Mob, tick: u32) -> Frame {
+    position_update(id, mob.position, tick, Some(&mob.motion))
 }
 
 /// Original ObjectToObjectEffect layout, using only documented fields 0..2.
@@ -1841,6 +1872,49 @@ mod tests {
             made_equipped
         );
     }
+    #[test]
+    fn ordinary_static_navs_set_native_name_signature_marker_and_refresh_without_create() {
+        let cooper = crate::sectors::SectorCatalog::load()
+            .unwrap()
+            .sector(4535)
+            .unwrap();
+        let nav = cooper
+            .navpoints
+            .iter()
+            .find(|point| {
+                point.object_type == 37 && point.navigation_present && point.navigation_type == 1
+            })
+            .unwrap();
+        let compact = map_object(nav);
+        assert_eq!(compact.body[57] & 0x30, 0x30);
+        let refresh = static_navigation_refresh(nav);
+        assert_eq!(
+            refresh.iter().map(|frame| frame.opcode).collect::<Vec<_>>(),
+            [0x1b, 0x99]
+        );
+        let mut aux = crate::protocol::Reader::new(&refresh[0].body);
+        assert_eq!(aux.u32().unwrap(), nav.id);
+        assert_eq!(aux.u16().unwrap() as usize, nav.name.len() + 9);
+        assert_eq!(aux.take(2).unwrap(), [1, 0x72]);
+        assert_eq!(aux.string().unwrap(), nav.name);
+        assert_eq!(aux.take(1).unwrap(), [1]);
+        assert_eq!(aux.f32().unwrap(), nav.signature);
+        assert!(aux.rest().is_empty());
+        let mut map = crate::protocol::Reader::new(&refresh[1].body);
+        assert_eq!(map.u32().unwrap(), nav.id);
+        assert_eq!(map.f32().unwrap(), nav.signature);
+        assert_eq!(map.take(1).unwrap(), [1]);
+        assert_eq!(map.u32().unwrap(), 1);
+        assert_eq!(map.take(1).unwrap(), [u8::from(nav.huge)]);
+        assert!(map.rest().is_empty());
+        let mut hidden = nav.clone();
+        hidden.navigation_present = false;
+        assert_eq!(map_object(&hidden).body[57] & 0x30, 0x20);
+        assert_eq!(static_navigation_refresh(&hidden).len(), 1);
+        hidden.navigation_type = 0;
+        assert_eq!(map_object(&hidden).body[57] & 0x30, 0);
+    }
+
     #[test]
     fn database_only_actor_types_do_not_reach_native_create() {
         let sector: super::Sector =

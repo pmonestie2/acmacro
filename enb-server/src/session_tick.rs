@@ -195,7 +195,7 @@ impl PlayerSession {
             self.mob_visible[index] = visible;
             if broadcast && visible {
                 self.pending
-                    .push(packets::movement(MOB_ID + index as u32, mob.position, tick));
+                    .push(packets::mob_movement(MOB_ID + index as u32, mob, tick));
                 self.pending
                     .push(packets::mob_status(MOB_ID + index as u32, mob));
             }

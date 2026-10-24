@@ -277,6 +277,9 @@ impl PlayerSession {
         // An inventory file can be newer than the transport checkpoint if the
         // process ended between durable replacement and sending the AUX reply.
         // Reconcile the client from authoritative state on every resume.
+        for nav in &self.sector.navpoints {
+            self.pending.extend(packets::static_navigation_refresh(nav));
+        }
         self.pending.extend(
             self.inventory
                 .templates(&self.items)?

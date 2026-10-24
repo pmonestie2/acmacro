@@ -27,7 +27,7 @@ PUBLIC_TABLES = SECTOR_TABLES | frozenset({'skills', 'skill_abilities', 'skill_l
     'item_base', 'item_engine', 'item_reactor', 'item_shield', 'item_beam', 'item_manufacturer_base',
     'item_projectile', 'item_missile', 'item_ammo', 'item_ammo_type', 'item_device',
     'item_other_req', 'item_effect_base', 'item_effect_container', 'item_effects',
-    'item_manufacture', 'item_refine', 'item_type'})
+    'item_manufacture', 'item_refine', 'item_type', 'missions'})
 SqlRow = dict[str, str | None]
 
 

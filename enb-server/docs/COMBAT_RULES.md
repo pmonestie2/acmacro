@@ -56,6 +56,17 @@ NPC damage now follows the archived delayed launch/impact path and the shared
 world/player receipt acknowledgment protocol described in
 [NPC_PROJECTILES.md](NPC_PROJECTILES.md).
 
+`mob_motion.rs` now records native render motion from the existing authoritative
+MOB displacement. Chasing and returning ships face their direction of travel;
+stationary attackers face their target. Native 0x3e packets include orientation,
+current/desired velocity in metres per millisecond and persistent movement IDs,
+instead of resetting every NPC to an identity quaternion with no velocity.
+Stopping, contemplation, death and respawn publish zero velocity. This adds no
+second flight solver or new patrol behavior: current chase/home speeds and
+combat/hate/projectile rules remain authoritative. Motion checkpoints validate
+finite values and normalized orientation; old snapshots default to stationary
+render motion until the next simulation tick establishes a direction.
+
 `src/mob_aggro.rs` now preserves the archived four-slot hate table per MOB in
 sector checkpoints. Owned weapon hits and Shield Leech add the integer part of
 their damage to that attacker's hate. Positive maximum hate selects the target;
