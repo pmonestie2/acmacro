@@ -20,8 +20,8 @@ namespace Enb.Protocol
         private SectorStream stream;
         private uint sequence = 1;
         private double receivedAt, keepaliveAt, resendAt, gateAt, dockAt, enteredAt;
-        private uint gate, dock, combatTarget, followTarget, pendingLoot;
-        private double combatTargetAt, followTargetAt, pendingLootAt;
+        private uint gate, dock, combatTarget, followTarget, pendingLoot, pendingResource;
+        private double combatTargetAt, followTargetAt, pendingLootAt, pendingResourceAt;
         private bool gateActivated, gateCamera, gateFinished, dockRequested, lootRequested, disposed, failed;
         private byte[] handoff;
         public uint Player { get; private set; }
@@ -169,7 +169,7 @@ namespace Enb.Protocol
             if (port == 0) throw new InvalidDataException("Missing sector port.");
             sector.Connect(address, port);
             stream = new SectorStream(Player); World = new World(); sequence = 1; Ready = false;
-            gate = dock = followTarget = 0; handoff = null;
+            gate = dock = followTarget = pendingResource = 0; handoff = null;
             byte[] body = Wire.Body(w =>
             {
                 w.Write(join); w.Write(unchecked((uint)Environment.TickCount)); w.Write(new byte[40]);
@@ -396,6 +396,36 @@ namespace Enb.Protocol
             Status = "Tractor beam: slot " + slot;
         }
 
+        /// <summary>Select a visible asteroid before opening its native prospecting window.</summary>
+        public void OpenResource(uint target)
+        {
+            if (!Ready || gate != 0 || pendingResource != 0 ||
+                !World.Objects.TryGetValue(target, out MapObject resource) || resource.Kind != 38) return;
+            followTarget = 0; pendingResource = target; pendingResourceAt = clock.Elapsed.TotalSeconds;
+            World.SetResourceTarget(target);
+            Send(0x17, Wire.Body(w => { w.Write(Player); w.Write(target); }));
+            Status = "Selecting asteroid: " + resource.Name;
+        }
+
+        /// <summary>Close the currently open prospecting window.</summary>
+        public void CloseResource()
+        {
+            if (!Ready || gate != 0 || !World.ResourceWindowOpen || World.ResourceTargetId == 0) return;
+            Send(0x2c, Wire.Body(w =>
+            { w.Write(Player); w.Write(17u); w.Write(World.ResourceTargetId); w.Write(0u); }));
+            Status = "Closing prospecting window";
+        }
+
+        /// <summary>Prospect one server-listed ore slot through native inventory transfer.</summary>
+        public void ProspectResource(int slot)
+        {
+            if (!Ready || gate != 0 || !World.ResourceWindowOpen ||
+                !World.Resources.TryGetValue(World.ResourceTargetId, out ResourceState resource) ||
+                slot < 0 || slot >= resource.Items.Length || resource.Items[slot]?.Present != true) return;
+            SendInventoryTransfer(18, (uint)slot, 0, 0, 0);
+            Status = "Prospecting " + resource.Items[slot].Template;
+        }
+
         /// <summary>Send one native group formation action after local validation.</summary>
         public void Formation(uint action, uint target = 0)
         {
@@ -440,6 +470,12 @@ namespace Enb.Protocol
                         Send(0x51, Wire.Body(w => { w.Write(Player); w.Write(0u); }));
                         Status = "Opening wreck";
                     }
+                    if (b.Length == 8 && pendingResource != 0 && Wire.U32(b, 0) == pendingResource && Wire.U32(b, 4) == uint.MaxValue)
+                    {
+                        Send(0x2c, Wire.Body(w =>
+                        { w.Write(Player); w.Write(17u); w.Write(pendingResource); w.Write(0u); }));
+                        pendingResource = 0; Status = "Opening prospecting window";
+                    }
                     if (b.Length == 8 && combatTarget != 0 && Wire.U32(b, 0) == combatTarget && Wire.U32(b, 4) == uint.MaxValue)
                     {
                         Send(0x2c, Wire.Body(w => { w.Write(Player); w.Write(9u); w.Write(combatTarget); w.Write(0u); }));
@@ -473,6 +509,9 @@ namespace Enb.Protocol
                         if (lower.Contains("cannot gate") || lower.Contains("unable to gate") || lower.Contains("gate inoperative") || lower.Contains("gate malfunction") || lower.Contains("sector is offline")) gate = 0;
                     }
                     break;
+                case 0x66:
+                    Status = World.ResourceWindowOpen ? "Prospecting window open" : "Prospecting window closed";
+                    break;
                 case 0x3a: handoff = Wire.Slice(b, 0, 64); Ready = false; break;
                 case 0xba: throw new IOException("Server ended the character session.");
             }
@@ -500,6 +539,8 @@ namespace Enb.Protocol
                 if (handoff != null) { Enter(handoff); return; }
                 if (pendingLoot != 0 && now - pendingLootAt > 5)
                 { pendingLoot = 0; Status = "Wreck did not open"; }
+                if (pendingResource != 0 && now - pendingResourceAt > 5)
+                { pendingResource = 0; World.SetResourceTarget(0); Status = "Asteroid did not acknowledge selection"; }
                 if (dock != 0 && now - dockAt > 8)
                 { dock = 0; Status = "Docking timed out"; }
                 if (combatTarget != 0 && now - combatTargetAt > 5)

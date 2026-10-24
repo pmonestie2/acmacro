@@ -237,6 +237,28 @@ namespace Enb.Protocol
             return stock;
         }
 
+        /// <returns>The resource contents and level after one native AUX revision.</returns>
+        public static ResourceState ReadResource(byte[] body, uint id, ResourceState previous)
+        {
+            var reader = new AuxState(body); Flags fields = reader.Mask(4);
+            string name = previous?.Name ?? "";
+            uint level = previous?.Level ?? 0;
+            float fraction = previous?.Fraction ?? 1;
+            ItemState[] items = previous == null ? new ItemState[40] : (ItemState[])previous.Items.Clone();
+            if (fields.Present[0]) name = reader.Text();
+            if (fields.Present[1]) reader.ReadSlots(items, 10);
+            else if (fields.Default[1])
+            {
+                if (reader.Byte() != 5) throw new InvalidDataException("Invalid resource inventory reset.");
+                items = new ItemState[40];
+            }
+            if (fields.Present[2]) fraction = reader.Float();
+            if (fields.Present[3]) level = reader.UInt();
+            if (fraction < 0 || fraction > 1 || level > 10)
+                throw new InvalidDataException("Invalid resource level or depletion.");
+            return new ResourceState(id, name, level, fraction, items);
+        }
+
         /// <returns>The server's standalone group update, or null for unrelated player AUX.</returns>
         public static GroupState ReadGroup(byte[] body)
         {

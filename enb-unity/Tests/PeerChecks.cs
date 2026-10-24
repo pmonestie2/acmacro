@@ -91,6 +91,24 @@ internal static class PeerChecks
                 Wait(observer, null, () => observer.World.Equipment.Mounted[3]?.Template == starterWeapon &&
                     observer.World.Equipment.Cargo[0]?.Present != true, "Server equip update did not restore the weapon.");
                 Console.WriteLine("PASS: item template, cargo and hardpoint decoding; authoritative unequip and equip");
+                Wait(observer, visitor, () => observer.World.Objects.Values.Any(item => item.Kind == 38),
+                    "Disposable asteroid was not visible to the pilot.");
+                MapObject resource = observer.World.Objects.Values.First(item => item.Kind == 38);
+                observer.OpenResource(resource.Id);
+                Wait(observer, visitor, () => observer.World.ResourceWindowOpen &&
+                    observer.World.Resources.TryGetValue(resource.Id, out ResourceState stock) &&
+                    stock.Items.Any(item => item?.Present == true),
+                    "Native prospecting window or asteroid stock did not arrive.");
+                ResourceState ore = observer.World.Resources[resource.Id];
+                int oreSlot = Array.FindIndex(ore.Items, item => item?.Present == true);
+                uint oreTemplate = ore.Items[oreSlot].Template;
+                observer.ProspectResource(oreSlot);
+                Wait(observer, visitor, () => observer.World.Equipment.Cargo.Any(item => item?.Template == oreTemplate),
+                    "Prospecting did not award server-owned ore into cargo.");
+                observer.CloseResource();
+                Wait(observer, visitor, () => !observer.World.ResourceWindowOpen,
+                    "Native prospecting window did not close.");
+                Console.WriteLine("PASS: asteroid selection, native prospect window, ore tractor and cargo award");
                 Position before = observer.World.Players[peerId].Position;
                 visitor.Thrust(2);
                 Wait(observer, visitor, () => observer.World.Players[peerId].Position.Distance(before) > 1900,

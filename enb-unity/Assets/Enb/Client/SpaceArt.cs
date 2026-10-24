@@ -13,7 +13,7 @@ namespace Enb.Client
         private readonly List<Mesh> meshes = new List<Mesh>();
         private readonly Mesh[] rocks = new Mesh[8];
         private readonly Mesh ring, shipHull;
-        private readonly Material hull, trim, dark, glass, glow, amber, rock, field;
+        private readonly Material hull, trim, dark, glass, glow, amber, hostile, mineral, rock, field;
         public Material Sky { get; }
 
         /// <summary>Create shared assets once rather than allocating them per object or frame.</summary>
@@ -22,9 +22,12 @@ namespace Enb.Client
             hull = Surface(new Color(.46f, .55f, .62f), .7f, .45f);
             trim = Surface(new Color(.08f, .15f, .2f), .8f, .5f);
             dark = Surface(new Color(.025f, .035f, .05f), .6f, .3f);
+            hull.SetFloat("_Panels", 1); trim.SetFloat("_Panels", .65f); dark.SetFloat("_Panels", .5f);
             glass = Surface(new Color(.015f, .12f, .18f), .8f, .85f);
             glow = Surface(new Color(.05f, .6f, .85f), .2f, .5f, new Color(.1f, 1.4f, 2.1f));
             amber = Surface(new Color(.8f, .35f, .06f), .4f, .3f, new Color(1.3f, .35f, .04f));
+            hostile = Surface(new Color(.7f, .045f, .035f), .25f, .5f, new Color(1.9f, .08f, .03f));
+            mineral = Surface(new Color(.04f, .62f, .72f), .35f, .65f, new Color(.08f, 1.15f, 1.4f));
             rock = Surface(new Color(.24f, .21f, .19f), .08f, .12f);
             rock.SetFloat("_Grain", 1);
             field = ShaderMaterial("ENB/GateField");
@@ -136,6 +139,18 @@ namespace Enb.Client
             return root;
         }
 
+        /// <summary>Add a fixed-size scanner outline so distant ships remain distinguishable in the world.</summary>
+        public void ContactMarker(Transform ship, bool isPlayer, bool isHostile)
+        {
+            Transform marker = Root(ship, isPlayer ? "Player scanner outline" : "Mob scanner outline");
+            marker.localScale = Vector3.one / Mathf.Max(.01f, ship.localScale.x);
+            Material signal = isPlayer ? glow : isHostile ? hostile : amber;
+            Model(marker, ring, signal, Vector3.zero, Vector3.one * 1.35f);
+            for (int side = -1; side <= 1; side += 2)
+                Part(marker, PrimitiveType.Cube, new Vector3(side * 1.48f, 0, 0),
+                    new Vector3(.22f, .045f, .045f), signal);
+        }
+
         /// <returns>A solid replacement model for a server object, or null for invisible boundary markers.</returns>
         public Transform WorldObject(Transform parent, MapObject item)
         {
@@ -144,6 +159,7 @@ namespace Enb.Client
             if (item.Kind == 11) Gate(root);
             else if (item.Kind == 12) Station(root);
             else if (item.Kind == 25) { Wreck(root); root.localScale *= .015f; }
+            else if (item.Kind == 38) ResourceRock(root, item.Id);
             else if (item.Asset == 412 || item.Asset == 377) { Station(root); root.localScale *= .03f; }
             else if (item.Asset == 127) { Beacon(root); root.localScale *= .2f; }
             else
@@ -164,6 +180,19 @@ namespace Enb.Client
             Transform wing = Model(root, shipHull, rock, new Vector3(-.8f, -.18f, .45f), new Vector3(.55f, .15f, .8f));
             wing.localRotation = Quaternion.Euler(-35, -26, 22);
             Part(root, PrimitiveType.Sphere, new Vector3(.3f, 0, -.2f), new Vector3(.3f, .25f, .3f), amber);
+        }
+
+        /// <summary>Expose bright mineral seams and facets on mineable asteroids.</summary>
+        private void ResourceRock(Transform root, uint id)
+        {
+            Model(root, rocks[(int)(id % (uint)rocks.Length)], rock, Vector3.zero, new Vector3(2.1f, 1.5f, 1.9f));
+            for (int i = 0; i < 5; i++)
+            {
+                float angle = (i * 72 + id % 31) * Mathf.Deg2Rad;
+                Vector3 position = new Vector3(Mathf.Cos(angle) * 1.2f, Mathf.Sin(angle * 1.7f) * .55f, Mathf.Sin(angle) * 1.1f);
+                Transform shard = Part(root, PrimitiveType.Cube, position, new Vector3(.2f, .14f, .85f), mineral);
+                shard.localRotation = Quaternion.Euler(20 + i * 13, i * 73, 25 + i * 19);
+            }
         }
 
         /// <summary>Assemble a traversable circular gate with a recessed energy field.</summary>

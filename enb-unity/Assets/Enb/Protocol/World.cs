@@ -80,6 +80,37 @@ namespace Enb.Protocol
         { return new StationState(Id, Kind, Rooms, Terminals, NpcIds.ToArray(), name); }
     }
 
+    /// <summary>Worker-owned contents and depletion state for a mineable resource.</summary>
+    public sealed class ResourceState
+    {
+        public readonly uint Id, Level;
+        public readonly string Name;
+        public readonly float Fraction;
+        public readonly ItemState[] Items;
+
+        /// <summary>Keep one authoritative resource revision together.</summary>
+        public ResourceState(uint id, string name, uint level, float fraction, ItemState[] items)
+        { Id = id; Name = name; Level = level; Fraction = fraction; Items = items; }
+    }
+
+    /// <summary>Immutable resource rows for the main-thread prospecting panel.</summary>
+    public sealed class ResourceView
+    {
+        public readonly uint Id, Level;
+        public readonly string Name;
+        public readonly float Fraction;
+        public readonly ItemView[] Items;
+
+        /// <summary>Resolve server-owned ore templates for display.</summary>
+        public ResourceView(ResourceState state, IReadOnlyDictionary<uint, ItemTemplateInfo> catalog)
+        {
+            Id = state.Id; Name = state.Name; Level = state.Level; Fraction = state.Fraction;
+            Items = new ItemView[state.Items.Length];
+            for (int i = 0; i < Items.Length; i++)
+                if (state.Items[i]?.Present == true) Items[i] = new ItemView(i, state.Items[i], catalog);
+        }
+    }
+
     /// <summary>One server-offered NPC conversation branch.</summary>
     public sealed class DialogueChoice
     {
@@ -213,6 +244,11 @@ namespace Enb.Protocol
         public DialogueState Dialogue { get; private set; }
         public ulong Credits { get; private set; }
         public ItemState[] Vendor { get; private set; } = Array.Empty<ItemState>();
+        public Dictionary<uint, ResourceState> Resources { get; } = new Dictionary<uint, ResourceState>();
+        public uint ResourceTargetId { get; private set; }
+        public bool ResourceWindowOpen { get; private set; }
+        /// <summary>Track the selected resource while awaiting its native prospecting window.</summary>
+        public void SetResourceTarget(uint id) { ResourceTargetId = id; ResourceWindowOpen = false; }
         /// <summary>Track the requested NPC while waiting for its talk tree.</summary>
         public void StartDialogue(uint npcId) { Dialogue = new DialogueState(npcId); }
         /// <summary>Clear the local conversation after the server closes it.</summary>
@@ -242,13 +278,14 @@ namespace Enb.Protocol
                     if (firstEnd < 0 || firstEnd + 1 >= b.Length) throw new InvalidDataException("Missing sector name.");
                     string name = Wire.Text(b, firstEnd + 1, b.Length - firstEnd - 1);
                     if (name.Length == 0) throw new InvalidDataException("Empty sector name.");
-                    if (Sector != name) { Objects.Clear(); Players.Clear(); Mobs.Clear(); Loot.Clear(); OpenLootId = 0; Shots.Clear(); Damages.Clear(); nextShot = nextDamage = 0; }
+                    if (Sector != name) { Objects.Clear(); Players.Clear(); Mobs.Clear(); Loot.Clear(); Resources.Clear(); ResourceTargetId = 0; ResourceWindowOpen = false; OpenLootId = 0; Shots.Clear(); Damages.Clear(); nextShot = nextDamage = 0; }
                     Sector = name;
                     break;
                 case 0x4f:
                     if (b.Length != 6) throw new InvalidDataException("Invalid station identity.");
                     Station = b[4] == 0 ? new StationState(Wire.U32(b, 0)) : null;
                     Dialogue = null; Vendor = Array.Empty<ItemState>();
+                    ResourceTargetId = 0; ResourceWindowOpen = false;
                     if (Station != null) Sector = "Station " + Station.Id;
                     break;
                 case 0x52:
@@ -343,6 +380,12 @@ namespace Enb.Protocol
                             if (contents != null) Loot[id] = contents;
                             break;
                         }
+                        if (Objects.TryGetValue(id, out MapObject resource) && resource.Kind == 38)
+                        {
+                            Resources.TryGetValue(id, out ResourceState previous);
+                            Resources[id] = AuxState.ReadResource(b, id, previous);
+                            break;
+                        }
                         var contacts = Players.ContainsKey(id) ? Players : Mobs;
                         if (contacts.TryGetValue(id, out ShipActor contact)) contacts[id] = AuxState.ReadShip(b, contact);
                     }
@@ -367,7 +410,9 @@ namespace Enb.Protocol
                     if (b.Length != 4) throw new InvalidDataException("Invalid removal.");
                     Objects.Remove(Wire.U32(b, 0));
                     Loot.Remove(Wire.U32(b, 0));
+                    Resources.Remove(Wire.U32(b, 0));
                     if (OpenLootId == Wire.U32(b, 0)) OpenLootId = 0;
+                    if (ResourceTargetId == Wire.U32(b, 0)) SetResourceTarget(0);
                     Players.Remove(Wire.U32(b, 0)); Mobs.Remove(Wire.U32(b, 0));
                     break;
                 case 0x3e:
@@ -391,6 +436,12 @@ namespace Enb.Protocol
                         AngularZ = Wire.Float(b, 62);
                     }
                     else if (b.Length >= 46) Speed = Wire.Float(b, 42) * 1000;
+                    break;
+                case 0x66:
+                    if (b.Length != 8 || Wire.U32(b, 4) != 0 || Wire.U32(b, 0) > 1)
+                        throw new InvalidDataException("Invalid prospecting window state.");
+                    ResourceWindowOpen = Wire.U32(b, 0) == 0;
+                    if (!ResourceWindowOpen) ResourceTargetId = 0;
                     break;
             }
         }
@@ -425,6 +476,9 @@ namespace Enb.Protocol
         public readonly DialogueState Dialogue;
         public readonly ulong Credits;
         public readonly ItemView[] Vendor;
+        public readonly ResourceView[] Resources;
+        public readonly uint ResourceTargetId;
+        public readonly bool ResourceWindowOpen;
         public readonly string Invitation;
         public readonly string[] Messages;
         public readonly bool Ready, HasPosition;
@@ -451,6 +505,8 @@ namespace Enb.Protocol
             Vendor = new ItemView[world.Vendor.Length];
             for (int i = 0; i < Vendor.Length; i++)
                 if (world.Vendor[i]?.Present == true) Vendor[i] = new ItemView(i, world.Vendor[i], world.ItemCatalog);
+            Resources = world.Resources.Values.Select(state => new ResourceView(state, world.ItemCatalog)).ToArray();
+            ResourceTargetId = world.ResourceTargetId; ResourceWindowOpen = world.ResourceWindowOpen;
             Invitation = world.Invitation; Messages = world.Messages.ToArray();
             OpenLootId = world.OpenLootId;
             Loot = world.Loot.Select(entry => new CorpseLoot(entry.Key, entry.Value, world.ItemCatalog)).ToArray();

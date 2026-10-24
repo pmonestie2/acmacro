@@ -21,6 +21,7 @@ namespace Enb.Client
         private RemoteShips remoteShips;
         private CombatEffects combatEffects;
         private FlightHud hud;
+        private MiningHud miningHud;
         private Transform ship, worldRoot, environment, hangar;
         private readonly Dictionary<uint, Transform> bodies = new Dictionary<uint, Transform>();
         private string host = "192.168.47.128", username = "toon", password = "pass", status = "Ready to connect", sector = "";
@@ -62,7 +63,7 @@ namespace Enb.Client
             Application.runInBackground = true;
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 120;
-            art = new SpaceArt(); hud = new FlightHud(this);
+            art = new SpaceArt(); hud = new FlightHud(this); miningHud = new MiningHud(this, hud);
             worldRoot = new GameObject("Server world").transform; worldRoot.SetParent(transform, false);
             remoteShips = new RemoteShips(art, worldRoot);
             ship = art.Ship(transform); combatEffects = new CombatEffects(transform, ship, remoteShips); ship.localScale = Vector3.one * .25f;
@@ -212,7 +213,7 @@ namespace Enb.Client
             if (yaw != previousYaw || pitch != previousPitch)
             { worker.Submit(new ClientCommand(CommandKind.Steer, yaw: yaw, pitch: pitch)); previousYaw = yaw; previousPitch = pitch; }
             if (bindings.Pressed(ControlAction.Follow)) FollowSelected();
-            if (!hud.ContainsPointer())
+            if (!hud.ContainsPointer() && !miningHud.ContainsPointer())
             {
                 if (Input.GetMouseButton(1) && !chart)
                 { orbitYaw += Input.GetAxis("Mouse X") * 3; orbitPitch = Mathf.Clamp(orbitPitch - Input.GetAxis("Mouse Y") * 3, -65, 65); }
@@ -320,7 +321,8 @@ namespace Enb.Client
         {
             if (snapshot == null) return; float best = 35; uint selected = 0;
             Vector2 pointer = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
-            if (hud.SelectContactAtPointer(snapshot, pointer) || hud.SelectWreckAtPointer(snapshot, pointer)) return;
+            if (hud.SelectContactAtPointer(snapshot, pointer) || hud.SelectWreckAtPointer(snapshot, pointer) ||
+                miningHud.SelectAtPointer(snapshot, pointer)) return;
             foreach (MapObject item in snapshot.Objects.Where(item => item.Navigable))
             {
                 Vector3 point = Project(item.Position); if (point.z <= 0) continue;
@@ -415,6 +417,26 @@ namespace Enb.Client
                 worker.Submit(new ClientCommand(CommandKind.TakeLoot, id, slot: slot));
         }
 
+        /// <summary>Open a visible asteroid's native prospecting window.</summary>
+        public void OpenResource(uint id)
+        {
+            if (Ready && snapshot.Objects.Any(item => item.Id == id && item.Kind == 38))
+                worker.Submit(new ClientCommand(CommandKind.OpenResource, id));
+        }
+
+        /// <summary>Close the current prospecting window.</summary>
+        public void CloseResource()
+        { if (Ready && snapshot.ResourceWindowOpen) worker.Submit(new ClientCommand(CommandKind.CloseResource)); }
+
+        /// <summary>Prospect one item slot advertised by the selected asteroid.</summary>
+        public void ProspectResource(int slot)
+        {
+            if (Ready && snapshot.ResourceWindowOpen && snapshot.Resources.Any(resource =>
+                resource.Id == snapshot.ResourceTargetId && slot >= 0 && slot < resource.Items.Length &&
+                resource.Items[slot] != null))
+                worker.Submit(new ClientCommand(CommandKind.ProspectResource, slot: slot));
+        }
+
         /// <summary>Set the authoritative target of a visible contact.</summary>
         public void SelectContact(uint id)
         {
@@ -479,7 +501,11 @@ namespace Enb.Client
             Matrix4x4 previous = GUI.matrix;
             float scale = hud.Scale;
             GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1));
-            try { hud.Draw(ref host, ref username, ref password); }
+            try
+            {
+                hud.Draw(ref host, ref username, ref password);
+                if (!hud.SettingsOpen && !hud.EquipmentOpen) miningHud.Draw(snapshot);
+            }
             finally { GUI.matrix = previous; }
         }
 
@@ -492,7 +518,7 @@ namespace Enb.Client
         }
 
         /// <summary>Release scene instances belonging to the departed sector.</summary>
-        private void ClearWorld() { combatEffects?.Clear(); remoteShips?.Clear(); foreach (Transform body in bodies.Values) Destroy(body.gameObject); bodies.Clear(); renderedObjects = System.Array.Empty<MapObject>(); }
+        private void ClearWorld() { combatEffects?.Clear(); remoteShips?.Clear(); miningHud?.Clear(); foreach (Transform body in bodies.Values) Destroy(body.gameObject); bodies.Clear(); renderedObjects = System.Array.Empty<MapObject>(); }
 
         /// <summary>Brake and neutralize steering when foreground control is lost.</summary>
         private void OnApplicationFocus(bool focused)

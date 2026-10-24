@@ -151,6 +151,11 @@ Ammo can be loaded through the same server move command. Defeated
 mobs leave server-owned wrecks. Click a wreck to open its fixed loot panel;
 within 2 km, open it and tractor listed items into cargo. The radar shows nearby
 contacts and navigation targets.
+
+Explorer pilots can click a mineable asteroid or gas cloud, open its prospecting
+window, and choose a server-listed ore slot. The server checks the ship, skill,
+distance, reactor energy, and shared resource claim before it awards ore to cargo.
+The panel shows the resource level, depletion, and stock from native packets.
 Models are placeholders rather than the original NPC assets. Station interiors
 and the full original combat and equipment UI remain unfinished.
 

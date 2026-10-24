@@ -15,8 +15,11 @@ namespace Enb.Client
         private float CanvasWidth => Screen.width / Scale;
         private float CanvasHeight => Screen.height / Scale;
         private readonly Color cyan = new Color(.3f, .85f, 1), white = new Color(.86f, .93f, 1), muted = new Color(.46f, .62f, .72f), gold = new Color(1, .72f, .3f);
-        private GUIStyle heading, body, small, button, selected, damageStyle;
-        private Texture2D buttonTexture, selectedTexture, radarTexture;
+        private GUIStyle heading, body, small, button, selected, playerButton, hostileButton, damageStyle;
+        private Texture2D buttonTexture, selectedTexture, panelTexture, radarTexture;
+        internal GUIStyle BodyStyle => body;
+        internal GUIStyle SmallStyle => small;
+        internal GUIStyle ButtonStyle => button;
         private Vector2 scroll;
         private bool navigation = true, equipmentOpen, settingsOpen;
         private ControlAction? bindingAction;
@@ -28,6 +31,8 @@ namespace Enb.Client
         public uint SelectedContactId => contactId;
         /// <summary>Keep keyboard-selected contacts aligned with the tactical HUD.</summary>
         public void SelectContact(uint id) { contactId = id; wreckId = 0; client.SelectContact(id); }
+        /// <summary>Dismiss fixed ship and wreck panels when another world target takes focus.</summary>
+        public void ClearSelection() { contactId = 0; wreckId = 0; }
         /// <returns>Whether a visible ship was selected at an actual screen point.</returns>
         public bool SelectContactAtPointer(Snapshot snapshot, Vector2 pointer)
         {
@@ -107,9 +112,22 @@ namespace Enb.Client
                 p.y > CanvasHeight - 115 || p.y < 85;
         }
 
-        /// <returns>A one-pixel owned background texture.</returns>
-        private static Texture2D Texture(Color color)
-        { var texture = new Texture2D(1, 1); texture.SetPixel(0, 0, color); texture.Apply(); return texture; }
+        /// <returns>Texture2D: An owned panel texture with subtle scanlines and a vertical light falloff.</returns>
+        private static Texture2D SurfaceTexture(Color top, Color bottom, int width, int height)
+        {
+            var pixels = new Color32[width * height];
+            for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+            {
+                float vertical = (float)y / Mathf.Max(1, height - 1);
+                float scanline = y % 4 == 0 ? .82f : 1f;
+                float edge = .96f + .04f * Mathf.Sin((float)x / width * Mathf.PI);
+                Color color = Color.Lerp(bottom, top, vertical) * scanline * edge;
+                pixels[y * width + x] = color;
+            }
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            texture.SetPixels32(pixels); texture.Apply(); return texture;
+        }
 
         /// <summary>Create styles inside a GUI event where the skin is available.</summary>
         private void EnsureStyles()
@@ -120,12 +138,16 @@ namespace Enb.Client
             small = new GUIStyle(GUI.skin.label) { fontSize = 11 }; small.normal.textColor = muted;
             damageStyle = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
             damageStyle.normal.textColor = gold;
-            buttonTexture = Texture(new Color(.035f, .075f, .105f, 1)); selectedTexture = Texture(new Color(.08f, .24f, .3f, 1));
+            panelTexture = SurfaceTexture(new Color(.025f, .072f, .103f, .98f), new Color(.006f, .018f, .035f, .97f), 64, 64);
+            buttonTexture = SurfaceTexture(new Color(.07f, .16f, .205f, 1), new Color(.025f, .065f, .1f, 1), 32, 32);
+            selectedTexture = SurfaceTexture(new Color(.13f, .32f, .38f, 1), new Color(.06f, .18f, .235f, 1), 32, 32);
             radarTexture = RadarTexture();
             button = new GUIStyle(GUI.skin.button) { fontSize = 13, alignment = TextAnchor.MiddleLeft, padding = new RectOffset(10, 8, 4, 4) };
             button.normal.background = buttonTexture; button.normal.textColor = white;
             button.hover.background = selectedTexture; button.hover.textColor = cyan;
             selected = new GUIStyle(button); selected.normal.background = selectedTexture; selected.normal.textColor = cyan;
+            playerButton = new GUIStyle(button); playerButton.normal.textColor = cyan;
+            hostileButton = new GUIStyle(button); hostileButton.normal.textColor = new Color(1f, .53f, .4f);
         }
 
         /// <returns>A shared transparent scanner dial with concentric range rings.</returns>
@@ -149,12 +171,13 @@ namespace Enb.Client
         private static void Fill(Rect rect, Color color)
         { Color previous = GUI.color; GUI.color = color; GUI.DrawTexture(rect, Texture2D.whiteTexture); GUI.color = previous; }
 
-        /// <summary>Draw a subtle panel and accent line.</summary>
-        private void Panel(Rect rect)
+        /// <summary>Draw a textured instrument panel with clear frame corners.</summary>
+        internal void Panel(Rect rect)
         {
-            Fill(rect, new Color(.007f, .018f, .032f, .96f));
-            Fill(new Rect(rect.x, rect.y, rect.width, 2), new Color(.14f, .65f, .76f, .9f));
-            Fill(new Rect(rect.x, rect.y + 2, rect.width, 8), new Color(.07f, .29f, .38f, .28f));
+            GUI.DrawTexture(rect, panelTexture);
+            Fill(new Rect(rect.x, rect.y, rect.width, 1), new Color(.32f, .75f, .84f, .9f));
+            Fill(new Rect(rect.x, rect.y + rect.height - 1, rect.width, 1), new Color(.14f, .35f, .45f, .8f));
+            Fill(new Rect(rect.x, rect.y + 2, rect.width, 8), new Color(.08f, .36f, .46f, .24f));
             Fill(new Rect(rect.x, rect.y, 2, 15), cyan);
             Fill(new Rect(rect.x + rect.width - 2, rect.y + rect.height - 15, 2, 15), cyan);
             Fill(new Rect(rect.x + rect.width - 15, rect.y + rect.height - 2, 15, 2), cyan);
@@ -521,17 +544,21 @@ namespace Enb.Client
             uint selectedId = contactId != 0 ? contactId : snapshot.SelectedTargetId;
             ShipActor target = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(actor => actor.Id == selectedId);
             if (target == null || !target.HasPosition) return;
-            float height = target.IsPlayer ? 150 : 92;
+            float height = target.IsPlayer ? 165 : 108;
             float x = (CanvasWidth - 340) * .5f, y = CanvasHeight - height - 122;
             Panel(new Rect(x, y, 340, height));
-            GUI.Label(new Rect(x + 12, y + 8, 315, 22), target.Name, body);
+            Color signal = target.IsPlayer ? cyan : target.Hostile ? new Color(1f, .42f, .32f) : gold;
+            Fill(new Rect(x + 12, y + 13, 5, 5), signal);
+            GUI.Label(new Rect(x + 25, y + 7, 290, 18),
+                target.IsPlayer ? "PLAYER TARGET" : target.Hostile ? "HOSTILE TARGET" : "MOB TARGET", small);
+            GUI.Label(new Rect(x + 12, y + 26, 315, 24), target.Name.ToUpperInvariant(), body);
             float distance = target.Position.Distance(snapshot.Position);
             string state = snapshot.WeaponsFiring && snapshot.SelectedTargetId == target.Id ? "  ·  FIRING" : "";
-            GUI.Label(new Rect(x + 12, y + 31, 310, 20), $"RANGE  {distance / 1000:0.00} km{state}", small);
+            GUI.Label(new Rect(x + 12, y + 51, 310, 20), $"RANGE  {distance / 1000:0.00} km{state}", small);
             if (target.Shield >= 0)
-                Meter(new Rect(x + 12, y + 57, 150, 8), "SHIELD", target.Shield, cyan);
+                Meter(new Rect(x + 12, y + 77, 150, 8), "SHIELD", target.Shield, cyan);
             if (target.MaxHull > 0)
-                Meter(new Rect(x + 178, y + 57, 150, 8), "HULL", target.Hull / target.MaxHull, gold);
+                Meter(new Rect(x + 178, y + 77, 150, 8), "HULL", target.Hull / target.MaxHull, gold);
             if (target.IsPlayer)
             {
                 bool member = snapshot.Group.Members.Any(item => item.Id == target.Id);
@@ -542,16 +569,16 @@ namespace Enb.Client
                 bool sentRecently = invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 5 &&
                     client.Status == "Group invitation sent.";
                 GUI.enabled = leader && !member && !full && !pending && !sentRecently;
-                if (GUI.Button(new Rect(x + 12, y + 82, 316, 30),
+                if (GUI.Button(new Rect(x + 12, y + 102, 316, 30),
                     member ? "ALREADY IN YOUR GROUP" : !leader ? "ONLY YOUR LEADER CAN INVITE" :
                     full ? "GROUP IS FULL" : pending ? "WAITING FOR SERVER…" : sentRecently ? "INVITATION SENT" :
                     "INVITE " + target.Name.ToUpperInvariant() + " TO GROUP", button))
                 { client.InvitePlayer(target.Id); invitePendingId = target.Id; invitePendingAt = Time.unscaledTime; }
                 GUI.enabled = true;
-                if (pending) GUI.Label(new Rect(x + 12, y + 118, 316, 20), "Invitation request pending", small);
+                if (pending) GUI.Label(new Rect(x + 12, y + 138, 316, 20), "Invitation request pending", small);
                 else if (invitePendingId == target.Id && Time.unscaledTime - invitePendingAt < 8 &&
                     client.Status != "Requesting group invitation")
-                    GUI.Label(new Rect(x + 12, y + 118, 316, 20), client.Status, small);
+                    GUI.Label(new Rect(x + 12, y + 138, 316, 20), client.Status, small);
             }
         }
 
@@ -612,7 +639,7 @@ namespace Enb.Client
             }
         }
 
-        /// <summary>Identify nearby player ships at their interpolated screen positions.</summary>
+        /// <summary>Identify remote ships with clear team colors and backed labels.</summary>
         private void PlayerLabels(Snapshot snapshot)
         {
             int shown = 0;
@@ -621,20 +648,29 @@ namespace Enb.Client
                 Vector3 point = client.ProjectPlayer(player.Id); point.x /= Scale; point.y /= Scale;
                 if (point.z <= 0 || point.x < 30 || point.x > CanvasWidth - 335 || point.y < 100 || point.y > CanvasHeight - 145) continue;
                 if (++shown > 32) break;
-                Color color = player.IsPlayer ? cyan : player.Hostile ? new Color(1, .35f, .2f) : gold;
+                Color color = player.IsPlayer ? cyan : player.Hostile ? new Color(1, .42f, .32f) : gold;
                 bool active = contactId == player.Id || snapshot.SelectedTargetId == player.Id;
-                float radius = active ? 13 : 4;
-                Fill(new Rect(point.x - radius, point.y - radius, active ? 10 : 8, 2), color);
-                Fill(new Rect(point.x - radius, point.y - radius, 2, active ? 10 : 8), color);
+                float radius = active ? 14 : 7;
+                Fill(new Rect(point.x - radius, point.y - radius, 9, 2), color);
+                Fill(new Rect(point.x - radius, point.y - radius, 2, 9), color);
+                Fill(new Rect(point.x + radius - 9, point.y - radius, 9, 2), color);
+                Fill(new Rect(point.x + radius - 1, point.y - radius, 2, 9), color);
+                Fill(new Rect(point.x - radius, point.y + radius, 9, 2), color);
+                Fill(new Rect(point.x - radius, point.y + radius - 7, 2, 9), color);
+                Fill(new Rect(point.x + radius - 9, point.y + radius, 9, 2), color);
+                Fill(new Rect(point.x + radius - 1, point.y + radius - 7, 2, 9), color);
+                float labelX = point.x + radius + 6, labelY = point.y - 16;
+                Fill(new Rect(labelX, labelY, 188, active ? 58 : 41), new Color(.005f, .018f, .032f, .88f));
+                Fill(new Rect(labelX, labelY, 3, active ? 58 : 41), color);
+                GUI.Label(new Rect(labelX + 9, labelY + 3, 175, 19), player.Name, body);
+                GUI.Label(new Rect(labelX + 9, labelY + 22, 175, 17),
+                    (player.IsPlayer ? "PLAYER" : player.Hostile ? "HOSTILE" : "MOB") +
+                    "   ·   " + (player.Position.Distance(snapshot.Position) / 1000).ToString("0.00") + " km", small);
                 if (active)
                 {
-                    Fill(new Rect(point.x + radius - 10, point.y + radius, 10, 2), color);
-                    Fill(new Rect(point.x + radius, point.y + radius - 10, 2, 10), color);
-                    if (player.Shield >= 0) Meter(new Rect(point.x + 10, point.y + 34, 120, 6), "", player.Shield, cyan);
-                    if (player.MaxHull > 0) Meter(new Rect(point.x + 10, point.y + 43, 120, 6), "", player.Hull / player.MaxHull, gold);
+                    if (player.Shield >= 0) Meter(new Rect(labelX + 9, labelY + 43, 81, 5), "", player.Shield, cyan);
+                    if (player.MaxHull > 0) Meter(new Rect(labelX + 98, labelY + 43, 81, 5), "", player.Hull / player.MaxHull, gold);
                 }
-                GUI.Label(new Rect(point.x + 10, point.y - 8, 220, 44),
-                    player.Name + (player.IsPlayer ? "  /  PLAYER\n" : player.Hostile ? "  /  HOSTILE\n" : "  /  NPC\n") + (player.Position.Distance(snapshot.Position) / 1000).ToString("0.00") + " km", body);
             }
         }
 
@@ -747,8 +783,9 @@ namespace Enb.Client
             foreach (ShipActor actor in socialContacts)
             {
                 string kind = actor.IsPlayer ? "PLAYER" : actor.Hostile ? "HOSTILE" : "NPC";
-                if (GUILayout.Button($"{actor.Name} · {kind}\n{actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
-                    contactId == actor.Id ? selected : button))
+                GUIStyle contactStyle = contactId == actor.Id ? selected : actor.IsPlayer ? playerButton : actor.Hostile ? hostileButton : button;
+                if (GUILayout.Button($"{kind}   {actor.Name}\n{actor.Position.Distance(snapshot.Position) / 1000:0.0} km",
+                    contactStyle, GUILayout.Height(40)))
                     SelectContact(actor.Id);
             }
             ShipActor contact = snapshot.Players.Concat(snapshot.Mobs).FirstOrDefault(a => a.Id == contactId);
@@ -887,6 +924,12 @@ namespace Enb.Client
         }
 
         /// <summary>Release generated button backgrounds.</summary>
-        public void Dispose() { if (buttonTexture != null) UnityEngine.Object.Destroy(buttonTexture); if (selectedTexture != null) UnityEngine.Object.Destroy(selectedTexture); if (radarTexture != null) UnityEngine.Object.Destroy(radarTexture); }
+        public void Dispose()
+        {
+            if (buttonTexture != null) UnityEngine.Object.Destroy(buttonTexture);
+            if (selectedTexture != null) UnityEngine.Object.Destroy(selectedTexture);
+            if (panelTexture != null) UnityEngine.Object.Destroy(panelTexture);
+            if (radarTexture != null) UnityEngine.Object.Destroy(radarTexture);
+        }
     }
 }

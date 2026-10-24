@@ -34,6 +34,10 @@ def main() -> None:
             ], input=password + '\n', text=True, check=True)
         (state / 'sandbox_loadout.json').write_bytes((server_root / 'data' / 'sandbox_loadout.json').read_bytes())
         sector = json.loads((server_root / 'data' / 'sector.json').read_text())
+        resource_sector = json.loads((server_root / 'data' / 'asteroid_belt_alpha.json').read_text())
+        resource = next(node for node in resource_sector['resources'] if node['level'] == 1 and node['ore_items'])
+        resource['position'] = [100.0, 0.0, 0.0]
+        sector['resources'] = [resource]
         for point in sector['navpoints']:
             if point['id'] == 100001:
                 point['id'] = 100002

@@ -66,6 +66,7 @@ namespace Enb.Client
                 {
                     Transform model = player.IsPlayer ? art.Ship(parent) : art.Mob(parent);
                     model.localScale = Vector3.one * .25f * Mathf.Clamp(player.Scale, .05f, 100);
+                    art.ContactMarker(model, player.IsPlayer, player.Hostile);
                     view = new View(model, player);
                     ships.Add(player.Id, view);
                 }

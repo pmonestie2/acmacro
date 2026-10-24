@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Enb.Protocol
 {
-    public enum CommandKind { Thrust, Steer, Warp, Gate, Dock, Launch, OpenNpc, ChooseNpc, BuyVendor, SellVendor, EquipCargo, UnequipMount, Chat, ToggleWeapons, Formation, SelectTarget, FollowTarget, InvitePlayer, StopWeapons, OpenLoot, TakeLoot }
+    public enum CommandKind { Thrust, Steer, Warp, Gate, Dock, Launch, OpenNpc, ChooseNpc, BuyVendor, SellVendor, EquipCargo, UnequipMount, Chat, ToggleWeapons, Formation, SelectTarget, FollowTarget, InvitePlayer, StopWeapons, OpenLoot, TakeLoot, OpenResource, CloseResource, ProspectResource }
 
     public readonly struct ClientCommand
     {
@@ -91,6 +91,9 @@ namespace Enb.Protocol
                                 case CommandKind.StopWeapons: session.StopWeapons(); break;
                                 case CommandKind.OpenLoot: session.OpenLoot(command.Target); break;
                                 case CommandKind.TakeLoot: session.TakeLoot(command.Target, command.Slot); break;
+                                case CommandKind.OpenResource: session.OpenResource(command.Target); break;
+                                case CommandKind.CloseResource: session.CloseResource(); break;
+                                case CommandKind.ProspectResource: session.ProspectResource(command.Slot); break;
                             }
                         }
                         session.Poll();
