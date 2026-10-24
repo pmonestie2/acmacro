@@ -53,6 +53,11 @@ class WorldSnapshot(TypedDict):
 
 class ActorSnapshot(TypedDict):
     state: str
+    definition: ActorDefinition
+
+
+class ActorDefinition(TypedDict):
+    radius: float
 
 
 class RecordingSession(SpaceSession):
@@ -69,7 +74,11 @@ class RecordingSession(SpaceSession):
         return frames
 
 
-def exercise(binary: Path, host: str, level: int = 20) -> None:
+def exercise(binary: Path, host: str, level: int = 20, radius: int = 0,
+             *, refresh_radius: bool = False) -> None:
+    if radius not in (0, 500, 1000):
+        raise ValueError('Use a supported radius fixture: 0, 500 or 1000 metres')
+    duration_ms = (4000 - radius) * 3
     with tempfile.TemporaryDirectory(prefix='enb-npc-projectile-') as temporary:
         folder = Path(temporary)
         state, log = folder / 'state', folder / 'server.log'
@@ -78,7 +87,7 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
                        input='example\n', text=True, capture_output=True, check=True)
         content = json.loads((ROOT / 'data/sector.json').read_text())
         mob = content['mobs'][0]
-        mob.update(level=level, spawn=[4000., 0., 0.], aggressive=True)
+        mob.update(level=level, spawn=[4000., 0., 0.], aggressive=True, radius=radius)
         mob['weapon'] = dict(item=3022, item_type=16, damage=11., damage_type=3,
                              reload=2., effect=948)
         mob['combat_override'].update(dps=0.25, reload=20., range=5000., effect=948)
@@ -118,7 +127,7 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
             assert shot['hit']['target'] == owner
             assert shot['hit']['target_epoch'] == player()['session_epoch']
             assert shot['hit']['damage'] == 5. and shot['hit']['damage_type'] == 3
-            assert shot['duration_ms'] == 12000
+            assert shot['duration_ms'] == duration_ms
 
             def damage_reports() -> list[Frame]:
                 return [frame for frame in frames if frame.opcode == 0x64
@@ -129,7 +138,7 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
                 return any(frame.opcode == 0x0b and len(frame.body) == 23
                            and struct.unpack_from('<II', frame.body, 2) == (0x10000001, owner)
                            and struct.unpack_from('<H', frame.body, 10)[0] == 948
-                           and struct.unpack_from('<H', frame.body, 21)[0] == 12000
+                           and struct.unpack_from('<H', frame.body, 21)[0] == duration_ms
                            for frame in frames)
 
             wait(saw_launch)
@@ -146,8 +155,13 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
             sequence = client.stream.expected
             (state / 'stop.request').write_text('replace with NPC shot in flight\n')
             process.wait(timeout=5)
+            if refresh_radius:
+                mob['radius'] = radius + 500
+                content_file.write_text(json.dumps(content))
             process = start_server(binary, host, state, content_file, log)
             wait(lambda: client is not None and client.stream.expected > sequence)
+            if refresh_radius:
+                wait(lambda: world()['actors'][0]['definition']['radius'] == radius + 500)
             assert player()['session_epoch'] == epoch
             assert player()['skills']['cloak_rank'] == 1
             wait(lambda: len(damage_reports()) == 1 and world()['npc_shots'] == [])
@@ -155,7 +169,7 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
             assert struct.unpack_from('<f', report.body)[0] == 5.
             assert struct.unpack_from('<II', report.body, 8) == (3, 1)
             assert client.sector.getsockname() == endpoint
-            print('PASS: NPC PL effect precedes its frozen 12-second impact', flush=True)
+            print(f'PASS: NPC PL effect precedes its frozen {duration_ms}ms surface-range impact', flush=True)
             print('PASS: committed NPC shot lands on a cloaked target after server replacement', flush=True)
             (state / 'stop.request').write_text('replace after NPC impact acknowledgment\n')
             process.wait(timeout=5)
@@ -165,6 +179,8 @@ def exercise(binary: Path, host: str, level: int = 20) -> None:
             assert len(damage_reports()) == 1
             assert world()['npc_shots'] == []
             print('PASS: second replacement does not replay acknowledged NPC damage', flush=True)
+            if refresh_radius:
+                print('PASS: refreshed NPC geometry preserves already-committed projectile timing', flush=True)
         except BaseException:
             if log.exists():
                 print(log.read_text(errors='replace'))
@@ -186,10 +202,15 @@ def main() -> None:
     parser.add_argument('--binary', type=Path, default=ROOT / 'target/debug/enb-server.exe')
     parser.add_argument('--server', default='127.0.0.15')
     parser.add_argument('--level', type=int, default=20, choices=(20, 61, 62))
+    parser.add_argument('--radius', type=int, default=0, choices=(0, 500, 1000),
+                        help='Explicit NPC surface radius in the disposable combat fixture')
+    parser.add_argument('--refresh-radius', action='store_true',
+                        help='Change NPC geometry during the in-flight server replacement')
     args = parser.parse_args()
     if registered(args.server):
         raise RuntimeError('Use an unused disposable server address')
-    exercise(args.binary.resolve(), args.server, args.level)
+    exercise(args.binary.resolve(), args.server, args.level, args.radius,
+             refresh_radius=args.refresh_radius)
 
 
 if __name__ == '__main__':

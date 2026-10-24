@@ -144,3 +144,7 @@ Follow now reads signed NPC motion velocity, as native `FollowTarget` reads
 move forward while a nearby NPC reversed. Session coverage checks the signed
 movement through the real follow command path, alongside ordinary follow and
 restart behavior.
+
+NPC surface-distance and player weapon size rules now use imported native
+asset radii; see [ASSET_GEOMETRY.md](ASSET_GEOMETRY.md) for the source rules,
+content provenance and remaining static/resource geometry work.

@@ -13,6 +13,8 @@ import math
 from pathlib import Path
 from typing import TypedDict
 
+from build import ROOT
+from import_asset_radii import load_radii
 from import_sector import SqlRow, number, public_rows
 
 
@@ -45,6 +47,7 @@ class MobSpawn(TypedDict):
     name: str
     level: int
     asset: int
+    radius: float
     spawn: list[float]
     scale: float
     hsv: list[float]
@@ -55,7 +58,8 @@ class MobSpawn(TypedDict):
 class PublicSpawns:
     """Index public relationships once for importing an entire universe."""
 
-    def __init__(self, dump: Path) -> None:
+    def __init__(self, dump: Path, *, asset_radii: Path = ROOT / 'data/asset_radii.json') -> None:
+        self.radii = load_radii(asset_radii)
         self.objects: defaultdict[int, list[SqlRow]] = defaultdict(list)
         self.rules: dict[int, SqlRow] = {}
         self.templates: dict[int, SqlRow] = {}
@@ -95,12 +99,14 @@ class PublicSpawns:
 
 
     def for_sector(self, sector_id: int) -> list[MobSpawn]:
-        return resolve_spawns(self.objects[sector_id], self.rules, self.templates, self.groups, self.weapons)
+        return resolve_spawns(self.objects[sector_id], self.rules, self.templates, self.groups,
+                              self.weapons, self.radii)
 
 
 def resolve_spawns(objects: list[SqlRow], rules: dict[int, SqlRow],
                    templates: dict[int, SqlRow], groups: dict[int, list[int]],
-                   weapons: dict[int,MobWeapon] | None = None) -> list[MobSpawn]:
+                   weapons: dict[int,MobWeapon] | None = None,
+                   radii: dict[int, float] | None = None) -> list[MobSpawn]:
     spawns: list[MobSpawn] = []
     for obj in sorted(objects, key=lambda row: number(row, 'sector_object_id')):
         group = int(number(obj, 'sector_object_id'))
@@ -122,6 +128,9 @@ def resolve_spawns(objects: list[SqlRow], rules: dict[int, SqlRow],
         region: SpawnRegion = {'center': center, 'radius': radius}
         for index in range(count):
             mob = eligible[index % len(eligible)]
+            asset = int(number(mob, 'base_asset_id'))
+            if radii is not None and asset not in radii:
+                raise ValueError(f'MOB asset {asset} has no native radius')
             faction = int(number(mob, 'faction_id'))
             aggression = int(number(mob, 'aggressiveness'))
             if not 0 <= faction <= 0xffffffff or not 0 <= aggression <= 255:
@@ -137,7 +146,8 @@ def resolve_spawns(objects: list[SqlRow], rules: dict[int, SqlRow],
                 'range_modifier': number(mob,'range_modifier',1),
                 'weapon': (weapons or {}).get(int(number(mob,'mob_id'))), 'template_id': int(number(mob, 'mob_id')),
                 'spawn_group': group, 'name': mob.get('name') or 'Unnamed MOB', 'level': int(number(mob, 'level')),
-                'asset': int(number(mob, 'base_asset_id')), 'spawn': spawn, 'scale': number(mob, 'scale') or 1.,
+                'asset': asset, 'radius': radii[asset] if radii is not None else 0.,
+                'spawn': spawn, 'scale': number(mob, 'scale') or 1.,
                 'hsv': [number(mob, key) for key in ('h', 's', 'v')],
                 'respawn_seconds': number(rule, 'respawn_time') or 30.,
                 'aggressive': aggression >= 3})

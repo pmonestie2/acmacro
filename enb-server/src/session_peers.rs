@@ -113,6 +113,7 @@ impl PlayerSession {
             .map(|peer| crate::following::FollowContact {
                 position: peer.position,
                 speed: peer.motion.speed,
+                radius: crate::following::PLAYER_RADIUS,
             });
     }
     pub(crate) fn publish_peers(&mut self, peers: &[PeerSnapshot]) {

@@ -191,7 +191,7 @@ impl Mob {
             .initialize(self.definition.source_id, self.definition.template_id);
         self.roaming.behavior = IdleBehavior::Drift;
         self.face_point(target);
-        let speed = pursuit_speed(distance(self.position, target), self.roaming.default_speed);
+        let speed = pursuit_speed(self.range_to(target), self.roaming.default_speed);
         self.integrate_native_motion(dt, speed, 0.);
         if dt.is_finite() && dt > 0. && dt < 5. && self.advance_roam_clock(dt) {
             // Native HandleMovementChanges draws these rolls even in PURSUE,
@@ -211,6 +211,8 @@ impl Mob {
             .spawn_region
             .as_ref()
             .expect("native roaming has region");
+        // Spawn-marker Object::Radius is separate from this MOB's radius.
+        // That marker geometry is not imported yet; retain the center bound.
         if distance(self.position, region.center) > region.radius {
             self.face_point(region.center);
             self.roaming.random_movement();
@@ -253,10 +255,8 @@ impl Mob {
                     .find(|p| p.id == player && p.session_epoch == epoch && p.visible)
                 {
                     self.face_point(player.position);
-                    let speed = curious_speed(
-                        distance(self.position, player.position),
-                        self.roaming.default_speed,
-                    );
+                    let speed =
+                        curious_speed(self.range_to(player.position), self.roaming.default_speed);
                     if speed == 0. {
                         self.roaming.behavior = IdleBehavior::Drift;
                     }

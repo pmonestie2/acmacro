@@ -6,11 +6,13 @@ use crate::protocol::invalid;
 use std::io;
 
 pub const FOLLOW_VISIBILITY: f32 = 20_000.;
+pub const PLAYER_RADIUS: f32 = 245.;
 
 #[derive(Clone, Copy, Debug)]
 pub struct FollowContact {
     pub position: [f32; 3],
     pub speed: f32,
+    pub radius: f32,
 }
 
 pub fn follow_speed(range: f32, target_speed: f32, maximum: f32) -> f32 {
@@ -27,6 +29,9 @@ pub fn follow_speed(range: f32, target_speed: f32, maximum: f32) -> f32 {
 }
 
 impl FollowContact {
+    pub fn range_to(self, position: [f32; 3]) -> f32 {
+        (distance(position, self.position) - self.radius).max(0.)
+    }
     pub fn advance(
         self,
         motion: &mut Motion,
@@ -36,14 +41,16 @@ impl FollowContact {
         maximum: f32,
     ) -> io::Result<()> {
         if !self.speed.is_finite()
+            || !self.radius.is_finite()
+            || !(0. ..=2_000_000.).contains(&self.radius)
             || !bounds.contains(self.position)
             || !maximum.is_finite()
             || maximum < 0.
         {
             return Err(invalid("Invalid follow target motion."));
         }
-        let range = distance(*position, self.position);
-        if range > 0.001 {
+        let range = self.range_to(*position);
+        if distance(*position, self.position) > 0.001 {
             motion.face(std::array::from_fn(|axis| {
                 self.position[axis] - position[axis]
             }))?;
@@ -77,12 +84,32 @@ mod tests {
         assert_eq!(follow_speed(1000., -200., 100.), -50.);
     }
     #[test]
+    fn follows_the_surface_without_crossing_and_rejects_invalid_geometry() {
+        let mut motion = Motion::default();
+        let mut position = [0.; 3];
+        let mut contact = FollowContact {
+            position: [2000., 0., 0.],
+            speed: 100.,
+            radius: 500.,
+        };
+        contact
+            .advance(&mut motion, &mut position, &Bounds::default(), 100., 250.)
+            .unwrap();
+        assert_eq!(position, [1490., 0., 0.]);
+        assert_eq!(contact.range_to(position), 10.);
+        contact.radius = -1.;
+        assert!(contact
+            .advance(&mut motion, &mut position, &Bounds::default(), 1., 250.)
+            .is_err());
+    }
+    #[test]
     fn following_faces_in_three_dimensions_and_never_crosses_a_target_on_a_large_tick() {
         let mut motion = Motion::default();
         let mut position = [0.; 3];
         FollowContact {
             position: [2000., 2000., 2000.],
             speed: 0.,
+            radius: 0.,
         }
         .advance(&mut motion, &mut position, &Bounds::default(), 100., 250.)
         .unwrap();
@@ -93,6 +120,7 @@ mod tests {
         FollowContact {
             position,
             speed: 100.,
+            radius: 0.,
         }
         .advance(&mut motion, &mut position, &Bounds::default(), 1., 250.)
         .unwrap();

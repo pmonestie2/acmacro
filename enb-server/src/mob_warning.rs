@@ -87,7 +87,7 @@ impl Mob {
         for _ in 0..passes {
             for player in &contacts {
                 if self.warnings.contacts.get(&player.id) != Some(&player.session_epoch)
-                    || distance(self.position, player.position) >= 1000.
+                    || self.range_to(player.position) >= 1000.
                     || !player
                         .factions
                         .allows_spontaneous_attack(self.definition.faction)

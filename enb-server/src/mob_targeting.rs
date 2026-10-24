@@ -1,4 +1,5 @@
-//! Active MOB visibility and cloak checks from MOBClass.cpp. Native MOB Scan
+//! Active MOB visibility and cloak checks from MOBClass.cpp. Sensor helpers
+//! receive the NPC's edge range, as computed by Object::RangeFrom. Native MOB Scan
 //! skill stays zero in the archived implementation; no unseen skill is inferred.
 use crate::mob::distance;
 use crate::mob_aggro::PlayerThreat;
@@ -72,11 +73,14 @@ impl MobSensors {
         &mut self,
         level: u32,
         position: [f32; 3],
+        radius: f32,
         players: &[PlayerThreat],
     ) -> Vec<u32> {
         let mut next = BTreeMap::new();
         let mut replaced = Vec::new();
         for player in players {
+            let range = distance(position, player.position) - radius;
+            let range = if range < 0. { 0. } else { range };
             if self
                 .players
                 .get(&player.id)
@@ -87,12 +91,7 @@ impl MobSensors {
             if player.id != 0
                 && player.session_epoch != 0
                 && player.visible
-                && mob_sees_player(
-                    level,
-                    player.signature,
-                    distance(position, player.position),
-                    self.contains(player),
-                )
+                && mob_sees_player(level, player.signature, range, self.contains(player))
             {
                 next.insert(player.id, player.session_epoch);
             }

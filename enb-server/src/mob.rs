@@ -7,6 +7,9 @@ use crate::motion::Motion;
 #[cfg(test)]
 #[path = "mob_faction_tests.rs"]
 mod faction_tests;
+#[cfg(test)]
+#[path = "mob_radius_tests.rs"]
+mod radius_tests;
 use serde::{Deserialize, Serialize};
 #[path = "mob_motion.rs"]
 mod movement;
@@ -21,6 +24,10 @@ use warning::WarningState;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MobDefinition {
     pub source_id: u32,
+    /// Native Object::SetBasset radius, without the rendered scale multiplier.
+    /// Custom scenarios retain point geometry unless explicitly configured.
+    #[serde(default)]
+    pub radius: f32,
     #[serde(default)]
     pub faction: u32,
     #[serde(default)]
@@ -63,6 +70,8 @@ impl MobDefinition {
     }
     pub fn validate(&self) -> std::io::Result<()> {
         if self.source_id == 0
+            || !self.radius.is_finite()
+            || !(0. ..=2_000_000.).contains(&self.radius)
             || self.aggression.is_some_and(|value| value > 255)
             || self
                 .spawn_region
@@ -189,6 +198,17 @@ pub fn move_towards(position: &mut [f32; 3], target: [f32; 3], distance: f32) {
 }
 
 impl Mob {
+    /// Object::RangeFrom subtracts the receiver's unscaled radius only. Facing,
+    /// displacement, and explicit absolute-distance leashes remain center based.
+    pub fn range_to(&self, point: [f32; 3]) -> f32 {
+        let range = distance(self.position, point) - self.definition.radius;
+        // Preserve NaN as invalid input rather than treating it as an overlap.
+        if range < 0. {
+            0.
+        } else {
+            range
+        }
+    }
     pub fn targets(&self, player: u32) -> bool {
         self.aggro.targets(player)
     }
@@ -392,10 +412,12 @@ impl Mob {
             self.aggro.target(None);
             return None;
         }
-        for player in self
-            .sensors
-            .refresh(self.definition.level, self.position, players)
-        {
+        for player in self.sensors.refresh(
+            self.definition.level,
+            self.position,
+            self.definition.radius,
+            players,
+        ) {
             self.aggro.remove(player);
         }
         self.check_warning_shots(dt, players);
@@ -479,8 +501,7 @@ impl Mob {
             && self.cooldown <= dt
             && players.iter().any(|player| {
                 player.visible
-                    && distance(self.position, player.position)
-                        <= self.combat.range + movement_margin
+                    && self.range_to(player.position) <= self.combat.range + movement_margin
                     && (self.definition.spawn_region.is_some()
                         || distance(self.definition.spawn, player.position) <= 15000.)
             })
@@ -578,7 +599,7 @@ impl Mob {
             return 0.;
         }
         self.cooldown = (self.cooldown - dt).max(0.);
-        let separation = distance(self.position, player);
+        let separation = self.range_to(player);
         let scan = 2500. + 150. * self.definition.level as f32;
         if !(mode == TargetingMode::Acquired
             || self.provoked
@@ -610,7 +631,7 @@ impl Mob {
             move_towards(&mut self.position, player, 150. * dt);
             return 0.;
         }
-        if distance(self.position, player) > self.combat.range {
+        if self.range_to(player) > self.combat.range {
             self.state = MobState::Chasing;
             return 0.;
         }
@@ -637,6 +658,7 @@ mod tests {
     fn definition() -> MobDefinition {
         MobDefinition {
             source_id: 1,
+            radius: 0.,
             faction: 0,
             aggression: None,
             spawn_region: None,

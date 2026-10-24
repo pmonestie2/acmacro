@@ -258,3 +258,13 @@ faction/takeover/restart packet smoke passes against the rebuilt binary as well.
 Native clients resumed across deployment and subsequent warp/cancel requests
 reached the server; graphical warning-shot and group-warp playtesting remain
 separate from these results.
+
+Public MOB geometry now carries the installed native asset radii. Surface-based
+NPC sensors, standoff, warnings, firing and flight, player weapon size reach and
+follow stop distance pass the complete 250 Rust tests and Clippy. The numeric
+catalog covers all 139 public MOB assets; the migration added only radius to all
+6650 actors while preserving other content. All 47 Python tool tests pass;
+scoped type checks pass for the four importer/test modules and extended NPC
+projectile smoke. See ASSET_GEOMETRY.md for provenance and remaining geometry
+scope. This checkpoint precedes live deployment and the refreshed-radius packet
+smoke.

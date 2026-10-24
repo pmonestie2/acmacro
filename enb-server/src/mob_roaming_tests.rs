@@ -214,3 +214,25 @@ fn curiosity_does_not_survive_departure_contemplation_or_a_new_npc_life() {
     assert_eq!(mob.state, MobState::Idle);
     assert!(matches!(mob.roaming.behavior, IdleBehavior::Drift));
 }
+
+#[test]
+fn curiosity_uses_own_radius_but_spawn_boundary_does_not_reuse_mob_radius() {
+    let mut mob = mob(4000.);
+    mob.definition.radius = 500.;
+    mob.roaming
+        .initialize(mob.definition.source_id, mob.definition.template_id);
+    mob.roaming.default_speed = 229.;
+    let target = player(1400.); // edge900 is inside the native five-second horizon
+    mob.roaming.behavior = IdleBehavior::Curious {
+        player: target.id,
+        epoch: target.session_epoch,
+    };
+    mob.tick_idle(0.1, std::slice::from_ref(&target));
+    assert_eq!(mob.motion.speed, 0.);
+    assert!(matches!(mob.roaming.behavior, IdleBehavior::Drift));
+    // The marker, not the drifting NPC, is RangeFrom's receiver here. Until
+    // marker radii are imported, use the existing center boundary unchanged.
+    mob.position = [4100., 0., 0.];
+    mob.choose_idle_change(&[]);
+    assert!(mob.motion.heading()[0] < -0.99);
+}

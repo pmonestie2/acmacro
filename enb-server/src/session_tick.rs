@@ -142,7 +142,7 @@ impl PlayerSession {
         mob.state != MobState::Dead
             && crate::mob_targeting::player_sees_mob(
                 self.equipment.ship.scan_range,
-                distance(self.position, mob.position),
+                mob.range_to(self.position),
                 self.mob_visible.get(index).copied().unwrap_or(false),
             )
     }

@@ -13776,7 +13776,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 82.01
     },
     {
       "source_id": 263401,
@@ -13819,7 +13820,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 82.01
     },
     {
       "source_id": 263402,
@@ -13862,7 +13864,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 82.01
     },
     {
       "source_id": 456100,
@@ -13905,7 +13908,8 @@
         0.0
       ],
       "respawn_seconds": 25.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 456101,
@@ -13948,7 +13952,8 @@
         0.0
       ],
       "respawn_seconds": 25.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 456102,
@@ -13991,7 +13996,8 @@
         0.0
       ],
       "respawn_seconds": 25.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 456103,
@@ -14034,7 +14040,8 @@
         0.0
       ],
       "respawn_seconds": 25.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 456200,
@@ -14077,7 +14084,8 @@
         4.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 456201,
@@ -14120,7 +14128,8 @@
         4.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 456202,
@@ -14163,7 +14172,8 @@
         4.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 456500,
@@ -14206,7 +14216,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     },
     {
       "source_id": 456501,
@@ -14249,7 +14260,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     },
     {
       "source_id": 456502,
@@ -14292,7 +14304,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     },
     {
       "source_id": 457600,
@@ -14335,7 +14348,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 85.0329
     },
     {
       "source_id": 457601,
@@ -14378,7 +14392,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 85.0329
     },
     {
       "source_id": 457602,
@@ -14421,7 +14436,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 85.0329
     },
     {
       "source_id": 457700,
@@ -14464,7 +14480,8 @@
         4.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 457701,
@@ -14507,7 +14524,8 @@
         4.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 457702,
@@ -14550,7 +14568,8 @@
         4.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 435.684
     },
     {
       "source_id": 457900,
@@ -14593,7 +14612,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 85.0329
     },
     {
       "source_id": 457901,
@@ -14636,7 +14656,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 85.0329
     },
     {
       "source_id": 457902,
@@ -14679,7 +14700,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 85.0329
     },
     {
       "source_id": 457903,
@@ -14722,7 +14744,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": false
+      "aggressive": false,
+      "radius": 85.0329
     },
     {
       "source_id": 543300,
@@ -14765,7 +14788,8 @@
         0.0
       ],
       "respawn_seconds": 120.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 2245.7666
     },
     {
       "source_id": 1360300,
@@ -14808,7 +14832,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360301,
@@ -14851,7 +14876,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360302,
@@ -14894,7 +14920,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360303,
@@ -14937,7 +14964,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360304,
@@ -14980,7 +15008,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360305,
@@ -15023,7 +15052,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360400,
@@ -15066,7 +15096,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360401,
@@ -15109,7 +15140,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360402,
@@ -15152,7 +15184,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360403,
@@ -15195,7 +15228,8 @@
         0.0
       ],
       "respawn_seconds": 20.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360600,
@@ -15238,7 +15272,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360601,
@@ -15281,7 +15316,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1360602,
@@ -15324,7 +15360,8 @@
         0.0
       ],
       "respawn_seconds": 30.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 36.4922
     },
     {
       "source_id": 1412300,
@@ -15367,7 +15404,8 @@
         0.0
       ],
       "respawn_seconds": 180.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     },
     {
       "source_id": 1412301,
@@ -15410,7 +15448,8 @@
         0.0
       ],
       "respawn_seconds": 180.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     },
     {
       "source_id": 1412302,
@@ -15453,7 +15492,8 @@
         0.0
       ],
       "respawn_seconds": 180.0,
-      "aggressive": true
+      "aggressive": true,
+      "radius": 48.4172
     }
   ],
   "source": "Archived net7 public sector, static objects, MOB spawn rules and resource fields",

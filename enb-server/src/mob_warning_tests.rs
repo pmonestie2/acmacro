@@ -165,3 +165,17 @@ fn warning_induced_launch_failure_restores_hate_clock_rng_and_contacts() {
     assert!(world.take_mob_launch_visuals().is_empty());
     std::fs::remove_dir_all(root).unwrap();
 }
+
+#[test]
+fn warning_proximity_uses_unscaled_npc_edge_with_strict_thousand_metre_boundary() {
+    for (center, expected) in [(1499., Some(0)), (1500., None)] {
+        let mut mob = mob();
+        mob.definition.radius = 500.;
+        mob.definition.scale = 4.;
+        let mut player = player(0x40000001);
+        player.position[0] = center;
+        mob.select_target_with_clock(0.5, std::slice::from_ref(&player));
+        mob.warnings.random_state = seed_for(99);
+        assert_eq!(mob.select_target_with_clock(0.5, &[player]), expected);
+    }
+}

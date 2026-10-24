@@ -159,7 +159,7 @@ impl SectorCombat {
                     })?;
                     let duration_ms = crate::npc_projectiles::travel_ms(
                         &mob.definition,
-                        crate::mob::distance(mob.position, player.position),
+                        mob.range_to(player.position),
                     )?;
                     let hit = MobHit {
                         sector: self.sector,

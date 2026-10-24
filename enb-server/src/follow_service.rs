@@ -66,6 +66,7 @@ impl PlayerSession {
                 // legacy scalar is a distance-per-tick magnitude and loses
                 // reverse movement when a pursuing NPC backs away.
                 speed: mob.motion.speed,
+                radius: mob.definition.radius,
             }))
     }
 
@@ -87,8 +88,8 @@ impl PlayerSession {
         } else {
             self.mob_follow_contact()?
         };
-        let Some(contact) = contact
-            .filter(|contact| distance(self.position, contact.position) <= FOLLOW_VISIBILITY)
+        let Some(contact) =
+            contact.filter(|contact| contact.range_to(self.position) <= FOLLOW_VISIBILITY)
         else {
             self.stop_following();
             return Ok(false);

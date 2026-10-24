@@ -7,6 +7,8 @@ import tempfile
 import unittest
 
 from import_spawns import PublicSpawns, export_spawns
+from import_asset_radii import load_radii
+from build import ROOT
 from test_import_sector import table
 
 
@@ -34,6 +36,20 @@ class SpawnTests(unittest.TestCase):
         self.assertEqual((mobs[0]['faction'], mobs[0]['aggression']), (17, 3))
         self.assertEqual(mobs[0]['spawn_region'], {'center': [500., 0., 0.], 'radius': 100.})
         self.assertEqual(mobs[1]['spawn_region'], mobs[0]['spawn_region'])
+        expected_radius = load_radii(ROOT / 'data/asset_radii.json')[384]
+        self.assertGreater(expected_radius, 0)
+        self.assertTrue(all(mob['radius'] == expected_radius for mob in mobs))
+
+    def test_missing_native_radius_is_reported_instead_of_invented(self) -> None:
+        sql = table('sector_objects', [{'sector_object_id': 20, 'sector_id': 1, 'type': 0}])
+        sql += table('sector_objects_mob', [{'mob_id': 20, 'mob_count': 1}])
+        sql += table('mob_spawn_group', [{'spawn_group_id': 20, 'mob_id': 7}])
+        sql += table('mob_base', [{'mob_id': 7, 'name': 'Unknown geometry', 'base_asset_id': 65000}])
+        with tempfile.TemporaryDirectory() as folder:
+            dump = Path(folder) / 'public.sql'
+            dump.write_text(sql)
+            with self.assertRaisesRegex(ValueError, '65000.*no native radius'):
+                PublicSpawns(dump).for_sector(1)
 
     def test_first_public_weapon_keeps_real_stats_and_null_boss_modifiers_default_to_one(self) -> None:
         sql=table('sector_objects',[{'sector_object_id':20,'sector_id':1,'type':0}])

@@ -27,7 +27,15 @@ impl PlayerSession {
         let source = target.definition.source_id;
         let template = target.definition.template_id;
         let generation = target.death_generation;
-        let range = distance(self.position, target.position);
+        let range = target.range_to(self.position);
+        // Archived Equipable::CheckRange adds scaled asset radius separately
+        // from Object::RangeFrom's unscaled surface offset. At scale1 both
+        // contributions are present; projectile flight uses only surface range.
+        let target_size = if target.definition.asset == 0 {
+            0.
+        } else {
+            target.definition.radius * target.definition.scale
+        };
         let target_position = target.position;
         let heading = self.motion.heading();
         let mut sequence = self
@@ -55,7 +63,7 @@ impl PlayerSession {
             if !self.weapon_firing[weapon.slot]
                 || self.weapon_cooldowns[weapon.slot] > 0.
                 || journal.energy_after < weapon.energy
-                || range > weapon.range
+                || range > weapon.range + target_size
                 || weapon.damage <= 0.
             {
                 continue;
@@ -368,6 +376,46 @@ mod tests {
         .unwrap();
         restored.combat = Arc::new(Mutex::new(combat));
         restored
+    }
+
+    #[test]
+    fn player_weapon_reach_uses_both_native_radius_offsets_but_flight_uses_surface_range() {
+        let ship = armed(3022, 512);
+        let reach = ship.equipment.weapons[0].range;
+        {
+            let mut combat = lock_combat(&ship.combat).unwrap();
+            let target = &mut combat.actors[0];
+            target.definition.radius = 500.;
+            target.definition.scale = 2.;
+            target.position = [reach + 1500., 0., 0.];
+        }
+        let candidate = ship.prepare_weapon_launch(&mut || 5000).unwrap().unwrap();
+        let journal = candidate.pending_launch.unwrap();
+        assert!(!journal.projectiles.is_empty());
+        assert_eq!(
+            journal.projectiles[0].duration_ms,
+            travel_ms(16, reach + 1000.)
+        );
+        // Preparing does not spend resources; a center just beyond the two
+        // native offsets must not create a second speculative volley.
+        lock_combat(&ship.combat).unwrap().actors[0].position[0] += 1.;
+        assert!(ship.prepare_weapon_launch(&mut || 5000).unwrap().is_none());
+        assert_eq!(ship.energy, 100.);
+        assert_eq!(ship.inventory.ammunition[3].as_ref().unwrap().quantity, 1);
+    }
+
+    #[test]
+    fn player_visibility_measures_to_npc_surface_without_applying_visual_scale() {
+        let ship = armed(3022, 512);
+        let limit = ship.equipment.ship.scan_range + crate::mob_targeting::MOB_SIGNATURE;
+        let mut combat = lock_combat(&ship.combat).unwrap();
+        let mob = &mut combat.actors[0];
+        mob.definition.radius = 500.;
+        mob.definition.scale = 10.;
+        mob.position = [limit + 499., 0., 0.];
+        assert!(ship.mob_visible_in_scan(0, mob));
+        mob.position[0] = limit + 500.;
+        assert!(!ship.mob_visible_in_scan(0, mob));
     }
 
     #[test]
