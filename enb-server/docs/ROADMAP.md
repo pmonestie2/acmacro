@@ -233,6 +233,25 @@ Python type checking passes for the extended NPC smoke.
 Authenticated character selection now takes over a stale session immediately,
 retiring old claims/casts/transport before issuing the replacement ticket.
 Two scoped behavioral tests pass, including old comms/sector logout isolation
-and invalid-slot preservation. The accompanying faction catalog/PDA/acquisition
-and source-backed roaming work is committed as an implementation checkpoint;
-its broader test run and public spawn regeneration remain in progress.
+and invalid-slot preservation. Takeover also discards old queued input, support
+actions, client events and replay responses before installing the new owner.
+
+The faction catalog/PDA/acquisition and source-backed roaming integration passes
+232 Rust tests and Clippy with warnings denied. Public spawn regeneration keeps
+all 6650 actors and every static navigation record; 6643 positive-radius actors
+now carry their original spawn regions, faction IDs and numeric aggression.
+Seven zero-radius actors remain stationary. The build is deployed locally.
+Focused faction/spawn importer tests pass (7); scoped type checking passes for
+the four changed importer/test modules.
+
+The disposable `smoke_factions.py` packet check passes for simultaneous friendly
+JE and hostile PW observers, idle roaming, numeric tier-three acquisition,
+immediate takeover with late old logout, and pursuit/attitude continuity through
+replacement. Its scoped type check passes. This does not establish graphical
+PDA rendering, field-guardian AI, kill faction awards or complete combat AI.
+
+After integrating the Unity agent's group-warp fix, all 240 Rust tests and
+Clippy pass. This includes the new six-case warning-shot suite and signed NPC
+follow regression. The Python server-tool suite passes all 43 tests. The new
+warning/follow changes are still awaiting deployment until the next coordinated
+restart; the packet smoke above ran against the preceding faction/roaming build.

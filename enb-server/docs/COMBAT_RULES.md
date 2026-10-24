@@ -85,9 +85,10 @@ that becomes undetectable loses its entry, as in native `LockTarget`.
 Contemplation retains its existing reset behavior, damage breaks its pause, and
 death/respawn and the existing direct leash reset clear combat state. The
 unowned `damage` API retains standalone scenario behavior separately from
-owned-player hate. No faction standings, group hate or new scan parameters are
-invented; attack-on-sight acquisition continues to use the imported aggressive
-flag and current scan range.
+owned-player hate. Group hate sharing is not implemented. Attack-on-sight now
+uses the imported numeric aggression tier (3 and above), per-player faction
+standing and the sensor rules below; legacy custom definitions without a numeric
+tier retain their explicit aggressive flag.
 
 `mob_targeting.rs` now applies the archived sensor boundaries. A player sees a
 MOB within equipped scan range plus the native 3,000 metre MOB signature. A MOB
@@ -110,3 +111,36 @@ retain their frozen impact and are unaffected by subsequent cloak changes.
 `smoke_npc_projectiles.py --level 61` and `--level 62` check the trained-stealth boundary
 using native packets, then replace the server while a shot is in flight.
 Both pass; group cloak/follow/formation/restart checks also pass independently.
+
+Public faction defaults come from `data/factions.json`: the archived loader uses
+the matrix's `base_value`, not `current_value`. PDA factions start within native
+bounds with 7500 for the character's own class; durable inventory overrides take
+precedence. NPC acquisition requires a standing of zero or less unless the player
+has provoked retaliation. Attitude colors have their separate native thresholds:
+hostile at -2000 or below, friendly at 2000 or above, shun between them. An NPC's
+current attack victim sees hostile attitude even if ordinarily friendly; other
+observers retain their individual faction reaction. Unknown numeric faction 32
+is preserved without inventing a PDA entry. Combat faction awards remain pending.
+
+`tools/smoke_factions.py` passes against a disposable server with two real packet
+clients: a same-faction JE observes a friendly drifting NPC, a PW is acquired by
+numeric aggression 3, and simultaneous observer attitudes remain independent.
+Immediate authenticated takeover survives the old transport's logout, and NPC
+pursuit plus faction attitudes survive a server replacement. These are native
+packet checks, not graphical PDA or combat playtesting.
+
+Numeric aggression 1 through 4 also follows archived `CheckWarningShots`: a
+previously observed ship strictly within 1000 metres with standing at zero or
+below gets a warning roll every 500 active milliseconds. The exact probabilities
+are 2/4/6/9 percent, adding 1/5/20/100 hate respectively. Normal cloak and target
+eligibility checks still apply. Prior-pass contact identities, the active clock
+and a separate deterministic random stream survive checkpoints; departure and
+life reset clear contacts. Failed shot persistence rolls back these changes with
+the actor. Suspension does not generate offline warning rolls. Six behavioral
+tests cover boundaries, faction/cloak, epochs, persistence and launch rollback.
+
+Follow now reads signed NPC motion velocity, as native `FollowTarget` reads
+`Object::Velocity()`. Using the old distance-per-tick magnitude made followers
+move forward while a nearby NPC reversed. Session coverage checks the signed
+movement through the real follow command path, alongside ordinary follow and
+restart behavior.

@@ -62,7 +62,10 @@ impl PlayerSession {
             .filter(|mob| self.mob_visible_in_scan(index as usize, mob))
             .map(|mob| FollowContact {
                 position: mob.position,
-                speed: mob.speed,
+                // Native FollowTarget reads signed Object::Velocity(). The
+                // legacy scalar is a distance-per-tick magnitude and loses
+                // reverse movement when a pursuing NPC backs away.
+                speed: mob.motion.speed,
             }))
     }
 
@@ -115,6 +118,7 @@ mod tests {
             let mut combat = lock_combat(&ship.combat).unwrap();
             combat.actors[0].position = [3000., 0., 0.];
             combat.actors[0].speed = 50.;
+            combat.actors[0].motion.speed = 50.;
         }
         ship.position = [0.; 3];
         let mut command = ship.player_id().to_le_bytes().to_vec();
@@ -144,6 +148,26 @@ mod tests {
         ship.advance_player(0.).unwrap();
         assert!(!ship.following);
         assert_eq!(ship.motion.speed, 0.);
+    }
+
+    #[test]
+    fn following_a_reversing_npc_uses_its_signed_velocity() {
+        let mut ship = super::super::tests::session();
+        ship.logged_in = true;
+        ship.target = MOB_ID;
+        ship.position = [0.; 3];
+        {
+            let mut combat = lock_combat(&ship.combat).unwrap();
+            let mob = &mut combat.actors[0];
+            mob.position = [1000., 0., 0.];
+            mob.speed = 50.; // Legacy movement magnitude remains positive.
+            mob.motion.speed = -50.;
+        }
+        ship.begin_following().unwrap();
+        ship.advance_player(1.).unwrap();
+        assert!(ship.following);
+        assert_eq!(ship.motion.speed, -50.);
+        assert_eq!(ship.position, [-50., 0., 0.]);
     }
 
     #[test]

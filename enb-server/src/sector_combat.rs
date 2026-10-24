@@ -145,7 +145,9 @@ impl SectorCombat {
                 mob.tick_idle(dt, players);
                 continue;
             }
-            let target = mob.select_target(players).map(|index| &players[index]);
+            let target = mob
+                .select_target_with_clock(dt, players)
+                .map(|index| &players[index]);
             let damage = match target {
                 Some(player) => mob.tick_target(dt, player),
                 None => mob.tick_idle(dt, players),

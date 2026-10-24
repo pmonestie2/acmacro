@@ -1,5 +1,5 @@
 //! Initial deterministic MOB state machine, following MOBClass/MOBSpawnClass.
-//! Archived level/weapon stats drive combat; faction matrices and group hate remain unfinished.
+//! Archived level/weapon stats, per-player factions, sensors and hate drive combat.
 use crate::mob_aggro::{MobAggro, PlayerThreat};
 use crate::mob_stats::{MobStats, MobWeapon};
 use crate::mob_targeting::{mob_detects_cloak, MobSensors};
@@ -14,6 +14,9 @@ mod movement;
 mod roaming;
 use roaming::RoamState;
 pub use roaming::SpawnRegion;
+#[path = "mob_warning.rs"]
+mod warning;
+use warning::WarningState;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MobDefinition {
@@ -158,6 +161,8 @@ pub struct Mob {
     sensors: MobSensors,
     #[serde(default)]
     roaming: RoamState,
+    #[serde(default)]
+    warnings: WarningState,
     /// Unowned damage is retained for standalone scenarios/tests; an owned hit
     /// must never make a neutral MOB retaliate against an unrelated bystander.
     #[serde(default)]
@@ -213,6 +218,7 @@ impl Mob {
             aggro: MobAggro::default(),
             sensors: MobSensors::default(),
             roaming: RoamState::default(),
+            warnings: WarningState::default(),
             unowned_provoked: false,
         }
     }
@@ -227,6 +233,7 @@ impl Mob {
         saved.aggro.validate()?;
         saved.sensors.validate()?;
         saved.roaming.validate()?;
+        saved.warnings.validate()?;
         saved.validate_motion()?;
         // Older simulation ticks let an elapsed respawn countdown run just
         // below zero before setting Idle. Those are valid expired timers, not
@@ -306,6 +313,7 @@ impl Mob {
             self.killer = None;
             self.aggro.clear();
             self.sensors.clear();
+            self.warnings.clear_contacts();
             self.roaming.reset_interest();
             self.unowned_provoked = false;
         }
@@ -365,6 +373,7 @@ impl Mob {
         self.unowned_provoked = false;
         self.aggro.clear();
         self.sensors.clear();
+        self.warnings.clear_contacts();
         self.roaming.reset_interest();
     }
     /// LockTarget prefers positive attacker hate. The coordinator supplies only
@@ -372,8 +381,13 @@ impl Mob {
     /// temporary target loss retains hate, like native LostTarget.
     /// The existing scan/leash limits remain the acquisition boundaries.
     pub fn select_target(&mut self, players: &[PlayerThreat]) -> Option<usize> {
+        self.select_target_with_clock(0., players)
+    }
+    /// The authoritative coordinator supplies elapsed active simulation time.
+    pub fn select_target_with_clock(&mut self, dt: f32, players: &[PlayerThreat]) -> Option<usize> {
         if self.state == MobState::Dead || self.disabled_seconds > 0. {
             self.sensors.clear();
+            self.warnings.clear_contacts();
             self.roaming.reset_interest();
             self.aggro.target(None);
             return None;
@@ -384,6 +398,7 @@ impl Mob {
         {
             self.aggro.remove(player);
         }
+        self.check_warning_shots(dt, players);
         let eligible = |player: &PlayerThreat| {
             player.id != 0
                 && player.visible
@@ -435,6 +450,7 @@ impl Mob {
     pub fn remove_player_hate(&mut self, player: u32) {
         self.aggro.remove(player);
         self.sensors.remove(player);
+        self.warnings.forget_player(player);
         self.roaming.forget_player(player);
     }
     /// Native FireWeapon decreases this victim's hate by truncated damage/10.
@@ -451,6 +467,8 @@ impl Mob {
     pub(crate) fn may_fire_this_tick(&self, dt: f32, players: &[PlayerThreat]) -> bool {
         // Native pursuit can enter firing range during this tick. Reserve a
         // rollback snapshot before that movement, using the sourced max speed.
+        // The nominal 1.2x standoff branch needs range>=750 and range<default
+        // simultaneously, so defaults130..229 can never reach that branch.
         let movement_margin = if self.native_roaming() && dt > 0. && dt < 5. {
             229. * dt
         } else {
@@ -473,8 +491,8 @@ impl Mob {
     pub fn tick_visible(&mut self, dt: f32, player: [f32; 3], visible: bool) -> f32 {
         self.tick_observed(dt, player, visible, TargetingMode::Direct)
     }
-    /// Keep the existing prototype return speed after target loss. Full native
-    /// patrol/drift behavior remains a separate future AI task.
+    /// Ordinary SQL groups drift or investigate contacts after target loss;
+    /// custom scenarios without a region retain the prototype return behavior.
     pub fn tick_without_target(&mut self, dt: f32) -> f32 {
         self.tick_idle(dt, &[])
     }
@@ -543,6 +561,7 @@ impl Mob {
                 self.unowned_provoked = false;
                 self.aggro.clear();
                 self.sensors.clear();
+                self.warnings.clear_contacts();
                 self.roaming.reset_interest();
                 self.killer = None;
                 self.state = MobState::Idle;
@@ -572,6 +591,7 @@ impl Mob {
             self.unowned_provoked = false;
             self.aggro.clear();
             self.sensors.clear();
+            self.warnings.clear_contacts();
             self.roaming.reset_interest();
             move_towards(&mut self.position, self.definition.spawn, 100. * dt);
             return 0.;
