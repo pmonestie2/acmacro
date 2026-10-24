@@ -62,6 +62,10 @@ class World:
         elif frame.opcode == 0x2018:
             item = decode_map_object(frame.body)
             self.objects[item.object_id] = item
+        elif frame.opcode == 0x0007:
+            if len(frame.body) != 4:
+                raise ValueError('Invalid object removal length')
+            self.objects.pop(struct.unpack('<I', frame.body)[0], None)
 
     def apply_datagram(self, data: bytes) -> None:
         outer = decode_frame(data)

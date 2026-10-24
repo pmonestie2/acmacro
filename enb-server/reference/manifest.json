@@ -1,0 +1,1486 @@
+{
+  "repository": "therealKyp/Earth-and-Beyond-server",
+  "revision": "3b46ad7c8baecca61adf8a0bedd2b23cb1936b9d",
+  "files": [
+    {
+      "path": "trunk/database/Skills.xml",
+      "sha": "fd6d19cd1cdb128872b822786665e4c7c87dfa09"
+    },
+    {
+      "path": "trunk/Net7/Abilities.h",
+      "sha": "03392c68c855e2a8df90af721e1908221eecf8e0"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AShieldSap.cpp",
+      "sha": "71eb21eb5d0f2cad729876994227788fdc2db2bd"
+    },
+    {
+      "path": "trunk/Net7/Abilities/ATemplate.cpp",
+      "sha": "73e0dee282ea0895b02aa5ce6c71078542a68e95"
+    },
+    {
+      "path": "trunk/Net7/Abilities/ATemplate.h",
+      "sha": "3dfe0865b43e4bdb329e54161c62d18729963f19"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilitiyHullPatch.cpp",
+      "sha": "0d9a537eeb61a66d5edfe03466353b5c88b095cf"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityCloak.cpp",
+      "sha": "c866b0215fc6cdb6466e8e0975dd88c72f3a6483"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityCloak.h",
+      "sha": "a995745bd001428b82e60fc428945a0793fca6f4"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityHullPatch.h",
+      "sha": "41c7faa3c24c3914842690cb74b7afe056afddcf"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityJumpStart.cpp",
+      "sha": "df9f84fb9bb4d198d18539e47bb12c09a65409ec"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityJumpStart.h",
+      "sha": "ac37e3d490cd4b9a8ef3a1fc703e1c8c83429e9f"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityRechargeShields.cpp",
+      "sha": "3e4312840a5f4894fc568a6a8629799f9afadb49"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityRechargeShields.h",
+      "sha": "e34c7d5b405a25a6e368d24af96c98475bec2763"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityShieldSap.h",
+      "sha": "2238ecd45c9ba101e1c947e9b42e08905f5a11f2"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityWormHole.cpp",
+      "sha": "a5c474d5c4a7380d710fc706f4243350bde73bf9"
+    },
+    {
+      "path": "trunk/Net7/Abilities/AbilityWormHole.h",
+      "sha": "6b4a9ea98167e52528e0ff37240d833ca1daad75"
+    },
+    {
+      "path": "trunk/Net7/AbilityBase.cpp",
+      "sha": "2d79b83db834bef011f2fbed9e978adc2d91f6dc"
+    },
+    {
+      "path": "trunk/Net7/AbilityBase.h",
+      "sha": "2f53267eec87a583ed55f253dc3f2aaf59f269c4"
+    },
+    {
+      "path": "trunk/Net7/AccountManager.cpp",
+      "sha": "0c69baed4da714145b0082392e724150838d4002"
+    },
+    {
+      "path": "trunk/Net7/AccountManager.h",
+      "sha": "075e42b07dd67213f46438543e13a36d79832c46"
+    },
+    {
+      "path": "trunk/Net7/AssetDatabase.h",
+      "sha": "7656d47d1def0548823577cf9dbadf4ce226dd29"
+    },
+    {
+      "path": "trunk/Net7/AssetDatabaseSQL.cpp",
+      "sha": "21ac493fbf8b3265eb41d5bd6e38ade10ebfc548"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxAttachment.cpp",
+      "sha": "af88c6a833fd78cb1fd004ae08f52142e41ccf06"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxAttachment.h",
+      "sha": "9bd24c052da527d4f34169038dd9b9753692d58d"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxAttachments.cpp",
+      "sha": "d221d14cd2e47b65ce4bf1a5df72c5ceb944fa00"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxAttachments.h",
+      "sha": "6f4b510ac6554b151e34f961e01eebade3bdf03e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBase.cpp",
+      "sha": "472ca63e4b1ba443512e9af423a22e7709660883"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBase.h",
+      "sha": "4e8e98c2a8cb7c456dbf8787b4b6c57e6bb4a53c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBuff.cpp",
+      "sha": "fac9ae4ac3984d1837f428dc2d2768bfb1a0e20c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBuff.h",
+      "sha": "4c288b8ebee78cb42028eea5d549e56d608bbc62"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBuffs.cpp",
+      "sha": "cb9698c6888645bc93850df5d79135258bacc1e3"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxBuffs.h",
+      "sha": "9bf3d84e57536f31b11a98f0cd08e535e1cc9683"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxCategories.cpp",
+      "sha": "20b1c997288041db9d588e243abc620997dcbf5a"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxCategories.h",
+      "sha": "946dbfe2fe4e0699a690515b37ca1fb6ff0e12fa"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxCategory.cpp",
+      "sha": "c088b552db5331cf17ef435160299c5bb701aea8"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxCategory.h",
+      "sha": "d67d044c10df8012a70170f39dbb18fa585ceb38"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxDamage.cpp",
+      "sha": "66d9516d0ee11213d469d5ed1d83293e9fab81b2"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxDamage.h",
+      "sha": "a9ca4d432f37a93d0ea5fc0c369466786b95aa2e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEffect.cpp",
+      "sha": "ba6430a29de9509873ebafb5b50f60e941b8a54e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEffect.h",
+      "sha": "d2397a19dd94fb2aac16cb733bed0dc03e65a229"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxElement.cpp",
+      "sha": "e33c4dd0b7d78e1a60dd26fde9fa471aeb41a0a0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxElement.h",
+      "sha": "fdc9b7bd9dcf9cadacfcd8cadd4df009abe97f4c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxElements.cpp",
+      "sha": "d3bc293b822bacfd317bcb5d3161511f57c83ceb"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxElements.h",
+      "sha": "53719551d2d8a3ad2d9142a5e16b7a7e363427d6"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEquipInventory.cpp",
+      "sha": "fe909900815e8c72e489f75382647ed8e4cfa812"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEquipInventory.h",
+      "sha": "fe72531d455d3caf4d765ece732ab4d743d84355"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEquipItem.cpp",
+      "sha": "b4d68c6155dab57f3078fd96e12c23a8221d09b0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxEquipItem.h",
+      "sha": "78b6667fc257940889ed4f9f244a1588a902f29b"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxFaction.cpp",
+      "sha": "f31ca6223f308165d36ec5d0b4bce1fce92661e8"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxFaction.h",
+      "sha": "53ee193fdc1cb017bbac782bca1dad826b75ef2f"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxFactions.cpp",
+      "sha": "c3ba87ed4512db83a3f8ae607d3a273118929f7f"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxFactions.h",
+      "sha": "fdb9d6c22f2264debf5330b8e825c0af3e450202"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupInfo.cpp",
+      "sha": "55c99eae088a3bdb494964407edec724513f9b56"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupInfo.h",
+      "sha": "22d152a34227e767d181523bce0ec4657116d636"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupMember.cpp",
+      "sha": "dcc3b916d957b475093009f5e9e87eeac2fefb3c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupMember.h",
+      "sha": "eb195af1c45978026a7b47fb6d0e8dae666572a4"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupMembers.cpp",
+      "sha": "f503c1c3dbaaa84f192b180c10cee88a9eb555ec"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxGroupMembers.h",
+      "sha": "a7f90b6e958913d483d88bbba502e4179d09f36f"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxHarvestable.cpp",
+      "sha": "ed4825ba522a374832b70ed2ce4256fb99b302bb"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxHarvestable.h",
+      "sha": "1ba92abe4ff293e3e88a9f608d3157873ca9235e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxHulkIndex.cpp",
+      "sha": "887120614fbd28e8035875006bbcef0b6b16734b"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxHulkIndex.h",
+      "sha": "f9fa26890516318e0042a50bab107656b6d22b25"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory1.cpp",
+      "sha": "2274ed5bec12ac8051ee640c419606b862b88500"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory1.h",
+      "sha": "75af7a839c7920a2330af4626128617786f90e71"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory20.cpp",
+      "sha": "343ba886d2cf4bb9ad1732785d6fe9181d3c04a0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory20.h",
+      "sha": "3d1c2fa25d0d13655311761fc7eb4f7e9b40b2d6"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory40.cpp",
+      "sha": "5945e7554bb0bddea9cf53f4c0e4f2ebcb8ee3ab"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory40.h",
+      "sha": "b76093d4d841e8a7fbc9de0c8b09353964d2def5"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory6.cpp",
+      "sha": "102e415c3c5632bd6180cafa635018edab2d7e6e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxInventory6.h",
+      "sha": "cfb972c30a468abcda46833f7327c8ec3ffafce3"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxItem.cpp",
+      "sha": "18a34046a136dad97e30030a2d5e23067a103d89"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxItem.h",
+      "sha": "bbab53d73ead56f42f98acae980d9ec8492e3458"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxKnownFormula.cpp",
+      "sha": "109c47d58cea98f2ce0f6773af5f5ca75e6c12a9"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxKnownFormula.h",
+      "sha": "99b398286d1d72584fa4a5281ed51b1edd66ab2e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxKnownFormulas.cpp",
+      "sha": "15f2273a8034239acf0f2f14f69ebcbc6feffcf3"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxKnownFormulas.h",
+      "sha": "3262e1100d898394c84ad5969b70cec7798113d1"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxLego.cpp",
+      "sha": "e41af37a399fad092e995d8ad9403d5c38a7eb34"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxLego.h",
+      "sha": "4ad53372b3587dc78a6f84671465f85358653527"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxManufacturingIndex.cpp",
+      "sha": "7fe2fec1b9bb41a3aee50e665323b32a354e8e1b"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxManufacturingIndex.h",
+      "sha": "e30d023c5773c50e536e5b2b1a1686d9a6cbd115"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMission.cpp",
+      "sha": "ff0cdd9f45dbf00b80d812812bfa238d0f6fafe1"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMission.h",
+      "sha": "aee19592e8d663b241abc97cbe5499a4c2abfdd2"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissionStage.cpp",
+      "sha": "af88e33dcb714089c7667d58b96b6ec4a5cb3b42"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissionStage.h",
+      "sha": "50b74c07c712f88a29858b20315ed0bd0f235b38"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissionStages.cpp",
+      "sha": "4f79e9efc13b3df6422392f4c5c0e675280b3543"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissionStages.h",
+      "sha": "1ff5b3b9b646b1302c55a8607ecb57becb36bbc4"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissions.cpp",
+      "sha": "ff329c0b3a46a27794f65ac66e1fa54748b5cc41"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMissions.h",
+      "sha": "d3fae918f90280b6eb4455b263e793aef79e6132"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMobIndex.cpp",
+      "sha": "77a248321b8b9c9b0533e903b6cbc19d6e05d62c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMobIndex.h",
+      "sha": "863fd1befa68bd8a51d9e179be3a42b9787e6fab"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMountBoneNames.cpp",
+      "sha": "ef105e03ecd26e42b3c91b17c2494040cdff38f0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMountBoneNames.h",
+      "sha": "35035e7c58d4128453f464ea3d27222a7b3ecd19"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMounts.cpp",
+      "sha": "b5df67a04605039dd575df1e0767cace89c7e731"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxMounts.h",
+      "sha": "21a8fe2c5e24639e9e083b56a44ba8ea65731f02"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxOverflowInventory.cpp",
+      "sha": "99e90e16342a7387098eff8fd54dc1261244d383"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxOverflowInventory.h",
+      "sha": "11130e8df7c8324b062cee90b9d3370ee27570bc"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPercent.cpp",
+      "sha": "e6fdc5d2cee84d22483db7042f144536f8e831da"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPercent.h",
+      "sha": "3e41d0a659ae450eaeffb43c92d095d282f7fb7e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPlayerIndex.cpp",
+      "sha": "528a8fca4152d15a0adeed6d96fed9b5e065bdef"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPlayerIndex.h",
+      "sha": "a5f2c0a500b8dd56e47e2e7101f27a0bf4d3456b"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPreviousAttempts.cpp",
+      "sha": "faf8ff7b5e328e92904c2000fb0701cb6e3aaae7"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPreviousAttempts.h",
+      "sha": "234876398c0449fe661cdd0eefac651db114c79d"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPrimaryCategories.cpp",
+      "sha": "27a9e8458a965a3f6c8afae4abf9d5ca53abb878"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPrimaryCategories.h",
+      "sha": "db959337aaa80d983621054896fab5560e906f15"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPrimaryCategory.cpp",
+      "sha": "0865468aaaf64e01e623a907b2d6174106ad6861"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxPrimaryCategory.h",
+      "sha": "1c97937574648f4dce8c7d28f85ce97bd5f1648a"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxQuadrantDamage.cpp",
+      "sha": "d4364fd555a8f11093388fff6dff5b1a87f14d99"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxQuadrantDamage.h",
+      "sha": "6c0361dcc0ccdedc3697dffe17ce2cbbf01eb5a4"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxRPGInfo.cpp",
+      "sha": "d689d90bf06dc64704f23a13f4dd9f54e9e198ca"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxRPGInfo.h",
+      "sha": "a428ad7ca6904c44cf3af920a69a405f3a7cfb78"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxReputation.cpp",
+      "sha": "49a0afc38a8c8185a214b202cbb6aa17f2a901a4"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxReputation.h",
+      "sha": "fd480b80afdc47880a63f9458d7547c929919bd2"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxRewardInventory.cpp",
+      "sha": "814253298209dea4353503ec45c7d370dcf2fee0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxRewardInventory.h",
+      "sha": "df377576794909dbbaebc5db8e4f42ed5219cea3"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSecureInventory.cpp",
+      "sha": "c481eaf6f6d6e97f9d285e8f76478f5474ba55c1"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSecureInventory.h",
+      "sha": "311cd16e69bd488cb3583bb40ec7d6a0e8bfb496"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShake.cpp",
+      "sha": "aef92c87eeb8718e59c8517e109e5be85866e462"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShake.h",
+      "sha": "dbfef8812c20f29863927b73cce33ee6ecf6eb56"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShipIndex.cpp",
+      "sha": "a8d8bbb1c104adc700eb0847a058236561af665c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShipIndex.h",
+      "sha": "01c63fa15205b7d97779fe5bf247657fc99f5af5"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShipInventory.cpp",
+      "sha": "adec3d48eba2a5799f4490c9b37f4e0cf788af34"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxShipInventory.h",
+      "sha": "298f5c2a03ef3abc2e54254c39bba183346fa53f"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkill.cpp",
+      "sha": "b3ee840d0bdea78b2b613175bc87cb3fa355528e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkill.h",
+      "sha": "32276907c0d0de34c4f7db9cad0eba003aec87e0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkillAbilities.cpp",
+      "sha": "d03565acebcb2fdab8694888d7dd2453dff8432d"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkillAbilities.h",
+      "sha": "943cbe8c6a53d109ce891273aa0108dd46f3ec6d"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkillAbility.cpp",
+      "sha": "95897bdeac89b586905ecafdcc0f6122c7fd5ea0"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkillAbility.h",
+      "sha": "57f690c77e112509049650210168f5de2cf73254"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkills.cpp",
+      "sha": "3c4450bb8d2c99231995ca3f626de15a5e9c6673"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSkills.h",
+      "sha": "f62d42033a76fcaa892c045eeb49eedf4affca0e"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxStats.cpp",
+      "sha": "e85c91cc47a2b1aa7dd4a3d3891249de4fd951fb"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxStats.h",
+      "sha": "4d7115852250885725d5d85bf27dc3044195730d"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSubCategories.cpp",
+      "sha": "efb18633cfc39829511621c4c883faf0291bf3af"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSubCategories.h",
+      "sha": "e02d6ea7beb90b6c0359c4aa49b47e58c613db98"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSubCategory.cpp",
+      "sha": "45bdfdd3f7fcb04b2df699610ac638ded5e1b06c"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxSubCategory.h",
+      "sha": "0b83d73ceaab5441dd9a101cf97b9e366a317988"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxVendorInventory.cpp",
+      "sha": "dff983862c23c61c06dd478ddd881b2a312905cf"
+    },
+    {
+      "path": "trunk/Net7/AuxClasses/AuxVendorInventory.h",
+      "sha": "03562f1369e4169da0684757f6ec5ebba38ea792"
+    },
+    {
+      "path": "trunk/Net7/BuffDatabaseSQL.cpp",
+      "sha": "3f85d9920ab7d46b46bfba534fa3453b2a5341e5"
+    },
+    {
+      "path": "trunk/Net7/BuffDatabaseSQL.h",
+      "sha": "b83ce2d3f4d91902bcd0d6c099527fc56d56ed13"
+    },
+    {
+      "path": "trunk/Net7/CBAssetParser.cpp",
+      "sha": "1b7a483d9ecc4e7a29b600107b44372c2875e6ed"
+    },
+    {
+      "path": "trunk/Net7/CBAssetParser.h",
+      "sha": "0ea833386f6f8e49c80ee17c0e417e8d842ed806"
+    },
+    {
+      "path": "trunk/Net7/CSVParser_DEP_.cpp",
+      "sha": "d54ab5d391c781b814c1f0e700a0aaa0be2103cc"
+    },
+    {
+      "path": "trunk/Net7/CSVParser_DEP_.h",
+      "sha": "8215821a8e1325380e4a2cf483559c934194d688"
+    },
+    {
+      "path": "trunk/Net7/ClientToGlobalServer.cpp",
+      "sha": "5ac0fec1a41070abd4e00d0065fe515ab8a39942"
+    },
+    {
+      "path": "trunk/Net7/ClientToMasterServer.cpp",
+      "sha": "6f860ea65712efe4a219f8ebae6ab605c2d3c263"
+    },
+    {
+      "path": "trunk/Net7/ClientToSectorServer.cpp",
+      "sha": "c3fc37fe4c22f6e0ca2a0c5b0cecdbe39265039a"
+    },
+    {
+      "path": "trunk/Net7/Connection.cpp",
+      "sha": "316115914300cbb2ab2ad10fc0041c6c714901ea"
+    },
+    {
+      "path": "trunk/Net7/Connection.h",
+      "sha": "cdf39bc622e4f696799a15dae25bd85c7925d717"
+    },
+    {
+      "path": "trunk/Net7/ConnectionManager.cpp",
+      "sha": "0c9c6fe02131149e81615824591dbc227dd16699"
+    },
+    {
+      "path": "trunk/Net7/ConnectionManager.h",
+      "sha": "c931bc830de94828ad3c6a84b1bb29fdc314a21d"
+    },
+    {
+      "path": "trunk/Net7/EffectManager.cpp",
+      "sha": "f72cf83eb3e808ef20470dc41b11883c78860f85"
+    },
+    {
+      "path": "trunk/Net7/EffectManager.h",
+      "sha": "0713cbb9e575df13460897d2005c2bd3d6d6933e"
+    },
+    {
+      "path": "trunk/Net7/Equipable.cpp",
+      "sha": "c53ca99c727c9a5a32b0513fcb4ebe86e443c7d6"
+    },
+    {
+      "path": "trunk/Net7/Equipable.h",
+      "sha": "782aef0831ab140c841503702d24abd5c61dfab3"
+    },
+    {
+      "path": "trunk/Net7/FactionDataSQL.cpp",
+      "sha": "795592434314b415137e15689f7ffd3d07e91aa8"
+    },
+    {
+      "path": "trunk/Net7/FactionDataSQL.h",
+      "sha": "dca2f56627aa5f1fa0e680dda7c8da85ca865ac0"
+    },
+    {
+      "path": "trunk/Net7/FieldClass.cpp",
+      "sha": "27024a16f18aaeae691d709c12e202faaa82c0ba"
+    },
+    {
+      "path": "trunk/Net7/FieldClass.h",
+      "sha": "01fb02e78762a6d32c199a16fdbbc53a4175696a"
+    },
+    {
+      "path": "trunk/Net7/GroupManager.cpp",
+      "sha": "0cbfd993ec936f29242281e289d8e28284e6981e"
+    },
+    {
+      "path": "trunk/Net7/HulkClass.cpp",
+      "sha": "af05c8085fc22efc4fb5c831d82fd2bc8076341a"
+    },
+    {
+      "path": "trunk/Net7/HulkClass.h",
+      "sha": "bd3dcd2e82883681f230b36292ee2755cdb50e1d"
+    },
+    {
+      "path": "trunk/Net7/HuskClass.cpp",
+      "sha": "0f6b72572b61b636667726dae59bcc520e751ffa"
+    },
+    {
+      "path": "trunk/Net7/HuskClass.h",
+      "sha": "16c96f26f6e4e726ca4d48c55189c7b6eaf6505f"
+    },
+    {
+      "path": "trunk/Net7/ItemBase.cpp",
+      "sha": "a92c93339ad1a8c35b372b4e0f8927583cfbdf66"
+    },
+    {
+      "path": "trunk/Net7/ItemBase.h",
+      "sha": "40ab6767eff15bad14826f105e426101386e7ed8"
+    },
+    {
+      "path": "trunk/Net7/ItemBaseManager.cpp",
+      "sha": "2d985f546ea069500ad58543801e7bdb2a48eb32"
+    },
+    {
+      "path": "trunk/Net7/ItemBaseManager.h",
+      "sha": "0baee8d168fab81e8e6e3646715c685827713351"
+    },
+    {
+      "path": "trunk/Net7/ItemBaseParser.cpp",
+      "sha": "f22735bf021f2b4f00698fcfdccd21f977b55b2f"
+    },
+    {
+      "path": "trunk/Net7/ItemBaseParser.h",
+      "sha": "0d4599b94658dbecdec0c523e55b6b1785326cfc"
+    },
+    {
+      "path": "trunk/Net7/ItemBaseSQL.cpp",
+      "sha": "7a1695a0dfe6d11bf79f174572ff522515c7dc7d"
+    },
+    {
+      "path": "trunk/Net7/ItemList.cpp",
+      "sha": "88cc4eacd743b7893ecd338e12d652724fb457d0"
+    },
+    {
+      "path": "trunk/Net7/ItemList.h",
+      "sha": "17e3728bd00462c7cbb5521dbc92b9aba8e11a10"
+    },
+    {
+      "path": "trunk/Net7/JobManager_DEP_.cpp",
+      "sha": "dfd5d3a2a1e587a477965decd098eb44164b187f"
+    },
+    {
+      "path": "trunk/Net7/JobManager_DEP_.h",
+      "sha": "b509b4083e8300c21a72b4a6031f7703dc6f9ca0"
+    },
+    {
+      "path": "trunk/Net7/JobParser_DEP_.cpp",
+      "sha": "de218be88664759e1d165f1de055220c3162bcfd"
+    },
+    {
+      "path": "trunk/Net7/JobParser_DEP_.h",
+      "sha": "3890327395ddff75e634bbd718c35cb060d6136b"
+    },
+    {
+      "path": "trunk/Net7/LUA/boost-1.34.1/include/boost/python/detail/python22_fixed.h",
+      "sha": "32bf941feff3d835be6dab0a274408aceb67d48b"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lapi.h",
+      "sha": "2c3fab244ef9e7c4940dbd241885ac48bca4e005"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lauxlib.h",
+      "sha": "34258235dbebff581b08a09d3acff87204cd5406"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lcode.h",
+      "sha": "b941c607212bf5255be169d202af6617b5a99ed7"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/ldebug.h",
+      "sha": "ba28a97248eb29d9a7f1c9af4ed6e49d30574df9"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/ldo.h",
+      "sha": "98fddac59fbd84c8e49ab3da8033bed30ca8362b"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lfunc.h",
+      "sha": "a68cf5151cba3a0fff09f22943ef1665ab9cf7f2"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lgc.h",
+      "sha": "5a8dc605b319f5e1320f5b4be8f9156312b0327e"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/llex.h",
+      "sha": "a9201cee484750962a06a2691df2eec684ac4115"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/llimits.h",
+      "sha": "ca8dcb72244bae473d27e605395b17a7d95c9c1c"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lmem.h",
+      "sha": "7c2dcb32207a0438684eb0566ce769f47d895cf4"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lobject.h",
+      "sha": "e7199dfc689e7b210b378bdb34fb9b5677ca19f2"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lopcodes.h",
+      "sha": "41224d6ee14daca139e35f2fa0c41c92a8bc99c8"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lparser.h",
+      "sha": "18836afd1cdf9af6f1c00e2cda41d973694aa3ad"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lstate.h",
+      "sha": "3bc575b6bc8cdef8286ea4d8d539a4ee4fe5a180"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lstring.h",
+      "sha": "73a2ff8b380d6453a2d6caa8e80c7ed05f081804"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/ltable.h",
+      "sha": "f5b9d5ead0f4a44fba1f800f5c4d604beabdbe73"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/ltm.h",
+      "sha": "64343b781b6498930c30abc8f56ce2f7c5ede1ac"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lua.h",
+      "sha": "1685d8bf070abfd307e4a700bcfa3850e24a527a"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/luaconf.h",
+      "sha": "eb2f5a1f71176c19d7fb293ef4924c2dcbf5e9cd"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lualib.h",
+      "sha": "469417f6703eb65a4559188f4febabac1a2ce01c"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lundump.h",
+      "sha": "c80189dbffc65fa56de1ebc471ba07ac22407ad1"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lvm.h",
+      "sha": "bfe4f5678d0256150b9022a3ca2060fe9b963914"
+    },
+    {
+      "path": "trunk/Net7/LUA/lua-5.1.3/src/lzio.h",
+      "sha": "51d695d8c1d5a26ba2146d5b1866c00c52771499"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/class.cpp",
+      "sha": "b0765fce8606009ea9ffe1e06044ad3a1bc329d6"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/class_info.cpp",
+      "sha": "044a35b15cf0fc78e76229492a49545a8f7945fd"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/class_registry.cpp",
+      "sha": "5fa1a5d9e405c8f1ad8003970e5e90456062d41f"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/class_rep.cpp",
+      "sha": "ef0e8119e03f00122fc97909283412aab56c42a9"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/create_class.cpp",
+      "sha": "27657f4764984970180248c590ba376e7a5e200a"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/error.cpp",
+      "sha": "09928fcfc9417793db4606e5d8d2bb6bdb28f52d"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/find_best_match.cpp",
+      "sha": "80d925cd11be32433806f8c9689d9fe99c775cae"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/function.cpp",
+      "sha": "3248a10431aa3cc6327903d872aacb19a8a25913"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/implicit_cast.cpp",
+      "sha": "22bcbcbcd47ec5e9056161f053bb4e7a6b142092"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/link_compatibility.cpp",
+      "sha": "d22c68b730b07d7a8f84873505da69ca6bc12bb9"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/object_rep.cpp",
+      "sha": "054f8deb8e1b7fd68d1fcd40ec5def82109bf9c4"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/open.cpp",
+      "sha": "f5ad86db1e3556fba3fed20cbe12b134dffa30a8"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/overload_rep.cpp",
+      "sha": "a4417ffd2b8a6791bb3572925e491a2dc657aeba"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/pcall.cpp",
+      "sha": "6b284e5e5b2a9f1e2575cf12b3afa4253b3a5527"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/ref.cpp",
+      "sha": "f227fe2d0aea406a1438d8a05f8c491bc23f10ca"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/scope.cpp",
+      "sha": "73ccfdf35578dba9750cdf457f563dca900af9f2"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/stack_content_by_name.cpp",
+      "sha": "e1956c5e8495267c59702a11cd7ebb3e9931779c"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/weak_ref.cpp",
+      "sha": "9eab9bfa37c64eedac5a4475abc88bd107c35b12"
+    },
+    {
+      "path": "trunk/Net7/LUA/luabind/src/wrapper_base.cpp",
+      "sha": "845aaa894dd57724fdafc854ae14851289966339"
+    },
+    {
+      "path": "trunk/Net7/MOBClass.cpp",
+      "sha": "bbbec98cde9518d7e841a16b935778f1163a562d"
+    },
+    {
+      "path": "trunk/Net7/MOBClass.h",
+      "sha": "b5b64e8db3ae1245736a3f5cc5b546a46282def6"
+    },
+    {
+      "path": "trunk/Net7/MOBDatabase.h",
+      "sha": "4295708d82d7dc05aa0a278846b3a637d40e9dd3"
+    },
+    {
+      "path": "trunk/Net7/MOBDatabaseSQL.cpp",
+      "sha": "a315dca944b1dd5edebcc9d1e7e3f9ab6bae3d17"
+    },
+    {
+      "path": "trunk/Net7/MOBSpawnClass.cpp",
+      "sha": "6a82e9954f0744ac76377c6655978cb4cbbcb920"
+    },
+    {
+      "path": "trunk/Net7/MOBSpawnClass.h",
+      "sha": "7fd34866d234d07e23a061f8d8ed970bca2d7767"
+    },
+    {
+      "path": "trunk/Net7/MasterServerToSectorServer.cpp",
+      "sha": "01f6e501bd8de73be881eff76bf53ddde38107f6"
+    },
+    {
+      "path": "trunk/Net7/MemoryHandler.cpp",
+      "sha": "55326d8cac87ecaacd8fc94efb9d6bbe85eb8be2"
+    },
+    {
+      "path": "trunk/Net7/MemoryHandler.h",
+      "sha": "99a6be0b4a5726063a8933a9b2e82a451fb04ca9"
+    },
+    {
+      "path": "trunk/Net7/MessageQueue.cpp",
+      "sha": "f1e8fad0f5ffecc46309b5200be3f2f14e99bc52"
+    },
+    {
+      "path": "trunk/Net7/MessageQueue.h",
+      "sha": "54788ba613550fa97f0c08e985de0b65852b1dd7"
+    },
+    {
+      "path": "trunk/Net7/MissionDatabaseSQL.cpp",
+      "sha": "3d2a6695cd5a5132efa0c6b59eaea5e78eb9e2c7"
+    },
+    {
+      "path": "trunk/Net7/MissionDatabaseSQL.h",
+      "sha": "31e99391db3feee267c760b08b3182d56b030e46"
+    },
+    {
+      "path": "trunk/Net7/MissionManager.cpp",
+      "sha": "40fe8affd8a6f5f2e2a5caf7553e4ed200f4039f"
+    },
+    {
+      "path": "trunk/Net7/MissionManager.h",
+      "sha": "a724891f35b7dd5e3d14044082f346aa3d23ac5b"
+    },
+    {
+      "path": "trunk/Net7/MissionParser.cpp",
+      "sha": "620558bfbac8c216f2e2f1220b76bb1c0d653877"
+    },
+    {
+      "path": "trunk/Net7/MissionParser.h",
+      "sha": "2318196c624aae8d49ce2f7e893bf18fb6dfaa5b"
+    },
+    {
+      "path": "trunk/Net7/Moveable.cpp",
+      "sha": "f4d49285c53eba5b7f7c8809fdbe642528f65ec5"
+    },
+    {
+      "path": "trunk/Net7/Moveable.h",
+      "sha": "dd62730b814cc510671d08d22b17a9d376effa02"
+    },
+    {
+      "path": "trunk/Net7/Mutex.cpp",
+      "sha": "3caa048c8ad07ba3eafc88bff5caa0658e321f8f"
+    },
+    {
+      "path": "trunk/Net7/Mutex.h",
+      "sha": "bf0dd80aff2f44195ccae7aa7e4e6f8de53c2208"
+    },
+    {
+      "path": "trunk/Net7/NavTypeClass.cpp",
+      "sha": "78f3642f45036ac0e0810537aa706ece28827be5"
+    },
+    {
+      "path": "trunk/Net7/NavTypeClass.h",
+      "sha": "7e6ba478669f5f074816a201cc38abb01dddadfc"
+    },
+    {
+      "path": "trunk/Net7/Net7.cpp",
+      "sha": "4f58a8959332aa800c24debb86c77b8a72ba968b"
+    },
+    {
+      "path": "trunk/Net7/Net7.h",
+      "sha": "ff32b2ad3041eba8ddde143974a4e5461aa59837"
+    },
+    {
+      "path": "trunk/Net7/ObjectClass.cpp",
+      "sha": "b9e8755a875d12e92f7889ccafb228b6c42f64d2"
+    },
+    {
+      "path": "trunk/Net7/ObjectClass.h",
+      "sha": "5362a7413e1b2966007a23080e9a2d01221ef982"
+    },
+    {
+      "path": "trunk/Net7/ObjectClassMovement.cpp",
+      "sha": "489dc0c4aa9565dbcf09b584b9a2d6bca996974e"
+    },
+    {
+      "path": "trunk/Net7/ObjectManager.cpp",
+      "sha": "54cefd43560b3d5aafedc7e7e39d84afd2e5e55e"
+    },
+    {
+      "path": "trunk/Net7/ObjectManager.h",
+      "sha": "b27ddffd60fbc6374ddf97a9d3121b89abe1088f"
+    },
+    {
+      "path": "trunk/Net7/Opcodes.h",
+      "sha": "374abacba972c735ac34783db6222b6d07f920a2"
+    },
+    {
+      "path": "trunk/Net7/PacketBuffer_DEP_.cpp",
+      "sha": "c046084a96705ba9960fa62580e386e095de89f0"
+    },
+    {
+      "path": "trunk/Net7/PacketBuffer_DEP_.h",
+      "sha": "41bcdc90a31f37b9d017dabf1449b14c26660e38"
+    },
+    {
+      "path": "trunk/Net7/PacketMethods.h",
+      "sha": "182a7a6ea747f07811d50da8eeaad767fc9ab63b"
+    },
+    {
+      "path": "trunk/Net7/PacketStructures.h",
+      "sha": "10d55eaa1b02cedc2a184d61cbac4af88a608b9c"
+    },
+    {
+      "path": "trunk/Net7/PlanetClass.cpp",
+      "sha": "0d4fa32af03c33f33ac252249d34b53a220b197e"
+    },
+    {
+      "path": "trunk/Net7/PlanetClass.h",
+      "sha": "37a66312603541cc2b742207327989c42c1ccf2f"
+    },
+    {
+      "path": "trunk/Net7/PlayerAbilitys.cpp",
+      "sha": "704ec92f2afe82763f1206f163f04aac19d875cb"
+    },
+    {
+      "path": "trunk/Net7/PlayerBuffs.cpp",
+      "sha": "0f32897f6372afd6dc44561b27da7c2d8c91d697"
+    },
+    {
+      "path": "trunk/Net7/PlayerBuffs.h",
+      "sha": "cfe5ed45c7dc6ad43a9542122ec80395e8efba94"
+    },
+    {
+      "path": "trunk/Net7/PlayerClass.cpp",
+      "sha": "39baff3cdb57d7f049fde006600396fc9433d5e6"
+    },
+    {
+      "path": "trunk/Net7/PlayerClass.h",
+      "sha": "697ba29a0abff5fdc3002dd49ad9ed2aabdf108d"
+    },
+    {
+      "path": "trunk/Net7/PlayerCombat.cpp",
+      "sha": "779e7c7403e4ff6002366bb41d2403340b73fe06"
+    },
+    {
+      "path": "trunk/Net7/PlayerConnection.cpp",
+      "sha": "4ecd9118f1996515ca9e53b9a1db9538961b472b"
+    },
+    {
+      "path": "trunk/Net7/PlayerEffects.cpp",
+      "sha": "289066b40de220dc105c5560e9fb15b4cbae03e3"
+    },
+    {
+      "path": "trunk/Net7/PlayerEffects.h",
+      "sha": "ea33673f1285eb7b7cc7b842f3b40998c43db300"
+    },
+    {
+      "path": "trunk/Net7/PlayerInventory.cpp",
+      "sha": "dff84b7b5b012ee7d8a9e169555e57ea5d113aab"
+    },
+    {
+      "path": "trunk/Net7/PlayerManager.cpp",
+      "sha": "d1bb8753544602f11df8973e1c692dc05db1dce0"
+    },
+    {
+      "path": "trunk/Net7/PlayerManager.h",
+      "sha": "1c9f0000c58268e83a0bfd291ec00932380b620e"
+    },
+    {
+      "path": "trunk/Net7/PlayerManufacturing.cpp",
+      "sha": "20c350c38af4e84be453e8c716c0ddc610e426a5"
+    },
+    {
+      "path": "trunk/Net7/PlayerManufacturing.h",
+      "sha": "90e835877309745da9071c7491e1c8f783091ad4"
+    },
+    {
+      "path": "trunk/Net7/PlayerMisc.cpp",
+      "sha": "0e3c008d7b2e4a06f5444fc31a0ddd172d145afd"
+    },
+    {
+      "path": "trunk/Net7/PlayerMissions.cpp",
+      "sha": "1a7c2c367f3b12c71ccf1ea5f62bc4b8574467c1"
+    },
+    {
+      "path": "trunk/Net7/PlayerSaves.cpp",
+      "sha": "e0a071a71ed9a4172c8ec5546e7084928af61e2f"
+    },
+    {
+      "path": "trunk/Net7/PlayerShip.h",
+      "sha": "7f115147a55827623ac6c3b048de30bcdf149ef7"
+    },
+    {
+      "path": "trunk/Net7/PlayerSkills.cpp",
+      "sha": "f6de80cd15ecfd078cc3df8c12f9e29f447df892"
+    },
+    {
+      "path": "trunk/Net7/PlayerSkills.h",
+      "sha": "0e2e788980158b04af171207dcfb9d59df7caff4"
+    },
+    {
+      "path": "trunk/Net7/ResourceClass.cpp",
+      "sha": "ae612f772bda83f4a416227b543868499d000a6f"
+    },
+    {
+      "path": "trunk/Net7/ResourceClass.h",
+      "sha": "c0673a827ec8280b8c224ca3ac054d420cdf30c0"
+    },
+    {
+      "path": "trunk/Net7/SSL_Connection.cpp",
+      "sha": "b3aad1357a5f772921a47c0ef612107a89651c8f"
+    },
+    {
+      "path": "trunk/Net7/SSL_Connection.h",
+      "sha": "f8d89cadf9ebe9bdc1539c0471a0f978a89eef8e"
+    },
+    {
+      "path": "trunk/Net7/SSL_Listener.cpp",
+      "sha": "2b90c7903a1c90df3e7ebdd467d2ae70f148894a"
+    },
+    {
+      "path": "trunk/Net7/SSL_Listener.h",
+      "sha": "bb196f4c8cd6ff1e139b088eea090c1adc236a22"
+    },
+    {
+      "path": "trunk/Net7/SaveManager.cpp",
+      "sha": "baa837561c4249d7541c8ded55cf15fbb200aa71"
+    },
+    {
+      "path": "trunk/Net7/SaveManager.h",
+      "sha": "a32deab58411972f30d8f9e999e57e924675fe18"
+    },
+    {
+      "path": "trunk/Net7/SectorContentParser.cpp",
+      "sha": "c4c8eab019c02950f781c2e6f3abe5ace1d87835"
+    },
+    {
+      "path": "trunk/Net7/SectorContentParser.h",
+      "sha": "48515ef9eddbcef9ea4678044edf58989884f12f"
+    },
+    {
+      "path": "trunk/Net7/SectorContentSQL.cpp",
+      "sha": "e6017d29f867e2e369a0b9050d925af37f6c4dfa"
+    },
+    {
+      "path": "trunk/Net7/SectorData.h",
+      "sha": "5c8808dfd9301cc032272417d1807902f8be4262"
+    },
+    {
+      "path": "trunk/Net7/SectorManager.cpp",
+      "sha": "23661806ff6a4410ce0fcc5e1d6d5be90ca73356"
+    },
+    {
+      "path": "trunk/Net7/SectorManager.h",
+      "sha": "901032ae5c48120b42aeabbaf62bafeff511b9cd"
+    },
+    {
+      "path": "trunk/Net7/SectorServerManager.cpp",
+      "sha": "6fcd7baed4512adf6134ad460b3001748ce84975"
+    },
+    {
+      "path": "trunk/Net7/SectorServerManager.h",
+      "sha": "14173e4195502731d3ef5ba811941cb91a5c3960"
+    },
+    {
+      "path": "trunk/Net7/SectorServerToSectorServer.cpp",
+      "sha": "6a9e67e7df60226df9816f65dcf59b2873332e7a"
+    },
+    {
+      "path": "trunk/Net7/ServerManager.cpp",
+      "sha": "9ea2e2d86734cff6574ddb14ccfa936a1e4d65d9"
+    },
+    {
+      "path": "trunk/Net7/ServerManager.h",
+      "sha": "d3e763d2f333eb3cdf5fc1cf9e44bcef8c42e1f4"
+    },
+    {
+      "path": "trunk/Net7/SkillParser.cpp",
+      "sha": "88cde6d070c8f3370f28b7b59ba12a71fddebc14"
+    },
+    {
+      "path": "trunk/Net7/SkillParser.h",
+      "sha": "bd09a7de15ef392d6a5830d2542b7d8957e6a6c3"
+    },
+    {
+      "path": "trunk/Net7/SkillsDatabase.h",
+      "sha": "1bfec897215022c59b4ebe2cbccb4b02a6a23db4"
+    },
+    {
+      "path": "trunk/Net7/SkillsDatabaseSQL.cpp",
+      "sha": "2271128ccf19be757111df3445fb728d0048a6ff"
+    },
+    {
+      "path": "trunk/Net7/StarBaseClass.cpp",
+      "sha": "1143f554eade51de180bebefb2fb68b439f76536"
+    },
+    {
+      "path": "trunk/Net7/StarBaseClass.h",
+      "sha": "c43b5db0bd1cad4b4647ba5d8c4acb8f61b2ab97"
+    },
+    {
+      "path": "trunk/Net7/StarGateClass.cpp",
+      "sha": "6f1d46de56a8119a3a0e21947b5f57f21d994465"
+    },
+    {
+      "path": "trunk/Net7/StarGateClass.h",
+      "sha": "6307979f35b3bd4f050f2095f56775e1fa6221d3"
+    },
+    {
+      "path": "trunk/Net7/StaticData.h",
+      "sha": "ad61f7d3d8c8efd82610d37a83b1593897b4ee70"
+    },
+    {
+      "path": "trunk/Net7/StationLoader.cpp",
+      "sha": "720bc66e6cb1668ba6e66880779cc46609b555be"
+    },
+    {
+      "path": "trunk/Net7/StationLoader.h",
+      "sha": "78a35ff203705ac5ec8cc4812e32c3a78136f367"
+    },
+    {
+      "path": "trunk/Net7/Stats.cpp",
+      "sha": "d25405ed70a3b2044719b7893a5cfe2826bfc8d3"
+    },
+    {
+      "path": "trunk/Net7/Stats.h",
+      "sha": "7442981d110ef4720fd71247a45550cbf2e43f5b"
+    },
+    {
+      "path": "trunk/Net7/StringManager.cpp",
+      "sha": "c75f7f285f84faaca664f31bd7475d171c9a3f67"
+    },
+    {
+      "path": "trunk/Net7/StringManager.h",
+      "sha": "fa692fa1745ace16afb8ff233790599215d2b64e"
+    },
+    {
+      "path": "trunk/Net7/TalkTree.h",
+      "sha": "3a256fbb4b511a47fafa7f779867840d7b4cbb4d"
+    },
+    {
+      "path": "trunk/Net7/TalkTreeParser.cpp",
+      "sha": "91f2a3720e177b0bb90861b43ed0f55db7ff3c4d"
+    },
+    {
+      "path": "trunk/Net7/TalkTreeParser.h",
+      "sha": "222151caf8189ce6c862eeb65aacdc9122e7b076"
+    },
+    {
+      "path": "trunk/Net7/TcpListener.cpp",
+      "sha": "15bc292247be954a56571aa1c21e67822eff3ea4"
+    },
+    {
+      "path": "trunk/Net7/TcpListener.h",
+      "sha": "cefcbdab680f3c996b411bf914d60e9771f0f5c7"
+    },
+    {
+      "path": "trunk/Net7/TimeNode.h",
+      "sha": "2b30041a15c2323579efdacd1c5b1ba7a30acb5a"
+    },
+    {
+      "path": "trunk/Net7/TokenParser_DEP_.cpp",
+      "sha": "c04aca7a52ae34655987c8d0191d78ca508309a8"
+    },
+    {
+      "path": "trunk/Net7/TokenParser_DEP_.h",
+      "sha": "51e4850b0f42f73ab9a098a980fd4bebcc500852"
+    },
+    {
+      "path": "trunk/Net7/UDPConnection.cpp",
+      "sha": "4567af7fddd6d1db040319b080d3ca3c1f3f02e6"
+    },
+    {
+      "path": "trunk/Net7/UDPConnection.h",
+      "sha": "0b434bc202c332238a63d49d920ba0006f7bc95f"
+    },
+    {
+      "path": "trunk/Net7/UDP_Client.cpp",
+      "sha": "6f053dfd936ec1ab402f261f0050303ee8974bb7"
+    },
+    {
+      "path": "trunk/Net7/UDP_Global.cpp",
+      "sha": "f2b54529bdb79121e1ff84b546fe40cc5bc603aa"
+    },
+    {
+      "path": "trunk/Net7/UDP_MVAS.cpp",
+      "sha": "2cb9727e8e52640d69a339dfe6414f131abd9db6"
+    },
+    {
+      "path": "trunk/Net7/UDP_Master.cpp",
+      "sha": "33eda55c9dbad290239d2a27381e73c014aaf5e4"
+    },
+    {
+      "path": "trunk/Net7/VectorMath.h",
+      "sha": "d517ba7d33e085d94fcf2149b893ee2ad02026aa"
+    },
+    {
+      "path": "trunk/Net7/WestwoodRC4.cpp",
+      "sha": "1bc8c14a025d257390d9ea60f36cb1de6771bbfb"
+    },
+    {
+      "path": "trunk/Net7/WestwoodRC4.h",
+      "sha": "07ef1cd6a795ce3d0f5fef74f1e0254b3c27c91f"
+    },
+    {
+      "path": "trunk/Net7/WestwoodRSA.cpp",
+      "sha": "914887e98207b5cbc8e8305ab86b95ce216cd49f"
+    },
+    {
+      "path": "trunk/Net7/WestwoodRSA.h",
+      "sha": "70363d6b8ee78e064fce5021bd237623194c4a5f"
+    },
+    {
+      "path": "trunk/Net7/XmlParser.cpp",
+      "sha": "7e03c10ef20528d560fbba01672a93950076130d"
+    },
+    {
+      "path": "trunk/Net7/XmlParser.h",
+      "sha": "9769154b27846ab2f0036c7af073bc1a4c96edf6"
+    },
+    {
+      "path": "trunk/Net7/XmlTags.h",
+      "sha": "d8c14ffa7e2dcb88e4f892fc9c699ec4a7506323"
+    },
+    {
+      "path": "trunk/Net7/xmlParser/xmlParser.h",
+      "sha": "77ecac88aa8e0e1aee69ad4120447cd526c26782"
+    },
+    {
+      "path": "trunk/Net7/xmlParser/xmlParser_.cpp",
+      "sha": "3f384c3d022e8e75a6df8a77bebb076af845f00a"
+    },
+    {
+      "path": "trunk/Net7Proxy/ClientToGlobalServer.cpp",
+      "sha": "e3b5db7aeb65512724cefe8ad5ecddcc0f51736c"
+    },
+    {
+      "path": "trunk/Net7Proxy/ClientToMasterServer.cpp",
+      "sha": "65d8549a7ed979eb4e6ed3c07e0576254186f0e9"
+    },
+    {
+      "path": "trunk/Net7Proxy/ClientToSectorServer.cpp",
+      "sha": "8b4e78e506974aade609a38d9badf31a57ecbb33"
+    },
+    {
+      "path": "trunk/Net7Proxy/Connection.cpp",
+      "sha": "825e8a4c40b307191266b6f73f08023c6a5de207"
+    },
+    {
+      "path": "trunk/Net7Proxy/Connection.h",
+      "sha": "f0a79822ef5e69034926d1b17efcb2067450a31d"
+    },
+    {
+      "path": "trunk/Net7Proxy/ConnectionManager.cpp",
+      "sha": "7133060b549bb03ef387fd5159b06775e1955684"
+    },
+    {
+      "path": "trunk/Net7Proxy/ConnectionManager.h",
+      "sha": "9588a8bdca9c153fcaf4213635eadc3afc59b039"
+    },
+    {
+      "path": "trunk/Net7Proxy/MessageQueue.cpp",
+      "sha": "a7787cea1c495fc88ab22d6bbe90e84d4e4e6b40"
+    },
+    {
+      "path": "trunk/Net7Proxy/MessageQueue.h",
+      "sha": "70cface4bdc6fa9b30d1da7f30d21e51369e827f"
+    },
+    {
+      "path": "trunk/Net7Proxy/Mutex.cpp",
+      "sha": "3caa048c8ad07ba3eafc88bff5caa0658e321f8f"
+    },
+    {
+      "path": "trunk/Net7Proxy/Mutex.h",
+      "sha": "bf0dd80aff2f44195ccae7aa7e4e6f8de53c2208"
+    },
+    {
+      "path": "trunk/Net7Proxy/Net7.cpp",
+      "sha": "bb548dfdba30d1408cf70957c3d36443d669e875"
+    },
+    {
+      "path": "trunk/Net7Proxy/Net7.h",
+      "sha": "c0838fabbfa3b6ab3dfa934cdc1b16371634e856"
+    },
+    {
+      "path": "trunk/Net7Proxy/Opcodes.h",
+      "sha": "272ba7b0a4be0c8dfdda2e9e7231353fa73247f1"
+    },
+    {
+      "path": "trunk/Net7Proxy/PacketMethods.h",
+      "sha": "182a7a6ea747f07811d50da8eeaad767fc9ab63b"
+    },
+    {
+      "path": "trunk/Net7Proxy/PacketStructures.h",
+      "sha": "ba2a9947ad2b39f8e4a90fcf7488b8b5ddf13342"
+    },
+    {
+      "path": "trunk/Net7Proxy/SSL_Connection.cpp",
+      "sha": "aa24321e457e98804f59bc02abfcaeab44ea66ea"
+    },
+    {
+      "path": "trunk/Net7Proxy/SSL_Connection.h",
+      "sha": "7b675dfd1068ab5632542e84ee78442139cac124"
+    },
+    {
+      "path": "trunk/Net7Proxy/SSL_Listener.cpp",
+      "sha": "5702f42052a8ddef5863f9d955f66a547a31692a"
+    },
+    {
+      "path": "trunk/Net7Proxy/SSL_Listener.h",
+      "sha": "a6033028b1bec462202ab4e3f5af85481b39e372"
+    },
+    {
+      "path": "trunk/Net7Proxy/SectorServerManager.cpp",
+      "sha": "8131592fdb450d8a0824b8fc9c4f7cacea3108e8"
+    },
+    {
+      "path": "trunk/Net7Proxy/SectorServerManager.h",
+      "sha": "e9d346ccc0e52c278cf4773d9b3026868d1d3d41"
+    },
+    {
+      "path": "trunk/Net7Proxy/ServerManager.cpp",
+      "sha": "7ee13f0958169873db2b7ca791d5a5b76cdc015e"
+    },
+    {
+      "path": "trunk/Net7Proxy/ServerManager.h",
+      "sha": "906de20d66efc7b5ebc25e832b0b1b3f691c8faa"
+    },
+    {
+      "path": "trunk/Net7Proxy/TcpListener.cpp",
+      "sha": "76f216012df76ac7244f84d49b113e08260a5116"
+    },
+    {
+      "path": "trunk/Net7Proxy/TcpListener.h",
+      "sha": "b955578f22518d8951a6cfb00d5a0ebbab04103a"
+    },
+    {
+      "path": "trunk/Net7Proxy/UDPClient.cpp",
+      "sha": "39eba141766b5783d3b16bb978309697b82d8b80"
+    },
+    {
+      "path": "trunk/Net7Proxy/UDPClient.h",
+      "sha": "801d508865f3dfc4b3aa9a4a2f487e4384c0c497"
+    },
+    {
+      "path": "trunk/Net7Proxy/UDPProxyMVAS.cpp",
+      "sha": "62526b8b02f2e8be8992cb190bd479f0f46cac67"
+    },
+    {
+      "path": "trunk/Net7Proxy/UDPProxyToClient.cpp",
+      "sha": "d75e4a86a64a59a2c68207e90d9d46a8db23d4ef"
+    },
+    {
+      "path": "trunk/Net7Proxy/UDPProxyToGlobal.cpp",
+      "sha": "23c0775c9a760eb224778fbf184bf20f9a3627c4"
+    },
+    {
+      "path": "trunk/Net7Proxy/WestwoodRC4.cpp",
+      "sha": "1bc8c14a025d257390d9ea60f36cb1de6771bbfb"
+    },
+    {
+      "path": "trunk/Net7Proxy/WestwoodRC4.h",
+      "sha": "07ef1cd6a795ce3d0f5fef74f1e0254b3c27c91f"
+    },
+    {
+      "path": "trunk/Net7Proxy/WestwoodRSA.cpp",
+      "sha": "914887e98207b5cbc8e8305ab86b95ce216cd49f"
+    },
+    {
+      "path": "trunk/Net7Proxy/WestwoodRSA.h",
+      "sha": "70363d6b8ee78e064fce5021bd237623194c4a5f"
+    }
+  ]
+}

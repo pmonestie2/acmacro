@@ -69,6 +69,7 @@ class SpaceSession:
         self.position: tuple[float, float, float] | None = None
         self.sequence = 1
         self.started = False
+        self.station_layout: bytes | None = None
         self.closed = False
         self.received_at = time.monotonic()
         self.last_keepalive = time.monotonic()
@@ -139,6 +140,7 @@ class SpaceSession:
             self.sequence = 1
             self.stream = SectorStream(ticket.player_id)
             self.world = World()
+            self.station_layout = None
             self.position = None
             self.started = False
             self.gate_target = None
@@ -156,7 +158,8 @@ class SpaceSession:
         return cls.enter(host, global_login, characters, slot)
 
     @classmethod
-    def enter(cls, host: str, global_login: GlobalLogin, characters: list[Character], slot: int) -> 'SpaceSession':
+    def enter(cls, host: str, global_login: GlobalLogin, characters: list[Character], slot: int,
+              *, allow_station: bool = False) -> 'SpaceSession':
         """Consume a freshly authenticated global connection after UI selection."""
         sector: socket.socket | None = None
         comms: socket.socket | None = None
@@ -167,7 +170,7 @@ class SpaceSession:
             character = next((item for item in characters if item.slot == slot), None)
             if character is None:
                 raise ValueError('Requested character slot is empty')
-            if character.sector_id >= 10000:
+            if character.sector_id >= 10000 and not allow_station:
                 raise ValueError('Character is inside a station; space login is required for this milestone')
             address = socket.gethostbyname(host)
             ticket = global_login.select(slot)
@@ -191,7 +194,8 @@ class SpaceSession:
             deadline = time.monotonic() + 30
             while time.monotonic() < deadline:
                 session.poll()
-                if session.started and session.world.sector and session.world.navigable():
+                if session.started and ((allow_station and character.sector_id >= 10000 and session.station_layout is not None)
+                        or (session.world.sector and session.world.navigable())):
                     return session
             raise TimeoutError('Sector login did not complete with a navigable map within 30 seconds')
         except BaseException:
@@ -217,7 +221,9 @@ class SpaceSession:
     def apply_frame(self, frame: Frame) -> None:
         self.frames += 1
         self.world.apply_frame(frame)
-        if frame.opcode == 0x2020 and len(frame.body) == 4:
+        if frame.opcode == 0x52:
+            self.station_layout = frame.body
+        elif frame.opcode == 0x2020 and len(frame.body) == 4:
             self.send(0x2021, frame.body)
         elif frame.opcode == 5 and len(frame.body) == 4:
             self.send(6, frame.body)
@@ -259,7 +265,9 @@ class SpaceSession:
         elif frame.opcode == 0x00ba:
             raise ConnectionError('Server ended the character session')
 
-    def poll(self) -> None:
+    def poll(self) -> list[Frame]:
+        """Advance the session and return decoded frames for event consumers."""
+        received: list[Frame] = []
         try:
             packet = self.sector.recv(65535)
         except socket.timeout:
@@ -271,12 +279,13 @@ class SpaceSession:
             opcode = struct.unpack_from('<H', packet, 2)[0] if len(packet) >= 4 else -1
             if opcode in (0x2016, 0x201a):
                 for frame in self.stream.feed(packet):
+                    received.append(frame)
                     self.apply_frame(frame)
                     if self.pending_handoff is not None:
                         break
         if self.pending_handoff is not None:
             self.enter_handoff(self.pending_handoff)
-            return
+            return received
         if self.gate_target is not None:
             elapsed = now - self.gate_submitted_at
             if self.gate_selected and self.gate_camera and elapsed >= 15 and not self.gate_finished:
@@ -297,6 +306,7 @@ class SpaceSession:
             self.last_keepalive = now
         if now - self.received_at > 45:
             raise TimeoutError('No sector packets received for 45 seconds')
+        return received
 
     def close(self, *, logout: bool = True) -> None:
         if self.closed:

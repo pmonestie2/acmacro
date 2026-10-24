@@ -12,6 +12,7 @@ from enb_protocol.capture import IPv4Reassembler
 from enb_protocol.connection import GameConnection, RC4, receive_exact
 from enb_protocol.wire import Frame, decode_batch, decode_frame, encode_udp
 from enb_protocol.world import World, decode_map_object
+from enb_protocol.session import SpaceSession
 from enb_web.server import AppState, WebServer
 
 
@@ -36,6 +37,40 @@ def fragment(offset: int, payload: bytes, more: bool) -> bytes:
 
 
 class SharedProtocolTests(unittest.TestCase):
+    def test_station_login_is_explicit_and_rejected_login_closes_owned_connections(self) -> None:
+        connection = Mock()
+        connection.take_comms.return_value = comms = Mock(spec=socket.socket)
+        sector = Mock(spec=socket.socket)
+        character = Mock(slot=0, sector_id=10761)
+        with patch('enb_protocol.session.socket.socket', return_value=sector):
+            with self.assertRaisesRegex(ValueError, 'inside a station'):
+                SpaceSession.enter('localhost', connection, [character], 0)
+        connection.select.assert_not_called()
+        connection.close.assert_called_once()
+        sector.close.assert_called_once()
+        comms.close.assert_called_once()
+
+    def test_station_layout_is_retained_separately_from_space_map(self) -> None:
+        session = SpaceSession('localhost', Mock(), Mock(), Mock(spec=socket.socket), Mock(spec=socket.socket), 3501)
+        body = struct.pack('<4I', 0, 0, 0, 0)
+        session.apply_frame(Frame(0x52, body))
+        self.assertEqual(session.station_layout, body)
+        self.assertFalse(session.started)
+        self.assertFalse(session.world.objects)
+
+    def test_streamed_objects_are_removed_and_can_reenter_visibility(self) -> None:
+        world = World()
+        world.apply_frame(Frame(0x2018, map_body()))
+        self.assertIn(123, world.objects)
+        with self.assertRaises(ValueError):
+            world.apply_frame(Frame(7, b'bad'))
+        self.assertIn(123, world.objects)
+        world.apply_frame(Frame(7, struct.pack('<I', 123)))
+        self.assertNotIn(123, world.objects)
+        world.apply_frame(Frame(7, struct.pack('<I', 123)))
+        world.apply_frame(Frame(0x2018, map_body('Returned gate')))
+        self.assertEqual(world.objects[123].name, 'Returned gate')
+
     def test_batch_round_trip_and_every_truncation(self) -> None:
         data = encode_udp(0x2016, 42, Frame(0x2018, map_body()).encode(), sequence=8)
         batch = decode_batch(data)

@@ -1,0 +1,626 @@
+{
+  "revision": 1,
+  "credits": 100000000,
+  "equipment": [
+    {
+      "slot": 0,
+      "template": 3764,
+      "quality": 2.0
+    },
+    {
+      "slot": 1,
+      "template": 5897,
+      "quality": 2.0
+    },
+    {
+      "slot": 2,
+      "template": 2627,
+      "quality": 2.0
+    },
+    {
+      "slot": 3,
+      "template": 1158,
+      "quality": 2.0
+    },
+    {
+      "slot": 4,
+      "template": 1158,
+      "quality": 2.0
+    },
+    {
+      "slot": 5,
+      "template": 1158,
+      "quality": 2.0
+    },
+    {
+      "slot": 9,
+      "template": 2455,
+      "quality": 2.0
+    },
+    {
+      "slot": 10,
+      "template": 2320,
+      "quality": 2.0
+    },
+    {
+      "slot": 11,
+      "template": 2332,
+      "quality": 2.0
+    },
+    {
+      "slot": 12,
+      "template": 2370,
+      "quality": 2.0
+    },
+    {
+      "slot": 13,
+      "template": 2362,
+      "quality": 2.0
+    },
+    {
+      "slot": 14,
+      "template": 2316,
+      "quality": 2.0
+    }
+  ],
+  "by_class": {
+    "te": [
+      {
+        "slot": 0,
+        "template": 5510,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3335,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2641,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 7,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 6172,
+        "quality": 2.0
+      }
+    ],
+    "tt": [
+      {
+        "slot": 0,
+        "template": 5510,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3335,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2641,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 6172,
+        "quality": 2.0
+      },
+      {
+        "slot": 13,
+        "template": 6173,
+        "quality": 2.0
+      }
+    ],
+    "ts": [
+      {
+        "slot": 0,
+        "template": 3763,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3335,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2641,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2455,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 13,
+        "template": 2362,
+        "quality": 2.0
+      }
+    ],
+    "jd": [
+      {
+        "slot": 0,
+        "template": 3763,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 5897,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2623,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 7,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2455,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 2370,
+        "quality": 2.0
+      }
+    ],
+    "js": [
+      {
+        "slot": 0,
+        "template": 3763,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 5897,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2623,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 6125,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2455,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 13,
+        "template": 2316,
+        "quality": 2.0
+      }
+    ],
+    "je": [
+      {
+        "slot": 0,
+        "template": 3764,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 5897,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2627,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 1158,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 1158,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 1158,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2455,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2332,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 13,
+        "template": 2362,
+        "quality": 2.0
+      },
+      {
+        "slot": 14,
+        "template": 2316,
+        "quality": 2.0
+      }
+    ],
+    "pw": [
+      {
+        "slot": 0,
+        "template": 5510,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3349,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2623,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 7,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 8,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2370,
+        "quality": 2.0
+      }
+    ],
+    "pp": [
+      {
+        "slot": 0,
+        "template": 5510,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3349,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2623,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 7,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2370,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 6172,
+        "quality": 2.0
+      }
+    ],
+    "ps": [
+      {
+        "slot": 0,
+        "template": 5510,
+        "quality": 2.0
+      },
+      {
+        "slot": 1,
+        "template": 3335,
+        "quality": 2.0
+      },
+      {
+        "slot": 2,
+        "template": 2623,
+        "quality": 2.0
+      },
+      {
+        "slot": 3,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 4,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 5,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 6,
+        "template": 5438,
+        "quality": 2.0
+      },
+      {
+        "slot": 9,
+        "template": 2455,
+        "quality": 2.0
+      },
+      {
+        "slot": 10,
+        "template": 2357,
+        "quality": 2.0
+      },
+      {
+        "slot": 11,
+        "template": 2320,
+        "quality": 2.0
+      },
+      {
+        "slot": 12,
+        "template": 2332,
+        "quality": 2.0
+      },
+      {
+        "slot": 13,
+        "template": 2370,
+        "quality": 2.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,3697 @@
+[
+  {
+    "class_index": 0,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 3,
+        "name": "Biorepression",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 6,
+        "name": "Build Engines",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 16,
+        "name": "Critical Targeting",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 17,
+        "name": "Damage Control",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 22,
+        "name": "Enrage",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 26,
+        "name": "Hacking",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 35,
+        "name": "Navigate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 36,
+        "name": "Negotiate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 44,
+        "name": "Rally",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 47,
+        "name": "Repair Equipment",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 9,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 6,
+        "skill": 22,
+        "rank": 1,
+        "name": "Anger",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 7,
+        "skill": 22,
+        "rank": 6,
+        "name": "Anger Group",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 8,
+        "skill": 47,
+        "rank": 6,
+        "name": "Area Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 13,
+        "skill": 26,
+        "rank": 7,
+        "name": "Area Multi-Hack",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 16,
+        "skill": 26,
+        "rank": 6,
+        "name": "Area System Hack",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 21,
+        "skill": 3,
+        "rank": 7,
+        "name": "Biocessation",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 22,
+        "skill": 3,
+        "rank": 1,
+        "name": "Biorepress",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 23,
+        "skill": 3,
+        "rank": 5,
+        "name": "Biorepression Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 24,
+        "skill": 3,
+        "rank": 3,
+        "name": "Biosuppress",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 25,
+        "skill": 3,
+        "rank": 6,
+        "name": "Biosuppression Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 27,
+        "skill": 22,
+        "rank": 3,
+        "name": "Cause Aggression",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 30,
+        "skill": 47,
+        "rank": 5,
+        "name": "Combat Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 34,
+        "skill": 44,
+        "rank": 1,
+        "name": "Damage Tactics",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 35,
+        "skill": 44,
+        "rank": 3,
+        "name": "Defense Tactics",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 41,
+        "skill": 22,
+        "rank": 5,
+        "name": "Enrage",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 42,
+        "skill": 22,
+        "rank": 7,
+        "name": "Enrage Group",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 46,
+        "skill": 44,
+        "rank": 5,
+        "name": "Firing Tactics",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 57,
+        "skill": 26,
+        "rank": 1,
+        "name": "Hack Systems",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 58,
+        "skill": 26,
+        "rank": 3,
+        "name": "Hack Weapons",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 62,
+        "skill": 47,
+        "rank": 7,
+        "name": "Improved Area Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 76,
+        "skill": 26,
+        "rank": 5,
+        "name": "Multi-Hack",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 90,
+        "skill": 47,
+        "rank": 1,
+        "name": "Regenerate Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 94,
+        "skill": 47,
+        "rank": 3,
+        "name": "Repair Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 116,
+        "skill": 44,
+        "rank": 7,
+        "name": "Stealth Tactics",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 1,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 2,
+        "name": "Befriend",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 4,
+        "name": "Build Components",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 6,
+        "name": "Build Engines",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 9,
+        "name": "Build Shields",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 27,
+        "name": "Hull Patch",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 35,
+        "name": "Navigate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 36,
+        "name": "Negotiate",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 46,
+        "name": "Recharge Shields",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 51,
+        "name": "Shield Charging",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 9,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 9,
+        "skill": 27,
+        "rank": 6,
+        "name": "Area Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 14,
+        "skill": 46,
+        "rank": 6,
+        "name": "Area Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 15,
+        "skill": 2,
+        "rank": 7,
+        "name": "Area Soothe",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 20,
+        "skill": 2,
+        "rank": 1,
+        "name": "Befriend",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 31,
+        "skill": 27,
+        "rank": 5,
+        "name": "Combat Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 32,
+        "skill": 46,
+        "rank": 5,
+        "name": "Combat Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 43,
+        "skill": 2,
+        "rank": 5,
+        "name": "Entrance",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 60,
+        "skill": 27,
+        "rank": 7,
+        "name": "Improved Area Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 61,
+        "skill": 46,
+        "rank": 7,
+        "name": "Improved Area Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 63,
+        "skill": 2,
+        "rank": 3,
+        "name": "Improved Befriend",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 74,
+        "skill": 51,
+        "rank": 7,
+        "name": "Megacharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 77,
+        "skill": 27,
+        "rank": 1,
+        "name": "Patch Hull",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 89,
+        "skill": 46,
+        "rank": 3,
+        "name": "Recharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 91,
+        "skill": 46,
+        "rank": 1,
+        "name": "Regenerate Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 95,
+        "skill": 27,
+        "rank": 3,
+        "name": "Repair Hull",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 115,
+        "skill": 2,
+        "rank": 6,
+        "name": "Soothe",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 121,
+        "skill": 51,
+        "rank": 1,
+        "name": "Supercharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 122,
+        "skill": 51,
+        "rank": 5,
+        "name": "Supercharge Target",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 129,
+        "skill": 51,
+        "rank": 3,
+        "name": "Ultracharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 130,
+        "skill": 51,
+        "rank": 6,
+        "name": "Ultracharge Target",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 2,
+    "skills": [
+      {
+        "id": 0,
+        "name": "Afterburn",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 6,
+        "name": "Build Engines",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 26,
+        "name": "Hacking",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 27,
+        "name": "Hull Patch",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 31,
+        "name": "Jumpstart",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 35,
+        "name": "Navigate",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 36,
+        "name": "Negotiate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 41,
+        "name": "Prospect",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 49,
+        "name": "Scan",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 8,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 9,
+        "skill": 27,
+        "rank": 6,
+        "name": "Area Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 31,
+        "skill": 27,
+        "rank": 5,
+        "name": "Combat Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 57,
+        "skill": 26,
+        "rank": 1,
+        "name": "Hack Systems",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 58,
+        "skill": 26,
+        "rank": 3,
+        "name": "Hack Weapons",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 60,
+        "skill": 27,
+        "rank": 7,
+        "name": "Improved Area Hull Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 65,
+        "skill": 31,
+        "rank": 1,
+        "name": "Jumpstart",
+        "description": "Attempts to resuscitate an incapacitated player, reducing experience debt from last death by 7% per skill level.  Larger ships will require additional energy to resuscitate.",
+        "kind": "jumpstart",
+        "energy": 140.0,
+        "charge": 7.0,
+        "cooldown": 10.0,
+        "range": 2750,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 76,
+        "skill": 26,
+        "rank": 5,
+        "name": "Multi-Hack",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 77,
+        "skill": 27,
+        "rank": 1,
+        "name": "Patch Hull",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 95,
+        "skill": 27,
+        "rank": 3,
+        "name": "Repair Hull",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 3,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 12,
+        "name": "Cloak",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 16,
+        "name": "Critical Targeting",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 19,
+        "name": "Energy Leech",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 24,
+        "name": "Fold Space",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 42,
+        "name": "Psionic Shield",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 47,
+        "name": "Repair Equipment",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 49,
+        "name": "Scan",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 56,
+        "name": "Summon",
+        "level": 7,
+        "active": true
+      }
+    ],
+    "abilities": [
+      {
+        "id": 0,
+        "skill": 12,
+        "rank": 3,
+        "name": "Advanced Cloak",
+        "description": "Allows the ship to move at full speed while cloaked.  This ability drains 1.5 energy per second while active.",
+        "kind": "cloak",
+        "energy": 30.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 8,
+        "skill": 47,
+        "rank": 6,
+        "name": "Area Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 17,
+        "skill": 24,
+        "rank": 7,
+        "name": "Area Teleport",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 28,
+        "skill": 12,
+        "rank": 1,
+        "name": "Cloak",
+        "description": "When activated, completely hides the ship from sensor detection.  The ship must be at a complete stop to cloak, and can only move at half speed while cloaked.  Cloaking takes 7 seconds to initialize and uses 0.5 energy per second thereafter.",
+        "kind": "cloak",
+        "energy": 9.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 29,
+        "skill": 12,
+        "rank": 5,
+        "name": "Combat Cloak",
+        "description": "Eliminates the requirement for the ship to be motionless before cloaking, and doubles unmodified beam weapon base damage for 5 seconds after cloaking is disengaged.  This ability consumes 3 energy per second while active.",
+        "kind": "cloak",
+        "energy": 100.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 30,
+        "skill": 47,
+        "rank": 5,
+        "name": "Combat Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 36,
+        "skill": 24,
+        "rank": 6,
+        "name": "Directional Teleport",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 38,
+        "skill": 19,
+        "rank": 1,
+        "name": "Energy Drain",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 39,
+        "skill": 19,
+        "rank": 3,
+        "name": "Energy Leech",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 40,
+        "skill": 19,
+        "rank": 6,
+        "name": "Energy Leeching Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 49,
+        "skill": 42,
+        "rank": 6,
+        "name": "Greater Psionic Shield",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 62,
+        "skill": 47,
+        "rank": 7,
+        "name": "Improved Area Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 69,
+        "skill": 42,
+        "rank": 3,
+        "name": "Lesser Psionic Shield",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 79,
+        "skill": 42,
+        "rank": 1,
+        "name": "Psionic Barrier",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 80,
+        "skill": 42,
+        "rank": 7,
+        "name": "Psionic Invulnerability",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 81,
+        "skill": 42,
+        "rank": 5,
+        "name": "Psionic Shield",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 90,
+        "skill": 47,
+        "rank": 1,
+        "name": "Regenerate Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 92,
+        "skill": 19,
+        "rank": 5,
+        "name": "Render Energy",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 93,
+        "skill": 19,
+        "rank": 7,
+        "name": "Render Energy Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 94,
+        "skill": 47,
+        "rank": 3,
+        "name": "Repair Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 97,
+        "skill": 56,
+        "rank": 7,
+        "name": "Return Friend",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 117,
+        "skill": 56,
+        "rank": 1,
+        "name": "Summon Enemy",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 118,
+        "skill": 56,
+        "rank": 6,
+        "name": "Summon Enemy Group",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 119,
+        "skill": 56,
+        "rank": 3,
+        "name": "Summon Friend",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 120,
+        "skill": 56,
+        "rank": 5,
+        "name": "Summon Group",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 124,
+        "skill": 24,
+        "rank": 3,
+        "name": "Teleport Enemy",
+        "description": "Teleports enemy NPCs away from the ship.",
+        "kind": "fold",
+        "energy": 75.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 125,
+        "skill": 24,
+        "rank": 5,
+        "name": "Teleport Friend",
+        "description": "Allows other group members within 6000 units to be teleported away from danger.",
+        "kind": "fold",
+        "energy": 150.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 126,
+        "skill": 24,
+        "rank": 1,
+        "name": "Teleport Self",
+        "description": "Teleports the ship 5000 units in a random direction.",
+        "kind": "fold",
+        "energy": 35.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 4,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 4,
+        "name": "Build Components",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 6,
+        "name": "Build Engines",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 8,
+        "name": "Build Reactors",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 12,
+        "name": "Cloak",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 24,
+        "name": "Fold Space",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 29,
+        "name": "Jenquai Culture",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 30,
+        "name": "Jenquai Lore",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 36,
+        "name": "Negotiate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 43,
+        "name": "Reactor Optimization",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 46,
+        "name": "Recharge Shields",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 49,
+        "name": "Scan",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 50,
+        "name": "Self Destruct",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 8,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 0,
+        "skill": 12,
+        "rank": 3,
+        "name": "Advanced Cloak",
+        "description": "Allows the ship to move at full speed while cloaked.  This ability drains 1.5 energy per second while active.",
+        "kind": "cloak",
+        "energy": 30.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 14,
+        "skill": 46,
+        "rank": 6,
+        "name": "Area Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 28,
+        "skill": 12,
+        "rank": 1,
+        "name": "Cloak",
+        "description": "When activated, completely hides the ship from sensor detection.  The ship must be at a complete stop to cloak, and can only move at half speed while cloaked.  Cloaking takes 7 seconds to initialize and uses 0.5 energy per second thereafter.",
+        "kind": "cloak",
+        "energy": 9.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 29,
+        "skill": 12,
+        "rank": 5,
+        "name": "Combat Cloak",
+        "description": "Eliminates the requirement for the ship to be motionless before cloaking, and doubles unmodified beam weapon base damage for 5 seconds after cloaking is disengaged.  This ability consumes 3 energy per second while active.",
+        "kind": "cloak",
+        "energy": 100.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 32,
+        "skill": 46,
+        "rank": 5,
+        "name": "Combat Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 61,
+        "skill": 46,
+        "rank": 7,
+        "name": "Improved Area Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 82,
+        "skill": 43,
+        "rank": 1,
+        "name": "Reactor Boost",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 83,
+        "skill": 43,
+        "rank": 3,
+        "name": "Reactor Surge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 84,
+        "skill": 43,
+        "rank": 5,
+        "name": "Reactor Extension",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 85,
+        "skill": 43,
+        "rank": 6,
+        "name": "Reactor Augmentation",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 86,
+        "skill": 43,
+        "rank": 7,
+        "name": "Reactor Optimization",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 89,
+        "skill": 46,
+        "rank": 3,
+        "name": "Recharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 91,
+        "skill": 46,
+        "rank": 1,
+        "name": "Regenerate Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 100,
+        "skill": 50,
+        "rank": 1,
+        "name": "Self Destruct I",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 101,
+        "skill": 50,
+        "rank": 3,
+        "name": "Self Destruct II",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 102,
+        "skill": 50,
+        "rank": 5,
+        "name": "Self Destruct III",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 124,
+        "skill": 24,
+        "rank": 3,
+        "name": "Teleport Enemy",
+        "description": "Teleports enemy NPCs away from the ship.",
+        "kind": "fold",
+        "energy": 75.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 125,
+        "skill": 24,
+        "rank": 5,
+        "name": "Teleport Friend",
+        "description": "Allows other group members within 6000 units to be teleported away from danger.",
+        "kind": "fold",
+        "energy": 150.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 126,
+        "skill": 24,
+        "rank": 1,
+        "name": "Teleport Self",
+        "description": "Teleports the ship 5000 units in a random direction.",
+        "kind": "fold",
+        "energy": 35.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 5,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 8,
+        "name": "Build Reactors",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 12,
+        "name": "Cloak",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 14,
+        "name": "Compulsory Contemplation",
+        "level": 1,
+        "active": true
+      },
+      {
+        "id": 15,
+        "name": "Create Wormhole",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 23,
+        "name": "Environment Shield",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 24,
+        "name": "Fold Space",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 31,
+        "name": "Jumpstart",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 35,
+        "name": "Navigate",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 41,
+        "name": "Prospect",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 49,
+        "name": "Scan",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 53,
+        "name": "Shield Leech",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 8,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 0,
+        "skill": 12,
+        "rank": 3,
+        "name": "Advanced Cloak",
+        "description": "Allows the ship to move at full speed while cloaked.  This ability drains 1.5 energy per second while active.",
+        "kind": "cloak",
+        "energy": 30.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 19,
+        "skill": 15,
+        "rank": 5,
+        "name": "Asteroid Belt Beta Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Asteroid Belt Beta.",
+        "kind": "wormhole",
+        "energy": 150.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 1077
+      },
+      {
+        "id": 26,
+        "skill": 15,
+        "rank": 6,
+        "name": "Carpenter Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Carpenter.",
+        "kind": "wormhole",
+        "energy": 250.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 4520
+      },
+      {
+        "id": 28,
+        "skill": 12,
+        "rank": 1,
+        "name": "Cloak",
+        "description": "When activated, completely hides the ship from sensor detection.  The ship must be at a complete stop to cloak, and can only move at half speed while cloaked.  Cloaking takes 7 seconds to initialize and uses 0.5 energy per second thereafter.",
+        "kind": "cloak",
+        "energy": 9.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 29,
+        "skill": 12,
+        "rank": 5,
+        "name": "Combat Cloak",
+        "description": "Eliminates the requirement for the ship to be motionless before cloaking, and doubles unmodified beam weapon base damage for 5 seconds after cloaking is disengaged.  This ability consumes 3 energy per second while active.",
+        "kind": "cloak",
+        "energy": 100.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 33,
+        "skill": 14,
+        "rank": 1,
+        "name": "Compulsory Contemplation",
+        "description": "Confuses a single target, preventing movement, skill, item, and weapon use until the effect is broken.",
+        "kind": "contemplation",
+        "energy": 1000.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 37,
+        "skill": 15,
+        "rank": 7,
+        "name": "Endriago Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Endriago.",
+        "kind": "wormhole",
+        "energy": 350.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 2210
+      },
+      {
+        "id": 44,
+        "skill": 23,
+        "rank": 1,
+        "name": "Environment Barrier",
+        "description": "creates a shield around a friendly target that protects the ship from environmental effects (reducing their power by 50%) and reduces incoming damage by 5%.",
+        "kind": "environment",
+        "energy": 35.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 45,
+        "skill": 23,
+        "rank": 5,
+        "name": "Environment Shield",
+        "description": "Creates a shield that reduces environmental effects by 100% and reduces incoming damage by 10%, reflecting up to 10 points of damage back to the attacker.  Energy damage is not reflected.",
+        "kind": "environment",
+        "energy": 250.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 48,
+        "skill": 23,
+        "rank": 6,
+        "name": "Greater Environment Shield",
+        "description": "Creates a shield that reduces environmental effects by 100%, reduces incoming damage by 10% (reflecting up to 25 points back to attacker), and converts 5% (maximum of 10 points) of incoming damage to reactor energy.  Energy damage is not reflected or converted.",
+        "kind": "environment",
+        "energy": 500.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 51,
+        "skill": 12,
+        "rank": 7,
+        "name": "Group Cloak",
+        "description": "Completely cloaks all group members within 1000 units.  Warp travel is allowed while cloaked.  This ability drains 10 energy per second while active.",
+        "kind": "cloak",
+        "energy": 350.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 1000,
+        "destination": null
+      },
+      {
+        "id": 52,
+        "skill": 53,
+        "rank": 5,
+        "name": "Group Leech",
+        "description": "Drains shields from a single hostile and transfers a portion of that as energy to the player and group.",
+        "kind": "leech",
+        "energy": 150.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 53,
+        "skill": 53,
+        "rank": 7,
+        "name": "Group Leeching Sphere",
+        "description": "Drains shields from all targets within 3000 units of the target and transfers a portion of that as energy to player and group.",
+        "kind": "leech",
+        "energy": 600.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 3000,
+        "destination": null
+      },
+      {
+        "id": 56,
+        "skill": 12,
+        "rank": 6,
+        "name": "Group Stealth",
+        "description": "Cloaks the ship and creates a stealth field around all group members within 1000 units.  Warp travel is allowed while cloaked.  This ability drains 6 energy per second while active.",
+        "kind": "cloak",
+        "energy": 200.0,
+        "charge": 3.0,
+        "cooldown": 5.0,
+        "range": 3000,
+        "radius": 1000,
+        "destination": null
+      },
+      {
+        "id": 65,
+        "skill": 31,
+        "rank": 1,
+        "name": "Jumpstart",
+        "description": "Attempts to resuscitate an incapacitated player, reducing experience debt from last death by 7% per skill level.  Larger ships will require additional energy to resuscitate.",
+        "kind": "jumpstart",
+        "energy": 140.0,
+        "charge": 7.0,
+        "cooldown": 10.0,
+        "range": 2750,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 66,
+        "skill": 15,
+        "rank": 2,
+        "name": "Jupiter Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Jupiter.",
+        "kind": "wormhole",
+        "energy": 50.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 1070
+      },
+      {
+        "id": 67,
+        "skill": 15,
+        "rank": 1,
+        "name": "Kailaasa Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Kailaasa.",
+        "kind": "wormhole",
+        "energy": 35.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 1910
+      },
+      {
+        "id": 68,
+        "skill": 23,
+        "rank": 3,
+        "name": "Lesser Environment Shield",
+        "description": "Creates a shield that reduces environmental effects by 100% and reduces incoming damage by 10%.",
+        "kind": "environment",
+        "energy": 100.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 106,
+        "skill": 53,
+        "rank": 1,
+        "name": "Shield Drain",
+        "description": "Drains shields from an enemy target.",
+        "kind": "leech",
+        "energy": 35.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 108,
+        "skill": 53,
+        "rank": 3,
+        "name": "Shield Leech",
+        "description": "Drains shields from a single hostile and transfers a portion of that as energy to the player.",
+        "kind": "leech",
+        "energy": 75.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 109,
+        "skill": 53,
+        "rank": 6,
+        "name": "Shield Leeching Sphere",
+        "description": "Drains shields from all targets within 1500 units of the target and transfers a portion of that as energy to the player.",
+        "kind": "leech",
+        "energy": 300.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 1500,
+        "destination": null
+      },
+      {
+        "id": 123,
+        "skill": 15,
+        "rank": 3,
+        "name": "Swooping Eagle Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Swooping Eagle.",
+        "kind": "wormhole",
+        "energy": 75.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 4120
+      },
+      {
+        "id": 124,
+        "skill": 24,
+        "rank": 3,
+        "name": "Teleport Enemy",
+        "description": "Teleports enemy NPCs away from the ship.",
+        "kind": "fold",
+        "energy": 75.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 125,
+        "skill": 24,
+        "rank": 5,
+        "name": "Teleport Friend",
+        "description": "Allows other group members within 6000 units to be teleported away from danger.",
+        "kind": "fold",
+        "energy": 150.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 126,
+        "skill": 24,
+        "rank": 1,
+        "name": "Teleport Self",
+        "description": "Teleports the ship 5000 units in a random direction.",
+        "kind": "fold",
+        "energy": 35.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 6000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 128,
+        "skill": 23,
+        "rank": 7,
+        "name": "Ultra Environment Shield",
+        "description": "Creates a shield that reduces environmental effects by 100%, reduces incoming damage by 10% (reflecting up to 50 points back to attacker), and converts 5% (maximum of 10 points) of incoming damage to reactor energy for all group members.  Energy damage is not reflected or converted.",
+        "kind": "environment",
+        "energy": 1000.0,
+        "charge": 1.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 131,
+        "skill": 15,
+        "rank": 4,
+        "name": "Valkyrie Twins Gate",
+        "description": "Creates a temporary wormhole, teleporting all group members to Valkyrie Twins.",
+        "kind": "wormhole",
+        "energy": 100.0,
+        "charge": 3.0,
+        "cooldown": 10.0,
+        "range": 3000,
+        "radius": 0,
+        "destination": 1705
+      }
+    ]
+  },
+  {
+    "class_index": 6,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 13,
+        "name": "Combat Trance",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 16,
+        "name": "Critical Targeting",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 17,
+        "name": "Damage Control",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 22,
+        "name": "Enrage",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 25,
+        "name": "Gravity Link",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 38,
+        "name": "Progen Culture",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 39,
+        "name": "Progen Lore",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 47,
+        "name": "Repair Equipment",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 50,
+        "name": "Self Destruct",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 52,
+        "name": "Shield Inversion",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 54,
+        "name": "Shield Sap",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 9,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 6,
+        "skill": 22,
+        "rank": 1,
+        "name": "Anger",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 8,
+        "skill": 47,
+        "rank": 6,
+        "name": "Area Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 10,
+        "skill": 25,
+        "rank": 7,
+        "name": "Area Immobilization Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 12,
+        "skill": 25,
+        "rank": 6,
+        "name": "Area Mass Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 27,
+        "skill": 22,
+        "rank": 3,
+        "name": "Cause Aggression",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 30,
+        "skill": 47,
+        "rank": 5,
+        "name": "Combat Equipment Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 41,
+        "skill": 22,
+        "rank": 5,
+        "name": "Enrage",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 47,
+        "skill": 25,
+        "rank": 3,
+        "name": "Gravity Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 54,
+        "skill": 54,
+        "rank": 5,
+        "name": "Group Sap",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 55,
+        "skill": 54,
+        "rank": 7,
+        "name": "Group Sapping Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 59,
+        "skill": 25,
+        "rank": 5,
+        "name": "Immobilization Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 62,
+        "skill": 47,
+        "rank": 7,
+        "name": "Improved Area Repair",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 73,
+        "skill": 25,
+        "rank": 1,
+        "name": "Mass Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 90,
+        "skill": 47,
+        "rank": 1,
+        "name": "Regenerate Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 94,
+        "skill": 47,
+        "rank": 3,
+        "name": "Repair Equipment",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 98,
+        "skill": 54,
+        "rank": 6,
+        "name": "Sapping Sphere",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 100,
+        "skill": 50,
+        "rank": 1,
+        "name": "Self Destruct I",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 101,
+        "skill": 50,
+        "rank": 3,
+        "name": "Self Destruct II",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 102,
+        "skill": 50,
+        "rank": 5,
+        "name": "Self Destruct III",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 103,
+        "skill": 50,
+        "rank": 6,
+        "name": "Self Destruct IV",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 104,
+        "skill": 50,
+        "rank": 7,
+        "name": "Self Destruct V",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 105,
+        "skill": 52,
+        "rank": 5,
+        "name": "Shield Burn",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 107,
+        "skill": 52,
+        "rank": 6,
+        "name": "Shield Flare",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 110,
+        "skill": 52,
+        "rank": 7,
+        "name": "Shield Nova",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 111,
+        "skill": 52,
+        "rank": 1,
+        "name": "Shield Ram",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 112,
+        "skill": 54,
+        "rank": 1,
+        "name": "Shield Sap",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 113,
+        "skill": 52,
+        "rank": 3,
+        "name": "Shield Spike",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 114,
+        "skill": 54,
+        "rank": 3,
+        "name": "Shield Transfer",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 7,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 4,
+        "name": "Build Components",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 8,
+        "name": "Build Reactors",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 9,
+        "name": "Build Shields",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 10,
+        "name": "Build Weapons",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 16,
+        "name": "Critical Targeting",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 33,
+        "name": "Menace",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 36,
+        "name": "Negotiate",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 38,
+        "name": "Progen Culture",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 39,
+        "name": "Progen Lore",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 46,
+        "name": "Recharge Shields",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 52,
+        "name": "Shield Inversion",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 9,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 14,
+        "skill": 46,
+        "rank": 6,
+        "name": "Area Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 32,
+        "skill": 46,
+        "rank": 5,
+        "name": "Combat Shield Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 61,
+        "skill": 46,
+        "rank": 7,
+        "name": "Improved Area Recharge",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 64,
+        "skill": 33,
+        "rank": 1,
+        "name": "Intimidate",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 89,
+        "skill": 46,
+        "rank": 3,
+        "name": "Recharge Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 91,
+        "skill": 46,
+        "rank": 1,
+        "name": "Regenerate Shields",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 99,
+        "skill": 33,
+        "rank": 3,
+        "name": "Scare",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 105,
+        "skill": 52,
+        "rank": 5,
+        "name": "Shield Burn",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 107,
+        "skill": 52,
+        "rank": 6,
+        "name": "Shield Flare",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 110,
+        "skill": 52,
+        "rank": 7,
+        "name": "Shield Nova",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 111,
+        "skill": 52,
+        "rank": 1,
+        "name": "Shield Ram",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 113,
+        "skill": 52,
+        "rank": 3,
+        "name": "Shield Spike",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 127,
+        "skill": 33,
+        "rank": 5,
+        "name": "Terrify",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  },
+  {
+    "class_index": 8,
+    "skills": [
+      {
+        "id": 1,
+        "name": "Beam Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 5,
+        "name": "Build Devices",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 9,
+        "name": "Build Shields",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 11,
+        "name": "Call Forward",
+        "level": 1,
+        "active": false
+      },
+      {
+        "id": 16,
+        "name": "Critical Targeting",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 18,
+        "name": "Device Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 20,
+        "name": "Engine Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 25,
+        "name": "Gravity Link",
+        "level": 5,
+        "active": true
+      },
+      {
+        "id": 31,
+        "name": "Jumpstart",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 33,
+        "name": "Menace",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 34,
+        "name": "Missile Weapon",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 37,
+        "name": "Power Down",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 38,
+        "name": "Progen Culture",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 39,
+        "name": "Progen Lore",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 40,
+        "name": "Projectile Weapon",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 41,
+        "name": "Prospect",
+        "level": 7,
+        "active": false
+      },
+      {
+        "id": 45,
+        "name": "Reactor Tech",
+        "level": 8,
+        "active": false
+      },
+      {
+        "id": 48,
+        "name": "Repulsor Field",
+        "level": 7,
+        "active": true
+      },
+      {
+        "id": 49,
+        "name": "Scan",
+        "level": 5,
+        "active": false
+      },
+      {
+        "id": 55,
+        "name": "Shield Tech",
+        "level": 9,
+        "active": false
+      },
+      {
+        "id": 57,
+        "name": "Terran Culture",
+        "level": 9,
+        "active": false
+      }
+    ],
+    "abilities": [
+      {
+        "id": 1,
+        "skill": 37,
+        "rank": 3,
+        "name": "Advanced Power Down",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 2,
+        "skill": 37,
+        "rank": 5,
+        "name": "Advanced Power Down 2",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 3,
+        "skill": 37,
+        "rank": 6,
+        "name": "Advanced Power Down 3",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 4,
+        "skill": 37,
+        "rank": 7,
+        "name": "Advanced Power Down 4",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 11,
+        "skill": 33,
+        "rank": 6,
+        "name": "Area Intimidation",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 18,
+        "skill": 33,
+        "rank": 7,
+        "name": "Area Terrify",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 47,
+        "skill": 25,
+        "rank": 3,
+        "name": "Gravity Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 50,
+        "skill": 48,
+        "rank": 6,
+        "name": "Greater Repulsor Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 59,
+        "skill": 25,
+        "rank": 5,
+        "name": "Immobilization Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 64,
+        "skill": 33,
+        "rank": 1,
+        "name": "Intimidate",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 65,
+        "skill": 31,
+        "rank": 1,
+        "name": "Jumpstart",
+        "description": "Attempts to resuscitate an incapacitated player, reducing experience debt from last death by 7% per skill level.  Larger ships will require additional energy to resuscitate.",
+        "kind": "jumpstart",
+        "energy": 140.0,
+        "charge": 7.0,
+        "cooldown": 10.0,
+        "range": 2750,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 70,
+        "skill": 48,
+        "rank": 3,
+        "name": "Lesser Repulsor Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 72,
+        "skill": 48,
+        "rank": 7,
+        "name": "Major Repulsor Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 73,
+        "skill": 25,
+        "rank": 1,
+        "name": "Mass Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 75,
+        "skill": 48,
+        "rank": 1,
+        "name": "Minor Repulsor Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 78,
+        "skill": 37,
+        "rank": 1,
+        "name": "Power Down",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 96,
+        "skill": 48,
+        "rank": 5,
+        "name": "Repulsor Field",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 99,
+        "skill": 33,
+        "rank": 3,
+        "name": "Scare",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      },
+      {
+        "id": 127,
+        "skill": 33,
+        "rank": 5,
+        "name": "Terrify",
+        "description": "Gameplay handler not implemented yet.",
+        "kind": "unsupported",
+        "energy": 0.0,
+        "charge": 0.0,
+        "cooldown": 0.0,
+        "range": 0,
+        "radius": 0,
+        "destination": null
+      }
+    ]
+  }
+]

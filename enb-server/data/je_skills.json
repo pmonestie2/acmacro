@@ -1,0 +1,492 @@
+{
+  "skills": [
+    {
+      "id": 1,
+      "name": "Beam Weapon",
+      "level": 9,
+      "active": false
+    },
+    {
+      "id": 5,
+      "name": "Build Devices",
+      "level": 7,
+      "active": false
+    },
+    {
+      "id": 8,
+      "name": "Build Reactors",
+      "level": 7,
+      "active": false
+    },
+    {
+      "id": 12,
+      "name": "Cloak",
+      "level": 7,
+      "active": true
+    },
+    {
+      "id": 14,
+      "name": "Compulsory Contemplation",
+      "level": 1,
+      "active": true
+    },
+    {
+      "id": 15,
+      "name": "Create Wormhole",
+      "level": 7,
+      "active": true
+    },
+    {
+      "id": 18,
+      "name": "Device Tech",
+      "level": 9,
+      "active": false
+    },
+    {
+      "id": 20,
+      "name": "Engine Tech",
+      "level": 8,
+      "active": false
+    },
+    {
+      "id": 23,
+      "name": "Environment Shield",
+      "level": 7,
+      "active": true
+    },
+    {
+      "id": 24,
+      "name": "Fold Space",
+      "level": 5,
+      "active": true
+    },
+    {
+      "id": 31,
+      "name": "Jumpstart",
+      "level": 7,
+      "active": true
+    },
+    {
+      "id": 35,
+      "name": "Navigate",
+      "level": 7,
+      "active": false
+    },
+    {
+      "id": 40,
+      "name": "Projectile Weapon",
+      "level": 8,
+      "active": false
+    },
+    {
+      "id": 41,
+      "name": "Prospect",
+      "level": 7,
+      "active": false
+    },
+    {
+      "id": 45,
+      "name": "Reactor Tech",
+      "level": 9,
+      "active": false
+    },
+    {
+      "id": 49,
+      "name": "Scan",
+      "level": 7,
+      "active": false
+    },
+    {
+      "id": 53,
+      "name": "Shield Leech",
+      "level": 7,
+      "active": true
+    },
+    {
+      "id": 55,
+      "name": "Shield Tech",
+      "level": 8,
+      "active": false
+    }
+  ],
+  "abilities": [
+    {
+      "id": 0,
+      "skill": 12,
+      "rank": 3,
+      "name": "Advanced Cloak",
+      "description": "Allows the ship to move at full speed while cloaked.  This ability drains 1.5 energy per second while active.",
+      "kind": "cloak",
+      "energy": 30.0,
+      "charge": 3.0,
+      "cooldown": 5.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 19,
+      "skill": 15,
+      "rank": 5,
+      "name": "Asteroid Belt Beta Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Asteroid Belt Beta.",
+      "kind": "wormhole",
+      "energy": 150.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 1077
+    },
+    {
+      "id": 26,
+      "skill": 15,
+      "rank": 6,
+      "name": "Carpenter Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Carpenter.",
+      "kind": "wormhole",
+      "energy": 250.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 4520
+    },
+    {
+      "id": 28,
+      "skill": 12,
+      "rank": 1,
+      "name": "Cloak",
+      "description": "When activated, completely hides the ship from sensor detection.  The ship must be at a complete stop to cloak, and can only move at half speed while cloaked.  Cloaking takes 7 seconds to initialize and uses 0.5 energy per second thereafter.",
+      "kind": "cloak",
+      "energy": 9.0,
+      "charge": 3.0,
+      "cooldown": 5.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 29,
+      "skill": 12,
+      "rank": 5,
+      "name": "Combat Cloak",
+      "description": "Eliminates the requirement for the ship to be motionless before cloaking, and doubles unmodified beam weapon base damage for 5 seconds after cloaking is disengaged.  This ability consumes 3 energy per second while active.",
+      "kind": "cloak",
+      "energy": 100.0,
+      "charge": 3.0,
+      "cooldown": 5.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 33,
+      "skill": 14,
+      "rank": 1,
+      "name": "Compulsory Contemplation",
+      "description": "Confuses a single target, preventing movement, skill, item, and weapon use until the effect is broken.",
+      "kind": "contemplation",
+      "energy": 1000.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 37,
+      "skill": 15,
+      "rank": 7,
+      "name": "Endriago Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Endriago.",
+      "kind": "wormhole",
+      "energy": 350.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 2210
+    },
+    {
+      "id": 44,
+      "skill": 23,
+      "rank": 1,
+      "name": "Environment Barrier",
+      "description": "creates a shield around a friendly target that protects the ship from environmental effects (reducing their power by 50%) and reduces incoming damage by 5%.",
+      "kind": "environment",
+      "energy": 35.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 45,
+      "skill": 23,
+      "rank": 5,
+      "name": "Environment Shield",
+      "description": "Creates a shield that reduces environmental effects by 100% and reduces incoming damage by 10%, reflecting up to 10 points of damage back to the attacker.  Energy damage is not reflected.",
+      "kind": "environment",
+      "energy": 250.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 48,
+      "skill": 23,
+      "rank": 6,
+      "name": "Greater Environment Shield",
+      "description": "Creates a shield that reduces environmental effects by 100%, reduces incoming damage by 10% (reflecting up to 25 points back to attacker), and converts 5% (maximum of 10 points) of incoming damage to reactor energy.  Energy damage is not reflected or converted.",
+      "kind": "environment",
+      "energy": 500.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 51,
+      "skill": 12,
+      "rank": 7,
+      "name": "Group Cloak",
+      "description": "Completely cloaks all group members within 1000 units.  Warp travel is allowed while cloaked.  This ability drains 10 energy per second while active.",
+      "kind": "cloak",
+      "energy": 350.0,
+      "charge": 3.0,
+      "cooldown": 5.0,
+      "range": 3000,
+      "radius": 1000,
+      "destination": null
+    },
+    {
+      "id": 52,
+      "skill": 53,
+      "rank": 5,
+      "name": "Group Leech",
+      "description": "Drains shields from a single hostile and transfers a portion of that as energy to the player and group.",
+      "kind": "leech",
+      "energy": 150.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 53,
+      "skill": 53,
+      "rank": 7,
+      "name": "Group Leeching Sphere",
+      "description": "Drains shields from all targets within 3000 units of the target and transfers a portion of that as energy to player and group.",
+      "kind": "leech",
+      "energy": 600.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 3000,
+      "destination": null
+    },
+    {
+      "id": 56,
+      "skill": 12,
+      "rank": 6,
+      "name": "Group Stealth",
+      "description": "Cloaks the ship and creates a stealth field around all group members within 1000 units.  Warp travel is allowed while cloaked.  This ability drains 6 energy per second while active.",
+      "kind": "cloak",
+      "energy": 200.0,
+      "charge": 3.0,
+      "cooldown": 5.0,
+      "range": 3000,
+      "radius": 1000,
+      "destination": null
+    },
+    {
+      "id": 65,
+      "skill": 31,
+      "rank": 1,
+      "name": "Jumpstart",
+      "description": "Attempts to resuscitate an incapacitated player, reducing experience debt from last death by 7% per skill level.  Larger ships will require additional energy to resuscitate.",
+      "kind": "jumpstart",
+      "energy": 140.0,
+      "charge": 7.0,
+      "cooldown": 10.0,
+      "range": 2750,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 66,
+      "skill": 15,
+      "rank": 2,
+      "name": "Jupiter Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Jupiter.",
+      "kind": "wormhole",
+      "energy": 50.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 1070
+    },
+    {
+      "id": 67,
+      "skill": 15,
+      "rank": 1,
+      "name": "Kailaasa Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Kailaasa.",
+      "kind": "wormhole",
+      "energy": 35.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 1910
+    },
+    {
+      "id": 68,
+      "skill": 23,
+      "rank": 3,
+      "name": "Lesser Environment Shield",
+      "description": "Creates a shield that reduces environmental effects by 100% and reduces incoming damage by 10%.",
+      "kind": "environment",
+      "energy": 100.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 106,
+      "skill": 53,
+      "rank": 1,
+      "name": "Shield Drain",
+      "description": "Drains shields from an enemy target.",
+      "kind": "leech",
+      "energy": 35.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 108,
+      "skill": 53,
+      "rank": 3,
+      "name": "Shield Leech",
+      "description": "Drains shields from a single hostile and transfers a portion of that as energy to the player.",
+      "kind": "leech",
+      "energy": 75.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 109,
+      "skill": 53,
+      "rank": 6,
+      "name": "Shield Leeching Sphere",
+      "description": "Drains shields from all targets within 1500 units of the target and transfers a portion of that as energy to the player.",
+      "kind": "leech",
+      "energy": 300.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 1500,
+      "destination": null
+    },
+    {
+      "id": 123,
+      "skill": 15,
+      "rank": 3,
+      "name": "Swooping Eagle Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Swooping Eagle.",
+      "kind": "wormhole",
+      "energy": 75.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 4120
+    },
+    {
+      "id": 124,
+      "skill": 24,
+      "rank": 3,
+      "name": "Teleport Enemy",
+      "description": "Teleports enemy NPCs away from the ship.",
+      "kind": "fold",
+      "energy": 75.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 6000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 125,
+      "skill": 24,
+      "rank": 5,
+      "name": "Teleport Friend",
+      "description": "Allows other group members within 6000 units to be teleported away from danger.",
+      "kind": "fold",
+      "energy": 150.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 6000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 126,
+      "skill": 24,
+      "rank": 1,
+      "name": "Teleport Self",
+      "description": "Teleports the ship 5000 units in a random direction.",
+      "kind": "fold",
+      "energy": 35.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 6000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 128,
+      "skill": 23,
+      "rank": 7,
+      "name": "Ultra Environment Shield",
+      "description": "Creates a shield that reduces environmental effects by 100%, reduces incoming damage by 10% (reflecting up to 50 points back to attacker), and converts 5% (maximum of 10 points) of incoming damage to reactor energy for all group members.  Energy damage is not reflected or converted.",
+      "kind": "environment",
+      "energy": 1000.0,
+      "charge": 1.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": null
+    },
+    {
+      "id": 131,
+      "skill": 15,
+      "rank": 4,
+      "name": "Valkyrie Twins Gate",
+      "description": "Creates a temporary wormhole, teleporting all group members to Valkyrie Twins.",
+      "kind": "wormhole",
+      "energy": 100.0,
+      "charge": 3.0,
+      "cooldown": 10.0,
+      "range": 3000,
+      "radius": 0,
+      "destination": 1705
+    }
+  ]
+}

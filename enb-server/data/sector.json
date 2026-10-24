@@ -1,0 +1,78 @@
+{
+  "id": 1076,
+  "name": "Rust Sandbox",
+  "system": "Sol",
+  "backdrop_asset": 220,
+  "navpoints": [
+    {
+      "id": 100000,
+      "name": "Sandbox Loop Gate",
+      "gate_destination": 1076,
+      "object_type": 11,
+      "asset": 48,
+      "position": [
+        20000,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 100001,
+      "name": "Sandbox Station",
+      "object_type": 12,
+      "asset": 51,
+      "position": [
+        -10000,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 100002,
+      "name": "Mining Field",
+      "object_type": 37,
+      "asset": 50,
+      "position": [
+        0,
+        15000,
+        0
+      ]
+    },
+    {
+      "id": 100003,
+      "name": "Test Arena",
+      "object_type": 37,
+      "asset": 50,
+      "position": [
+        -15000,
+        -12000,
+        0
+      ]
+    }
+  ],
+  "mobs": [
+    {
+      "source_id": 46,
+      "name": "Achilles Drone",
+      "level": 1,
+      "asset": 1121,
+      "spawn": [
+        15000,
+        15000,
+        0
+      ],
+      "respawn_seconds": 20,
+      "aggressive": true,
+      "combat_override": {
+        "hull": 100.0,
+        "shield": 150.0,
+        "dps": 2.5,
+        "reload": 2.0,
+        "range": 1000.0,
+        "effect": 35,
+        "damage_type": 3,
+        "variance": false
+      }
+    }
+  ]
+}

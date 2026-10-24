@@ -1,0 +1,24 @@
+{
+  "unresolved": [
+    {
+      "item": 2903,
+      "target": "Anthracite",
+      "reason": "Missing or ambiguous product name"
+    },
+    {
+      "item": 2960,
+      "target": "Anthenicite Coal",
+      "reason": "Missing or ambiguous product name"
+    },
+    {
+      "item": 3397,
+      "target": "White Tazeron Hexagon",
+      "reason": "Product recipe does not consume only this input"
+    },
+    {
+      "item": 3400,
+      "target": "Yellow Tazeron Hexagon",
+      "reason": "Product recipe does not consume only this input"
+    }
+  ]
+}
