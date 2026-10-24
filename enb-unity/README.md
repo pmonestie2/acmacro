@@ -151,6 +151,8 @@ Ammo can be loaded through the same server move command. Defeated
 mobs leave server-owned wrecks. Click a wreck to open its fixed loot panel;
 within 2 km, open it and tractor listed items into cargo. The radar shows nearby
 contacts and navigation targets.
+The loadout shows each weapon's server firing state and loaded ammunition.
+Select an installed weapon to toggle that hardpoint alone during space combat.
 
 Explorer pilots can click a mineable asteroid or gas cloud, open its prospecting
 window, and choose a server-listed ore slot. The server checks the ship, skill,

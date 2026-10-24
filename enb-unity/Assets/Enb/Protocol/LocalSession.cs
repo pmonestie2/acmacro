@@ -326,6 +326,21 @@ namespace Enb.Protocol
             Status = "Moving equipment to cargo";
         }
 
+        /// <summary>Toggle one mounted weapon with the native item activation packet.</summary>
+        public void ActivateWeapon(int slot)
+        {
+            if (!Ready || gate != 0 || World.Station != null || World.Equipment.Hull <= 0 ||
+                slot < 3 || slot >= 3 + World.Equipment.WeaponMounts || slot >= World.Equipment.Mounted.Length)
+                return;
+            ItemState mounted = World.Equipment.Mounted[slot];
+            if (mounted?.Present != true ||
+                !World.ItemCatalog.TryGetValue(mounted.Template, out ItemTemplateInfo template) ||
+                template.Type < 14 || template.Type > 16) return;
+            Send(0x5d, Wire.Body(w => { w.Write(Player); w.Write((byte)2); w.Write((byte)slot); }));
+            Status = (mounted.WeaponState & 1) != 0 ? "Stopping weapon slot " + slot :
+                "Firing weapon slot " + slot;
+        }
+
         /// <summary>Submit a bounded owned-inventory move through the server's durable transfer path.</summary>
         private void SendInventoryTransfer(uint source, uint sourceSlot, uint destination, uint destinationSlot, uint quantity)
         {

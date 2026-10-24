@@ -416,6 +416,15 @@ namespace Enb.Client
                 worker.Submit(new ClientCommand(CommandKind.UnequipMount, (uint)mountSlot));
         }
 
+        /// <summary>Toggle one mounted weapon in space while preserving the other hardpoints.</summary>
+        public void ActivateWeapon(int slot)
+        {
+            if (Ready && !Incapacitated && snapshot.Station == null && slot >= 3 &&
+                slot < 3 + snapshot.WeaponMounts && slot < snapshot.Mounted.Length &&
+                snapshot.Mounted[slot]?.Type >= 14 && snapshot.Mounted[slot]?.Type <= 16)
+                worker.Submit(new ClientCommand(CommandKind.ActivateWeapon, (uint)slot));
+        }
+
         /// <summary>Request a server-authoritative formation change or follow action.</summary>
         public void Formation(uint action)
         { if (Ready) worker.Submit(new ClientCommand(CommandKind.Formation, action)); }

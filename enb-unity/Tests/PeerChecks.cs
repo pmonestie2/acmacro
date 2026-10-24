@@ -118,6 +118,14 @@ internal static class PeerChecks
                 Wait(observer, null, () => observer.World.Equipment.Mounted[3]?.Template == starterWeapon &&
                     observer.World.Equipment.Cargo[0]?.Present != true, "Server equip update did not restore the weapon.");
                 Console.WriteLine("PASS: item template, cargo and hardpoint decoding; authoritative unequip and equip");
+                bool firingBefore = (observer.World.Equipment.Mounted[3].WeaponState & 1) != 0;
+                observer.ActivateWeapon(3);
+                Wait(observer, null, () => ((observer.World.Equipment.Mounted[3]?.WeaponState ?? 0) & 1) !=
+                    (firingBefore ? 1u : 0u), "Native mounted-weapon activation did not update its own hardpoint.");
+                observer.ActivateWeapon(3);
+                Wait(observer, null, () => ((observer.World.Equipment.Mounted[3]?.WeaponState ?? 0) & 1) ==
+                    (firingBefore ? 1u : 0u), "Native mounted-weapon stop did not clear its hardpoint.");
+                Console.WriteLine("PASS: per-weapon native activation and authoritative firing state");
                 Wait(observer, visitor, () => observer.World.Objects.Values.Any(item => item.Kind == 38),
                     "Disposable asteroid was not visible to the pilot.");
                 MapObject resource = observer.World.Objects.Values.First(item => item.Kind == 38);

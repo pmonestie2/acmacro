@@ -507,7 +507,7 @@ namespace Enb.Protocol
         public readonly bool Ready, HasPosition;
         public readonly float Speed, Energy, Shield, Hull, MaxEnergy, MaxShield, MaxHull;
         public readonly float TargetSpeed, Acceleration, AngularY, AngularZ;
-        public readonly ItemView[] Cargo, Mounted;
+        public readonly ItemView[] Cargo, Mounted, Ammo;
         public readonly CorpseLoot[] Loot;
         public readonly uint OpenLootId;
         public readonly uint WeaponMounts, DeviceMounts, SelectedTargetId;
@@ -548,10 +548,13 @@ namespace Enb.Protocol
             SelectedTargetId = equipment.TargetId;
             WeaponsFiring = equipment.Mounted.Any(item => item != null && (item.WeaponState & 1) != 0);
             Cargo = new ItemView[equipment.Cargo.Length]; Mounted = new ItemView[equipment.Mounted.Length];
+            Ammo = new ItemView[equipment.Ammo.Length];
             for (int i = 0; i < Cargo.Length; i++)
                 if (equipment.Cargo[i]?.Present == true) Cargo[i] = new ItemView(i, equipment.Cargo[i], world.ItemCatalog);
             for (int i = 0; i < Mounted.Length; i++)
                 if (equipment.Mounted[i]?.Present == true) Mounted[i] = new ItemView(i, equipment.Mounted[i], world.ItemCatalog);
+            for (int i = 0; i < Ammo.Length; i++)
+                if (equipment.Ammo[i]?.Present == true) Ammo[i] = new ItemView(i, equipment.Ammo[i], world.ItemCatalog);
         }
     }
 }

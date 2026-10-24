@@ -862,7 +862,16 @@ namespace Enb.Client
                 if (!available) continue;
                 ItemView item = snapshot.Mounted[slot];
                 string title = $"{slot:00}  " + (item?.Name ?? (slot < 3 ? new[] { "Reactor", "Engine", "Shield" }[slot] : slot < 9 ? "Weapon" : "Device") + " · EMPTY");
-                if (GUILayout.Button(title, selectedMount == slot ? selected : button, GUILayout.Height(28)))
+                bool weapon = item != null && item.Type >= 14 && item.Type <= 16;
+                if (weapon)
+                {
+                    string state = (item.WeaponState & 1) != 0 ? "FIRING" : "SAFE";
+                    ItemView ammo = snapshot.Ammo[slot];
+                    title += "\n" + state + (item.Type == 14 ? "  ·  BEAM" :
+                        ammo == null ? "  ·  NO AMMO" : $"  ·  {ammo.Name} ×{ammo.Quantity}");
+                }
+                if (GUILayout.Button(title, selectedMount == slot ? selected : button,
+                    GUILayout.Height(weapon ? 43 : 28)))
                     selectedMount = selectedMount == slot ? -1 : slot;
             }
             GUILayout.EndScrollView(); GUILayout.EndArea();
@@ -891,6 +900,12 @@ namespace Enb.Client
             GUI.enabled = client.Ready && mounted != null && cargoSpace;
             if (GUI.Button(new Rect(rect.x + 393, foot, 344, 34), cargoSpace ? "REMOVE TO CARGO" : "CARGO HOLD FULL", button))
                 client.UnequipMount(selectedMount);
+            bool mountedWeapon = mounted != null && mounted.Type >= 14 && mounted.Type <= 16 &&
+                selectedMount >= 3 && selectedMount < 3 + snapshot.WeaponMounts;
+            GUI.enabled = client.Ready && !client.Incapacitated && snapshot.Station == null && mountedWeapon;
+            if (mountedWeapon && GUI.Button(new Rect(rect.x + 20, foot + 37, 717, 30),
+                (mounted.WeaponState & 1) != 0 ? "STOP SELECTED WEAPON" : "FIRE SELECTED WEAPON", button))
+                client.ActivateWeapon(selectedMount);
             GUI.enabled = true;
         }
 
@@ -901,7 +916,7 @@ namespace Enb.Client
             if (cargo == null || slot < 0 || slot >= snapshot.Mounted.Length) return false;
             if (cargo.Type == 10)
                 return slot >= 3 && slot < 3 + snapshot.WeaponMounts &&
-                    snapshot.Mounted[slot]?.Type >= 14 && snapshot.Mounted[slot]?.Type <= 16;
+                    snapshot.Mounted[slot]?.Type >= 15 && snapshot.Mounted[slot]?.Type <= 16;
             if (cargo.Quantity != 1) return false;
             switch (cargo.Type)
             {
