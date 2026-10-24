@@ -142,13 +142,13 @@ impl SectorCombat {
             // Failing the whole tick at capacity would leave the queue full
             // forever, because the coordinator could never retire old hits.
             if self.npc_shots.len() >= 16384 {
-                mob.tick_without_target(dt);
+                mob.tick_idle(dt, players);
                 continue;
             }
             let target = mob.select_target(players).map(|index| &players[index]);
             let damage = match target {
                 Some(player) => mob.tick_target(dt, player),
-                None => mob.tick_without_target(dt),
+                None => mob.tick_idle(dt, players),
             };
             if let Some(player) = target {
                 if damage > 0. {

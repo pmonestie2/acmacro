@@ -3,7 +3,7 @@ use crate::protocol::invalid;
 use serde::{Deserialize, Serialize};
 use std::io;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct PlayerThreat {
     pub id: u32,
     pub session_epoch: u64,
@@ -13,6 +13,7 @@ pub struct PlayerThreat {
     pub visible: bool,
     pub signature: f32,
     pub stealth: Option<u32>,
+    pub factions: std::sync::Arc<crate::factions::FactionReactions>,
 }
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
@@ -109,6 +110,9 @@ impl MobAggro {
 
     pub fn target(&mut self, player: Option<u32>) {
         self.target = player;
+    }
+    pub fn targets(&self, player: u32) -> bool {
+        self.target == Some(player)
     }
 
     pub fn remove(&mut self, player: u32) {

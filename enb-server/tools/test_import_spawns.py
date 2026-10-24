@@ -19,7 +19,7 @@ class SpawnTests(unittest.TestCase):
             {'mob_id': 20, 'mob_count': 2, 'mob_spawn_radius': 100, 'respawn_time': 25},
             {'mob_id': 21, 'mob_count': 0, 'mob_spawn_radius': 0, 'respawn_time': 0}])
         sql += table('mob_spawn_group', [{'spawn_group_id': 20, 'mob_id': 7}, {'spawn_group_id': 21, 'mob_id': 7}])
-        sql += table('mob_base', [{'mob_id': 7, 'name': 'Drone', 'level': 3, 'base_asset_id': 384, 'aggressiveness': 4, 'type': 5, 'shield_modifier': 10, 'damage_modifier': 2, 'range_modifier': 3}])
+        sql += table('mob_base', [{'mob_id': 7, 'name': 'Drone', 'level': 3, 'base_asset_id': 384, 'aggressiveness': 3, 'faction_id': 17, 'type': 5, 'shield_modifier': 10, 'damage_modifier': 2, 'range_modifier': 3}])
         with tempfile.TemporaryDirectory() as folder:
             dump, content = Path(folder) / 'public.sql', Path(folder) / 'sector.json'
             dump.write_text(sql)
@@ -31,6 +31,9 @@ class SpawnTests(unittest.TestCase):
         self.assertTrue(all(400 <= mob['spawn'][0] <= 600 for mob in mobs))
         self.assertEqual(mobs[0]['respawn_seconds'], 25)
         self.assertEqual((mobs[0]['mob_type'],mobs[0]['shield_modifier'],mobs[0]['damage_modifier'],mobs[0]['range_modifier']),(5,10,2,3))
+        self.assertEqual((mobs[0]['faction'], mobs[0]['aggression']), (17, 3))
+        self.assertEqual(mobs[0]['spawn_region'], {'center': [500., 0., 0.], 'radius': 100.})
+        self.assertEqual(mobs[1]['spawn_region'], mobs[0]['spawn_region'])
 
     def test_first_public_weapon_keeps_real_stats_and_null_boss_modifiers_default_to_one(self) -> None:
         sql=table('sector_objects',[{'sector_object_id':20,'sector_id':1,'type':0}])
@@ -64,3 +67,31 @@ class SpawnTests(unittest.TestCase):
             self.assertEqual(catalog.for_sector(1)[0]['scale'], -1)
             self.assertEqual(catalog.for_sector(2), [])
             self.assertEqual(catalog.missing_models, {8: 'Missing'})
+
+    def test_zero_radius_preserves_static_content_and_numeric_nine_aggression(self) -> None:
+        sql = table('sector_objects', [{'sector_object_id': 20, 'sector_id': 1, 'type': 0, 'position_z': 500}])
+        sql += table('sector_objects_mob', [{'mob_id': 20, 'mob_count': 1, 'mob_spawn_radius': 0}])
+        sql += table('mob_spawn_group', [{'spawn_group_id': 20, 'mob_id': 7}])
+        sql += table('mob_base', [{'mob_id': 7, 'name': 'Static', 'base_asset_id': 384, 'aggressiveness': 9}])
+        with tempfile.TemporaryDirectory() as folder:
+            dump = Path(folder) / 'public.sql'
+            dump.write_text(sql)
+            mob = PublicSpawns(dump).for_sector(1)[0]
+        self.assertEqual(mob['spawn_region'], {'center': [0., 0., 500.], 'radius': 0.})
+        self.assertEqual(mob['spawn'], [0., 0., 500.])
+        self.assertTrue(mob['aggressive'])
+        self.assertEqual(mob['aggression'], 9)
+
+    def test_invalid_roaming_regions_and_native_byte_metadata_are_rejected(self) -> None:
+        for radius, faction, aggression in [(-1, 0, 3), ('NaN', 0, 3), (100, -1, 3), (100, 0, 256)]:
+            with self.subTest(radius=radius, faction=faction, aggression=aggression):
+                sql = table('sector_objects', [{'sector_object_id': 20, 'sector_id': 1, 'type': 0}])
+                sql += table('sector_objects_mob', [{'mob_id': 20, 'mob_count': 1, 'mob_spawn_radius': radius}])
+                sql += table('mob_spawn_group', [{'spawn_group_id': 20, 'mob_id': 7}])
+                sql += table('mob_base', [{'mob_id': 7, 'name': 'Invalid', 'base_asset_id': 384,
+                                           'faction_id': faction, 'aggressiveness': aggression}])
+                with tempfile.TemporaryDirectory() as folder:
+                    dump = Path(folder) / 'public.sql'
+                    dump.write_text(sql)
+                    with self.assertRaises(ValueError):
+                        PublicSpawns(dump).for_sector(1)

@@ -101,8 +101,10 @@ three must be at least the player's stealth. The archived NPC Scan skill remains
 zero; no additional skill value is inferred. Player stealth uses overall level
 plus five times trained Cloak skill, rather than the selected ability rank.
 Consequently a level 150 JE with Cloak 7 is hidden from CL61 but detectable by
-CL62. Lost targets use the existing 100 metre/second return-home fallback; full
-native patrol/drift and faction behavior remain pending. Shots already launched
+CL62. Definitions without spawn-region metadata use the existing 100 metre/second
+return-home fallback. Ordinary positive-radius spawn groups now use the native
+DRIFT/CURIOUS and pursuit rules in [MOB_ROAMING.md](MOB_ROAMING.md); resource-field
+patrols and scripted behaviors remain separate work. Shots already launched
 retain their frozen impact and are unaffected by subsequent cloak changes.
 
 `smoke_npc_projectiles.py --level 61` and `--level 62` check the trained-stealth boundary

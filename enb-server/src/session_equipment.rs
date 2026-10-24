@@ -13,6 +13,10 @@ impl PlayerSession {
 
     pub(super) fn refresh_equipment(&mut self) -> io::Result<()> {
         self.equipment = EquipmentStats::derive(&self.inventory, &self.items, &self.skill_catalog)?;
+        self.reputation = self.factions.reactions(
+            self.account.character.class(),
+            &self.inventory.faction_standings,
+        )?;
         self.apply_equipment_parameters();
         Ok(())
     }

@@ -1,0 +1,5896 @@
+{
+  "factions": [
+    {
+      "id": 1,
+      "name": "Anseria",
+      "description": "Death to InfinitiCorp! A militant phalanx of the Psionics, the Anseria wants to both free the Psionics and get revenge on the ones that have done them wrong. They are more Vrix friendly than most other factions.",
+      "pda": true,
+      "pda_text": "Anseria",
+      "gain_sound": "1512_01_045Se.MP3"
+    },
+    {
+      "id": 2,
+      "name": "Bogeril",
+      "description": "A loose collection of early settlers in the Alpha Centauri system. Bogeril are renowned for their ingenuity and tinkering abilities. The Bogeril wish to be left alone amd are working towards the return of their leader Sam Bogeril. Sam Bogeril is dead, how",
+      "pda": true,
+      "pda_text": "Bogeril",
+      "gain_sound": "null"
+    },
+    {
+      "id": 3,
+      "name": "Centuriata Warriors",
+      "description": "In a clone culture obsessed with Perfection, the Centuriata appear to be more human than human. In battle, the Centuriata are brilliant pilots, and show impeccable honor and loyalty to friends and allies, while efficiently, ruthlessly and mercilessly dealing with enemies.\r\n",
+      "pda": true,
+      "pda_text": "PW",
+      "gain_sound": "1512_01_027Se.MP3"
+    },
+    {
+      "id": 4,
+      "name": "Chavez",
+      "description": "The Chavez were once a minor Terran house who were locked in an economic war with the Montague Famlily.  The current family leader Miguel Chavez chose to go rogue and have become pirates.  Now that they have subdued most of their blood feud, they have set their sights on the Red Dragon.  The Chavez recently attained faction status but have no allies so one doesn't need to worry about losing standing with them. ",
+      "pda": true,
+      "pda_text": "CHVZ",
+      "gain_sound": "null"
+    },
+    {
+      "id": 5,
+      "name": "Collegia Traders",
+      "description": "Recruited from the fringes of Sabine society, the Collegia Traders have one goal in mind: Progen Warriors using Progen Weapons. They have had enough of InfinitiCorp''s galactic control, enough of Vinda's non-leadership, and enough of travesties like the Glenn Treaty, which gave the Terrans the richest weapons-grade resource in the known galaxy - 61 Cygni.\r\n",
+      "pda": true,
+      "pda_text": "PT",
+      "gain_sound": "1512_01_033Se.MP3"
+    },
+    {
+      "id": 6,
+      "name": "EarthCorps Warriors",
+      "description": "Operating independently of the mega-corporations, the EarthCorps military expands and secures Terran interests through force of arms. With massive fleets and all the resources of the Terran military behind them, they are a force fit to rival any in human space.",
+      "pda": true,
+      "pda_text": "TW",
+      "gain_sound": "1512_01_035Se.MP3"
+    },
+    {
+      "id": 7,
+      "name": "Free Spacers",
+      "description": "Nomadic and elusive, the Free Spacers have wandered the fringes of civilization since the early 22nd century. They reject the idea of racial differentiation, preferring to see themselves as free and unique individuals. Rumors persist of Free Spacers who have ventured far beyond the bounds of known space.\r\n",
+      "pda": false,
+      "pda_text": "FS",
+      "gain_sound": "1512_01_053Se.MP3"
+    },
+    {
+      "id": 8,
+      "name": "Glenn Commission",
+      "description": "The Glenn Commission is the neutral government of Beta Hydri, created by the Gate Treaty of 2298. Governed by members of all three races, it is a social experiment, promoting science, tourism, and exploration within its borders. After the brutal Gate war ",
+      "pda": false,
+      "pda_text": "GC",
+      "gain_sound": "1512_01_059Se.MP3"
+    },
+    {
+      "id": 9,
+      "name": "Good Earth Trading Company",
+      "description": "Free your mind and your cash flow will follow. GETCo or Good Earth Trading Company was the first mega-corporation established with the sole purpose of interplanetary commerce in 2034, competing with InfintiCorp for market domination and trying to acquire ",
+      "pda": false,
+      "pda_text": "GETCo",
+      "gain_sound": "null"
+    },
+    {
+      "id": 10,
+      "name": "Hyperia Explorers",
+      "description": "Originally backed by GETCo, the Hyperia Explorers have two mandates in its charter. First, to colonize a new system in order to give GETCo a foothold against InfinitiCorp. Second, to create an explorer class within Terran Society. Hyperia is free of the pseudo-religious overtones of the Sha'ha'dem, and the obsessions and ethical quandaries of the Sabine.",
+      "pda": true,
+      "pda_text": "TE",
+      "gain_sound": "1512_01_037Se.MP3"
+    },
+    {
+      "id": 11,
+      "name": "InfinitiCorp Traders",
+      "description": "InfinitiCorp embodies the Terran ideal: pure mercantilism. InfinitiCorp is in constant struggle with its eternal rival, GETCo, in defining the direction of the Terran sphere. Led by the beautiful Lady Isabel deWinter, InfinitiCorp will stop at nothing to control all trade and manufacturing in all of human space.\r\n",
+      "pda": true,
+      "pda_text": "TT",
+      "gain_sound": "1512_01_039Se.MP3"
+    },
+    {
+      "id": 12,
+      "name": "Jing Leung Red Dragons",
+      "description": "Once a leading tong of the Red Dragon Pirates, the Jing Leung have fallen into disgrace, following a failed coup against Red Dragon leadership.  Seeking to reclaim their honor, they now launch suicide attacks against targets of opportunity throughout human space.  They are exceedingly dangerous and unpredictable.\r\n",
+      "pda": false,
+      "pda_text": "JingLeung",
+      "gain_sound": "1512_01_057Se.MP3"
+    },
+    {
+      "id": 13,
+      "name": "Net-7",
+      "description": "Net-7 is the largest and most influential News and Information agency in the Galaxy. They are always first to break stories, they always get the juicy information before their lesser competitors, and are on top in that cutthroat industry, and showing no signs of weakness.",
+      "pda": false,
+      "pda_text": "N7",
+      "gain_sound": "1512_01_061Se.MP3"
+    },
+    {
+      "id": 14,
+      "name": "Psionics",
+      "description": "InfinitiCorp maintains that the Psis were created by IC scientists for their talents in mining dangerous materials. The Psionics have no idea how they happened, and don't really care. They DO know they are enslaved in the mines of Cygni by InfinitiCorp because of IC's fears about their paranormal abilities.\r\n",
+      "pda": false,
+      "pda_text": "TerranPsi",
+      "gain_sound": "1512_01_047Se.MP3"
+    },
+    {
+      "id": 15,
+      "name": "Sabine Explorers",
+      "description": "The Sabine are masters of genetic science and keepers of Progen immortality. They divide themselves into three major classes: the Versatiles, the Specialists, and the Reclaimers. To a Sabine, perfection can and will be achieved through science. ",
+      "pda": true,
+      "pda_text": "PE",
+      "gain_sound": "1512_01_031Se.MP3"
+    },
+    {
+      "id": 16,
+      "name": "Sha'ha'dem Explorers",
+      "description": "The Sha'ha'dem are the heart and soul of Jenquai society. These scholars, researchers, thinkers, and explorer monks are the most influential voice in the Jenquai government. Sha'ha'dem, the explorers of the Jenquai, are lead by Merjan Kathrada. \r\n",
+      "pda": true,
+      "pda_text": "JE",
+      "gain_sound": "1512_01_023Se.MP3"
+    },
+    {
+      "id": 17,
+      "name": "Sharim Traders",
+      "description": "Due to recent events, the Sha'ha'dem have seen fit to build a caste of traders to combat the constant theft of Ancient Artifacts from the Aragoth System. The Sharim are charged with the recovery of these artifacts, which are holy relics, and should not be handled and sold by the likes of InfinitiCorp and the Red Dragon.",
+      "pda": true,
+      "pda_text": "JT",
+      "gain_sound": "1512_01_025Se.MP3"
+    },
+    {
+      "id": 18,
+      "name": "Shinwa Warriors",
+      "description": "Formed in the aftermath of the Gate War, the Shinwa are the tireless defenders of the Jenquai nation. They value discipline, duty, and selflessness. Though they are few, they are masters in the art of combat. The Shinwa is the warrior class in Jenquai soc",
+      "pda": true,
+      "pda_text": "JW",
+      "gain_sound": "1512_01_019Se.MP3"
+    },
+    {
+      "id": 19,
+      "name": "The Alliance",
+      "description": "A mysterious and secret organization led by the enigmatic Nostradamus Smythe, the Alliance is dedicated to earning equality and freedom for the Psionics, by any means necessary. Strangely, many in the Alliance are afflicted by a new disease called Landauer Syndrome.",
+      "pda": false,
+      "pda_text": "Alliance",
+      "gain_sound": "1512_01_065Se.MP3"
+    },
+    {
+      "id": 20,
+      "name": "The Kokura",
+      "description": "Guardians of the sky. Defenders of Sirius space, they are trying to keep Swooping Eagle safe from the V''rix. Their leader is Grey Feather.",
+      "pda": false,
+      "pda_text": "Kokura",
+      "gain_sound": "1512_01_021Se.MP3"
+    },
+    {
+      "id": 21,
+      "name": "The Mordana",
+      "description": "The One True Path and the One True Way. A Jenquai extreme cult which wants to bring back their leader Mordane, who died in the Gate Wars. Current leader is Daniel Malhouse.",
+      "pda": false,
+      "pda_text": "Mordana",
+      "gain_sound": "1512_01_051Se.MP3"
+    },
+    {
+      "id": 22,
+      "name": "The Red Dragon",
+      "description": "Ruthless, brilliantly organized, and expanding, the Red Dragon tongs are the most effective criminal organization in human space. Fierce discipline and enduring commitment to the group have made the Red Dragon pirates a particularly formidable threat. Cur",
+      "pda": true,
+      "pda_text": "Pirate",
+      "gain_sound": "1512_01_043Se.MP3"
+    },
+    {
+      "id": 23,
+      "name": "V'rix",
+      "description": "S2RV1NTS4FTH21NC32NTS. Wants to force all humans away from the ancient gates both by using warfare and by using humans' own perception of what is frightening (taking forms of large insects and names from the human history of Aztec indians).",
+      "pda": true,
+      "pda_text": "V'Rix",
+      "gain_sound": "1512_01_049Se.MP3"
+    },
+    {
+      "id": 24,
+      "name": "Scuttlebugs",
+      "description": "<Added by Tienbau> Bunch of bugs - look after their own but probably dislike anyone else. I''ve added this faction as a placeholder MOB faction so that scuttlebugs won''t attack their own, and will protect them. Just give scuttlebug faction to all scuttlebugs and it should work.",
+      "pda": false,
+      "pda_text": "FIXME",
+      "gain_sound": "null"
+    },
+    {
+      "id": 25,
+      "name": "TheCommonWealth",
+      "description": "FIXME",
+      "pda": false,
+      "pda_text": "FIXME",
+      "gain_sound": "null"
+    },
+    {
+      "id": 26,
+      "name": "Renegade Progen",
+      "description": "These dissidents of the Progen Republic are united under Proconsul Quintus Seritorius (Former Warrior Class General in the Progen Republic) and Marcus Perpenna Vento (Quintus' Second in Command). Together these two individuals are uniting the remaining \"Rogue Progen\" and \"Renegade Progen\" into a formidable force, sharing a common goal, to change \"the ways\" of the Republic.",
+      "pda": true,
+      "pda_text": "RP",
+      "gain_sound": "null"
+    },
+    {
+      "id": 27,
+      "name": "Progen Combine",
+      "description": "The Progen frontline for 61 Cygni battles",
+      "pda": true,
+      "pda_text": "PC",
+      "gain_sound": "null"
+    },
+    {
+      "id": 28,
+      "name": "Terran Alliance",
+      "description": "The Terran Alliance within 61 Cygni standing off against the Progen Combine.",
+      "pda": true,
+      "pda_text": "TA",
+      "gain_sound": "null"
+    }
+  ],
+  "relationships": [
+    {
+      "source": 1,
+      "target": 1,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 1,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 1,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 6,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 1,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 1,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 1,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 1,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 1,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 2,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 4,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 6,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 2,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 10,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 11,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 14,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 19,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 23,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 2,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 1,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 3,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 3,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 5,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 3,
+      "target": 6,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 7,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 8,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 9,
+      "base": 2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 10,
+      "base": 1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 11,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 3,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 13,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 14,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 15,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 3,
+      "target": 16,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 17,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 18,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 19,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 21,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 22,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 3,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 3,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 1,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 2,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 4,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 4,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 4,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 6,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 7,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 8,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 9,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 10,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 11,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 12,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 4,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 14,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 19,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 22,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 4,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 4,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 4,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 4,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 1,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 2,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 3,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 5,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 5,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 5,
+      "target": 6,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 9,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 10,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 11,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 13,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 14,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 15,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 16,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 17,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 18,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 19,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 21,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 5,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 5,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 1,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 2,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 3,
+      "base": 1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 5,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 6,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 6,
+      "target": 7,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 8,
+      "base": 1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 9,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 10,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 11,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 6,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 13,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 14,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 6,
+      "target": 15,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 16,
+      "base": 2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 17,
+      "base": 2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 18,
+      "base": 2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 19,
+      "base": 3500.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 6,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 21,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 22,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 23,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 6,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 6,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 1,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 2,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 3,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 4,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 5,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 6,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 7,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 7,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 10,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 11,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 12,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 14,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 15,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 17,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 18,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 19,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 20,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 21,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 22,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 7,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 2,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 8,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 8,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 12,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 21,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 23,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 8,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 2,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 3,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 4,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 5,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 9,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 9,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 21,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 9,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 1,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 2,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 3,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 5,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 6,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 10,
+      "target": 7,
+      "base": 1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 8,
+      "base": 1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 9,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 10,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 10,
+      "target": 11,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 13,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 14,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 15,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 10,
+      "target": 16,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 10,
+      "target": 17,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 18,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 19,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 21,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 10,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 10,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 1,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 2,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 3,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 11,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 5,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 6,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 11,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 8,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 9,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 10,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 11,
+      "base": 6000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 11,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 13,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 14,
+      "base": -2000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 16,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 17,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 18,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 19,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 21,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 11,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 11,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 11,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 1,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 2,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 3,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 4,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 12,
+      "target": 5,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 6,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 7,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 8,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 9,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 10,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 11,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 12,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 12,
+      "target": 13,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 14,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 15,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 16,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 17,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 18,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 19,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 20,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 21,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 22,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 12,
+      "target": 23,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 12,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 12,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 12,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 4,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 12,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 13,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 13,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 22,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 13,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 3,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 14,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 14,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 10,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 14,
+      "target": 11,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 14,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 14,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 14,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 17,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 14,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 19,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 14,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 21,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 14,
+      "target": 22,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 14,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 14,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 14,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 2,
+      "base": -2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 3,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 15,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 5,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 6,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 8,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 9,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 10,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 15,
+      "target": 11,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 12,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 15,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 15,
+      "target": 16,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 21,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 22,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 15,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 15,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 2,
+      "base": -2500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 3,
+      "base": -1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 4,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 5,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 6,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 7,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 9,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 10,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 11,
+      "base": 500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 16,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 14,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 16,
+      "target": 15,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 16,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 16,
+      "target": 17,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 16,
+      "target": 18,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 20,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 21,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 22,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 16,
+      "target": 23,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 16,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 26,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 16,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 16,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 2,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 3,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 4,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 17,
+      "target": 5,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 17,
+      "target": 6,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 7,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 9,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 10,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 11,
+      "base": -500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 12,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 17,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 14,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 17,
+      "target": 15,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 16,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 17,
+      "target": 17,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 17,
+      "target": 18,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 19,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 20,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 21,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 22,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 17,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 17,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 26,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 17,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 17,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 2,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 3,
+      "base": -1500.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 4,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 18,
+      "target": 5,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 6,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 8,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 9,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 10,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 11,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 12,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 18,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 14,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 16,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 17,
+      "base": 9000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 18,
+      "target": 18,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 18,
+      "target": 19,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 20,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 21,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 18,
+      "target": 22,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 18,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 18,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 26,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 18,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 18,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 1,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 19,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 6,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 19,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 9,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 10,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 11,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 19,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 14,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 19,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 16,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 17,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 18,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 19,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 19,
+      "target": 20,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 21,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 22,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 19,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 19,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 1,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 3,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 4,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 5,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 6,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 9,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 10,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 11,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 12,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 14,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 15,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 16,
+      "base": 7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 17,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 18,
+      "base": 10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 19,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 20,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 20,
+      "target": 21,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 22,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 23,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 20,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 20,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 1,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 3,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 5,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 6,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 9,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 10,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 11,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 12,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 14,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 15,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 16,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 17,
+      "base": 4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 18,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 19,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 21,
+      "target": 20,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 21,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 21,
+      "target": 22,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 23,
+      "base": 8000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 21,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 21,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 21,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 2,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 3,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 4,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 5,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 6,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 8,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 9,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 10,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 11,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 12,
+      "base": -1999.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 14,
+      "base": 1000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 22,
+      "target": 15,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 16,
+      "base": -1000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 17,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 22,
+      "target": 18,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 19,
+      "base": 2000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 22,
+      "target": 20,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 21,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 22,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 22,
+      "target": 23,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 22,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 22,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 22,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 1,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 23,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 3,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 4,
+      "base": -1999.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 5,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 6,
+      "base": -6000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 7,
+      "base": -1999.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 8,
+      "base": -1999.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 9,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 10,
+      "base": -1999.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 11,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 12,
+      "base": -8000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 14,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 15,
+      "base": -4000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 16,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 17,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 18,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 19,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 20,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 23,
+      "target": 21,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": -1.0
+    },
+    {
+      "source": 23,
+      "target": 22,
+      "base": -9000.0,
+      "current": 0.0,
+      "reward": 2.0
+    },
+    {
+      "source": 23,
+      "target": 23,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 23,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 26,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 23,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 23,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 24,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 24,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 26,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 24,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 3,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 5,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 6,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 10,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 11,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 15,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 16,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 17,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 18,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 23,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 25,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 25,
+      "target": 26,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 25,
+      "target": 32,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 3,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 26,
+      "target": 4,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 5,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 26,
+      "target": 6,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 10,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 11,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 12,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 15,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 26,
+      "target": 16,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 17,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 18,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 21,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 22,
+      "base": -10000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 23,
+      "base": -7000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 26,
+      "target": 24,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 26,
+      "base": 5000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 26,
+      "target": 27,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 26,
+      "target": 28,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 3,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 5,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 6,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 10,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 11,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 15,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 16,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 17,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 18,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 23,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 27,
+      "target": 27,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": -2.0
+    },
+    {
+      "source": 27,
+      "target": 28,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 28,
+      "target": 1,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 2,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 3,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 4,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 5,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 6,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 7,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 8,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 9,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 10,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 11,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 12,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 13,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 14,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 15,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 16,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 17,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 18,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 19,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 20,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 21,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 22,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 23,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 24,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 25,
+      "base": 0.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 26,
+      "base": -5000.0,
+      "current": 0.0,
+      "reward": 0.0
+    },
+    {
+      "source": 28,
+      "target": 27,
+      "base": -3000.0,
+      "current": 0.0,
+      "reward": 1.0
+    },
+    {
+      "source": 28,
+      "target": 28,
+      "base": 3000.0,
+      "current": 0.0,
+      "reward": -2.0
+    }
+  ],
+  "unresolved_factions": [
+    32
+  ]
+}

@@ -57,7 +57,7 @@ fn chasing_faces_actual_three_dimensional_motion_and_native_velocity() {
     assert_ne!(mob.motion.orientation, [0., 0., 0., 1.]);
     assert_eq!(mob.motion.movement_id, initial_id + 5);
     verify_packet(&mob, 150.);
-    let frames = packets::mob_spawn(0x10000001, &mob, 12345);
+    let frames = packets::mob_spawn(0x10000001, &mob, 12345, 0);
     assert_eq!(
         frames[2].body,
         packets::mob_movement(0x10000001, &mob, 12345).body

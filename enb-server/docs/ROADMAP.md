@@ -229,3 +229,10 @@ for CL61 (cannot detect cloaked JE) and CL62 (detects it), including pending-sho
 impacts after cloak and server replacement without duplicate damage. The
 two-client group/cloak/follow/formation/replacement smoke also passes. Scoped
 Python type checking passes for the extended NPC smoke.
+
+Authenticated character selection now takes over a stale session immediately,
+retiring old claims/casts/transport before issuing the replacement ticket.
+Two scoped behavioral tests pass, including old comms/sector logout isolation
+and invalid-slot preservation. The accompanying faction catalog/PDA/acquisition
+and source-backed roaming work is committed as an implementation checkpoint;
+its broader test run and public spawn regeneration remain in progress.

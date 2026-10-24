@@ -307,6 +307,7 @@ impl PlayerSession {
             &self.inventory,
             &self.items,
         ));
+        self.publish_reputation();
         self.restore_npc_service()?;
         self.initialise_workbench_lab(!self.workbench_lab_ready)?;
         self.pending
@@ -349,6 +350,7 @@ impl PlayerSession {
                     MOB_ID + index as u32,
                     mob,
                     self.tick_ms(),
+                    self.mob_relationship(mob),
                 ));
             }
         }

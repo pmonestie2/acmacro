@@ -134,6 +134,7 @@ impl PlayerSession {
             visible: self.logged_in && self.hull > 0.,
             signature: self.equipment.ship.signature,
             stealth: self.cloak_stealth(),
+            factions: Arc::clone(&self.reputation),
         }
     }
 
@@ -207,8 +208,12 @@ impl PlayerSession {
             }
             let visible = self.mob_visible_in_scan(index, mob);
             if visible && !self.mob_visible[index] {
-                self.pending
-                    .extend(packets::mob_spawn(MOB_ID + index as u32, mob, tick));
+                self.pending.extend(packets::mob_spawn(
+                    MOB_ID + index as u32,
+                    mob,
+                    tick,
+                    self.mob_relationship(mob),
+                ));
             } else if !visible && self.mob_visible[index] {
                 self.pending.push(Frame::new(
                     7,
@@ -224,6 +229,10 @@ impl PlayerSession {
             }
             self.mob_visible[index] = visible;
             if broadcast && visible {
+                self.pending.push(packets::relationship(
+                    MOB_ID + index as u32,
+                    self.mob_relationship(mob),
+                ));
                 self.pending
                     .push(packets::mob_movement(MOB_ID + index as u32, mob, tick));
                 self.pending

@@ -47,6 +47,9 @@ impl CharacterClass {
     pub fn devices(self) -> usize {
         [4, 5, 5, 4, 5, 6, 3, 4, 5][self.0]
     }
+    pub fn faction(self) -> u32 {
+        [6, 11, 10, 18, 17, 16, 3, 5, 15][self.0]
+    }
     pub fn base_scan_range(self) -> f32 {
         if self.profession() == 2 {
             5000.

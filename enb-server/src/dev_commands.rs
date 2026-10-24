@@ -54,6 +54,7 @@ impl GameState {
             definition.spawn = position;
             definition.source_id = 0; // shared world assigns the durable dev identity
             definition.spawn_group = 0;
+            definition.spawn_region = None;
             definitions.push(definition);
         }
         let ids = lock_combat(&self.sessions[&source].combat)?.spawn_developer(definitions)?;

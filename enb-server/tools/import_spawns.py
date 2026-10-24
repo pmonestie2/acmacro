@@ -25,8 +25,16 @@ class MobWeapon(TypedDict):
     effect: int
 
 
+class SpawnRegion(TypedDict):
+    center: list[float]
+    radius: float
+
+
 class MobSpawn(TypedDict):
     source_id: int
+    faction: int
+    aggression: int
+    spawn_region: SpawnRegion
     mob_type: int
     shield_modifier: float
     damage_modifier: float
@@ -105,14 +113,24 @@ def resolve_spawns(objects: list[SqlRow], rules: dict[int, SqlRow],
         # an 80-actor group, so the former 64-actor importer bound lost content.
         if not 0 <= count <= 100:
             raise ValueError(f'Spawn group {group} has unsupported count {count}')
+        if count == 0:
+            continue
         center = [number(obj, 'position_' + axis) for axis in 'xyz']
-        radius = max(0., number(rule, 'mob_spawn_radius'))
+        radius = number(rule, 'mob_spawn_radius')
+        if not math.isfinite(radius) or radius < 0 or any(not math.isfinite(value) or abs(value) + radius > 2_000_000 for value in center):
+            raise ValueError(f'Spawn group {group} has an invalid roaming region')
+        region: SpawnRegion = {'center': center, 'radius': radius}
         for index in range(count):
             mob = eligible[index % len(eligible)]
+            faction = int(number(mob, 'faction_id'))
+            aggression = int(number(mob, 'aggressiveness'))
+            if not 0 <= faction <= 0xffffffff or not 0 <= aggression <= 255:
+                raise ValueError(f'MOB {mob.get("mob_id")} has invalid faction/aggression metadata')
             angle = index * math.pi * (3 - math.sqrt(5))
             offset = radius * math.sqrt((index + .5) / count)
             spawn = [center[0] + math.cos(angle) * offset, center[1] + math.sin(angle) * offset, center[2]]
             spawns.append({'source_id': group * 100 + index,
+                'faction': faction, 'aggression': aggression, 'spawn_region': region,
                 'mob_type': int(number(mob,'type')),
                 'shield_modifier': number(mob,'shield_modifier',1),
                 'damage_modifier': number(mob,'damage_modifier',1),
@@ -122,7 +140,7 @@ def resolve_spawns(objects: list[SqlRow], rules: dict[int, SqlRow],
                 'asset': int(number(mob, 'base_asset_id')), 'spawn': spawn, 'scale': number(mob, 'scale') or 1.,
                 'hsv': [number(mob, key) for key in ('h', 's', 'v')],
                 'respawn_seconds': number(rule, 'respawn_time') or 30.,
-                'aggressive': number(mob, 'aggressiveness') >= 4})
+                'aggressive': aggression >= 3})
     if len(spawns) > 256:
         raise ValueError('Sector exceeds the current 256 MOB limit')
     return spawns

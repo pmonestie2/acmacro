@@ -10,15 +10,13 @@ impl Mob {
         if motion.orientation.iter().any(|value| !value.is_finite())
             || !norm.is_finite()
             || (norm - 1.).abs() > 0.01
-            || [
-                motion.speed,
-                motion.set_speed,
-                motion.acceleration,
-                motion.max_speed,
-                motion.turn_scale,
-            ]
-            .iter()
-            .any(|value| !value.is_finite() || *value < 0.)
+            || [motion.acceleration, motion.max_speed, motion.turn_scale]
+                .iter()
+                .any(|value| !value.is_finite() || *value < 0.)
+            || !motion.speed.is_finite()
+            || motion.speed < -50.
+            || !motion.set_speed.is_finite()
+            || motion.set_speed < -50.
             || !motion.turn.is_finite()
             || !motion.tilt.is_finite()
         {

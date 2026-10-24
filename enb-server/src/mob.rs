@@ -7,10 +7,20 @@ use crate::motion::Motion;
 use serde::{Deserialize, Serialize};
 #[path = "mob_motion.rs"]
 mod movement;
+#[path = "mob_roaming.rs"]
+mod roaming;
+use roaming::RoamState;
+pub use roaming::SpawnRegion;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MobDefinition {
     pub source_id: u32,
+    #[serde(default)]
+    pub faction: u32,
+    #[serde(default)]
+    pub aggression: Option<u32>,
+    #[serde(default)]
+    pub spawn_region: Option<SpawnRegion>,
     #[serde(default)]
     pub mob_type: i8,
     #[serde(default = "default_scale")]
@@ -41,8 +51,17 @@ pub struct MobDefinition {
 }
 
 impl MobDefinition {
+    pub fn attacks_on_sight(&self) -> bool {
+        self.aggression
+            .map_or(self.aggressive, |aggression| aggression >= 3)
+    }
     pub fn validate(&self) -> std::io::Result<()> {
         if self.source_id == 0
+            || self.aggression.is_some_and(|value| value > 255)
+            || self
+                .spawn_region
+                .as_ref()
+                .is_some_and(|region| !region.valid())
             || self
                 .spawn
                 .iter()
@@ -134,6 +153,8 @@ pub struct Mob {
     aggro: MobAggro,
     #[serde(default)]
     sensors: MobSensors,
+    #[serde(default)]
+    roaming: RoamState,
     /// Unowned damage is retained for standalone scenarios/tests; an owned hit
     /// must never make a neutral MOB retaliate against an unrelated bystander.
     #[serde(default)]
@@ -160,6 +181,9 @@ pub fn move_towards(position: &mut [f32; 3], target: [f32; 3], distance: f32) {
 }
 
 impl Mob {
+    pub fn targets(&self, player: u32) -> bool {
+        self.aggro.targets(player)
+    }
     pub fn new(definition: MobDefinition) -> Self {
         let combat = MobStats::derive(&definition);
         let max_health = combat.hull;
@@ -185,6 +209,7 @@ impl Mob {
             provoked: false,
             aggro: MobAggro::default(),
             sensors: MobSensors::default(),
+            roaming: RoamState::default(),
             unowned_provoked: false,
         }
     }
@@ -198,6 +223,7 @@ impl Mob {
         }
         saved.aggro.validate()?;
         saved.sensors.validate()?;
+        saved.roaming.validate()?;
         saved.validate_motion()?;
         // Older simulation ticks let an elapsed respawn countdown run just
         // below zero before setting Idle. Those are valid expired timers, not
@@ -381,7 +407,12 @@ impl Mob {
                     .iter()
                     .enumerate()
                     .filter(|(_, player)| {
-                        eligible(player) && (self.unowned_provoked || self.definition.aggressive)
+                        eligible(player)
+                            && (self.unowned_provoked
+                                || self.definition.attacks_on_sight()
+                                    && player
+                                        .factions
+                                        .allows_spontaneous_attack(self.definition.faction))
                     })
                     .min_by(|(a_index, a), (b_index, b)| {
                         distance(a.position, self.position)
@@ -411,13 +442,22 @@ impl Mob {
     /// selection still runs in the normal tick; this only proves that no shot
     /// can be produced while every player is outside the firing/leash bounds.
     pub(crate) fn may_fire_this_tick(&self, dt: f32, players: &[PlayerThreat]) -> bool {
+        // Native pursuit can enter firing range during this tick. Reserve a
+        // rollback snapshot before that movement, using the sourced max speed.
+        let movement_margin = if self.native_roaming() && dt > 0. && dt < 5. {
+            229. * dt
+        } else {
+            0.
+        };
         self.state != MobState::Dead
             && self.disabled_seconds <= 0.
             && self.cooldown <= dt
             && players.iter().any(|player| {
                 player.visible
-                    && distance(self.position, player.position) <= self.combat.range
-                    && distance(self.definition.spawn, player.position) <= 15000.
+                    && distance(self.position, player.position)
+                        <= self.combat.range + movement_margin
+                    && (self.definition.spawn_region.is_some()
+                        || distance(self.definition.spawn, player.position) <= 15000.)
             })
     }
     pub fn tick(&mut self, dt: f32, player: [f32; 3]) -> f32 {
@@ -429,7 +469,26 @@ impl Mob {
     /// Keep the existing prototype return speed after target loss. Full native
     /// patrol/drift behavior remains a separate future AI task.
     pub fn tick_without_target(&mut self, dt: f32) -> f32 {
-        self.tick_observed(dt, self.definition.spawn, false, TargetingMode::Returning)
+        self.tick_idle(dt, &[])
+    }
+    pub fn tick_idle(&mut self, dt: f32, players: &[PlayerThreat]) -> f32 {
+        if self.state != MobState::Dead && self.disabled_seconds <= 0. && self.native_roaming() {
+            self.state = MobState::Idle;
+            self.cooldown = (self.cooldown - dt).max(0.);
+            self.advance_roaming(dt, players);
+            return 0.;
+        }
+        let mode = if self
+            .definition
+            .spawn_region
+            .as_ref()
+            .is_some_and(|region| region.radius == 0.)
+        {
+            TargetingMode::Direct
+        } else {
+            TargetingMode::Returning
+        };
+        self.tick_observed(dt, self.definition.spawn, false, mode)
     }
     fn tick_observed(
         &mut self,
@@ -439,14 +498,25 @@ impl Mob {
         mode: TargetingMode,
     ) -> f32 {
         let before = self.position;
+        let previous_motion = self.motion.clone();
         let was_dead = self.state == MobState::Dead;
+        let was_disabled = self.disabled_seconds > 0.;
         let damage = self.advance_state(dt, player, visible, mode);
         self.speed = if dt > 0. && !was_dead {
             distance(before, self.position) / dt
         } else {
             0.
         };
-        self.synchronize_motion(before, player, visible, was_dead);
+        if self.native_roaming()
+            && visible
+            && !was_dead
+            && !was_disabled
+            && matches!(self.state, MobState::Chasing | MobState::Attacking)
+        {
+            self.finish_native_motion(before, &previous_motion);
+        } else {
+            self.synchronize_motion(before, player, visible, was_dead);
+        }
         damage
     }
     fn advance_state(
@@ -486,7 +556,8 @@ impl Mob {
         if !(mode == TargetingMode::Acquired
             || self.provoked
             || self.definition.aggressive && separation <= scan)
-            || distance(player, self.definition.spawn) > 15000.
+            || self.definition.spawn_region.is_none()
+                && distance(player, self.definition.spawn) > 15000.
         {
             self.state = MobState::Idle;
             self.provoked = false;
@@ -496,9 +567,22 @@ impl Mob {
             move_towards(&mut self.position, self.definition.spawn, 100. * dt);
             return 0.;
         }
-        if separation > self.combat.range {
+        if self.native_roaming() {
+            self.advance_native_pursuit(dt, player);
+        } else if self
+            .definition
+            .spawn_region
+            .as_ref()
+            .is_some_and(|region| region.radius == 0.)
+        {
+            self.stop_motion();
+        } else if separation > self.combat.range {
             self.state = MobState::Chasing;
             move_towards(&mut self.position, player, 150. * dt);
+            return 0.;
+        }
+        if distance(self.position, player) > self.combat.range {
+            self.state = MobState::Chasing;
             return 0.;
         }
         self.state = MobState::Attacking;
@@ -524,6 +608,9 @@ mod tests {
     fn definition() -> MobDefinition {
         MobDefinition {
             source_id: 1,
+            faction: 0,
+            aggression: None,
+            spawn_region: None,
             mob_type: 0,
             shield_modifier: 1.,
             damage_modifier: 1.,
@@ -559,6 +646,7 @@ mod tests {
             visible: true,
             signature: 0.,
             stealth: None,
+            factions: crate::factions::FactionReactions::neutral(),
         }
     }
 
@@ -621,7 +709,7 @@ mod tests {
         let mut mob = Mob::new(definition());
         let mut player = threat(1, 3100.);
         player.signature = 500.; // CL1 scan2650 plus500 signature
-        assert_eq!(mob.select_target(&[player]), Some(0));
+        assert_eq!(mob.select_target(std::slice::from_ref(&player)), Some(0));
         mob.tick_target(1., &player);
         assert_eq!(mob.state, MobState::Chasing);
         assert_eq!(mob.position, [150., 0., 0.]);
@@ -631,29 +719,35 @@ mod tests {
     fn sensor_hysteresis_persists_but_a_new_epoch_cannot_inherit_it_or_old_hate() {
         let mut mob = Mob::new(definition());
         let mut player = threat(1, 2649.);
-        assert_eq!(mob.select_target(&[player]), Some(0));
+        assert_eq!(mob.select_target(std::slice::from_ref(&player)), Some(0));
         player.position[0] = 2850.;
-        assert_eq!(mob.select_target(&[player]), Some(0));
+        assert_eq!(mob.select_target(std::slice::from_ref(&player)), Some(0));
         let snapshot: Mob = serde_json::from_slice(&serde_json::to_vec(&mob).unwrap()).unwrap();
         let mut restored = Mob::new(definition());
         restored.restore_from(snapshot).unwrap();
-        assert_eq!(restored.select_target(&[player]), Some(0));
+        assert_eq!(
+            restored.select_target(std::slice::from_ref(&player)),
+            Some(0)
+        );
         player.session_epoch = 2;
-        assert_eq!(restored.select_target(&[player]), None);
+        assert_eq!(restored.select_target(std::slice::from_ref(&player)), None);
         player.position[0] = 2649.;
-        assert_eq!(restored.select_target(&[player]), Some(0));
+        assert_eq!(
+            restored.select_target(std::slice::from_ref(&player)),
+            Some(0)
+        );
         player.position[0] = 2850.1;
-        assert_eq!(restored.select_target(&[player]), None);
+        assert_eq!(restored.select_target(std::slice::from_ref(&player)), None);
         player.position[0] = 2800.;
-        assert_eq!(restored.select_target(&[player]), None);
+        assert_eq!(restored.select_target(std::slice::from_ref(&player)), None);
         let mut neutral = definition();
         neutral.aggressive = false;
         let mut mob = Mob::new(neutral);
         player = threat(1, 500.);
         mob.damage_by(10., player.id);
-        assert_eq!(mob.select_target(&[player]), Some(0));
+        assert_eq!(mob.select_target(std::slice::from_ref(&player)), Some(0));
         player.session_epoch = 2;
-        assert_eq!(mob.select_target(&[player]), None);
+        assert_eq!(mob.select_target(std::slice::from_ref(&player)), None);
     }
 
     #[test]
@@ -664,14 +758,14 @@ mod tests {
         player.stealth = Some(185);
         let mut low = Mob::new(definition.clone());
         low.damage_by(10., player.id);
-        assert_eq!(low.select_target(&[player]), None);
+        assert_eq!(low.select_target(std::slice::from_ref(&player)), None);
         player.stealth = None;
         low.definition.aggressive = false;
-        assert_eq!(low.select_target(&[player]), None); // undetected attacker hate cleared
+        assert_eq!(low.select_target(std::slice::from_ref(&player)), None); // undetected attacker hate cleared
         definition.level = 62;
         let mut high = Mob::new(definition);
         player.stealth = Some(185);
-        assert_eq!(high.select_target(&[player]), Some(0));
+        assert_eq!(high.select_target(std::slice::from_ref(&player)), Some(0));
         assert!(high.tick_target(1., &player) > 0.);
     }
 

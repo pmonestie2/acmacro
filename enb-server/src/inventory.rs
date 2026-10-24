@@ -91,6 +91,8 @@ pub struct Inventory {
     pub craft_job: Option<crate::crafting::CraftJob>,
     #[serde(default)]
     pub loot_receipts: BTreeMap<u64, crate::loot_world::LootReceipt>,
+    #[serde(default)]
+    pub faction_standings: BTreeMap<u32, f32>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -220,6 +222,7 @@ impl Inventory {
             production_target: empty_production_target(),
             craft_job: None,
             loot_receipts: BTreeMap::new(),
+            faction_standings: BTreeMap::new(),
         };
         for starting in templates.starting_items()? {
             if starting.slot >= EQUIPMENT_SLOTS || inventory.equipped[starting.slot].is_some() {
@@ -252,6 +255,9 @@ impl Inventory {
     }
 
     pub fn validate(&self, templates: &ItemCatalog) -> io::Result<()> {
+        if !self.faction_standings.is_empty() {
+            crate::factions::FactionCatalog::load()?.validate_overrides(&self.faction_standings)?;
+        }
         if self
             .pending_launch
             .as_ref()

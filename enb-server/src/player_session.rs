@@ -52,6 +52,8 @@ mod npc_services;
 mod production_service;
 #[path = "recovery.rs"]
 mod recovery;
+#[path = "reputation_service.rs"]
+mod reputation_service;
 #[path = "sector_transfer.rs"]
 mod sector_transfer;
 #[path = "sector_transition.rs"]
@@ -70,6 +72,9 @@ mod session_tick;
 mod station_actions;
 #[path = "station_peers.rs"]
 mod station_peers;
+#[cfg(test)]
+#[path = "session_takeover_tests.rs"]
+mod takeover_tests;
 #[path = "target_verbs.rs"]
 mod target_verbs;
 #[path = "weapon_launch.rs"]
@@ -104,6 +109,8 @@ pub struct PlayerSession {
     sectors: SectorCatalog,
     items: ItemCatalog,
     npcs: NpcCatalog,
+    factions: crate::factions::FactionCatalog,
+    reputation: Arc<crate::factions::FactionReactions>,
     inventory: Inventory,
     workbench: Option<production_service::WorkbenchWindow>,
     session_epoch: u64,
@@ -230,6 +237,9 @@ impl PlayerSession {
         let inventory = granted.unwrap_or(inventory);
         inventory.validate_for_profile(&account.character, &items, &skill_catalog)?;
         let equipment = EquipmentStats::derive(&inventory, &items, &skill_catalog)?;
+        let factions = crate::factions::FactionCatalog::load()?;
+        let reputation =
+            factions.reactions(account.character.class(), &inventory.faction_standings)?;
         let stats = equipment.ship;
         let path = state_dir.join("player.json");
         let mut position = [0.; 3];
@@ -273,6 +283,8 @@ impl PlayerSession {
             sectors,
             items,
             npcs,
+            factions,
+            reputation,
             inventory,
             workbench: None,
             session_epoch: rand::random::<u64>().max(1),
@@ -461,7 +473,6 @@ impl PlayerSession {
     }
     pub fn select(&mut self, slot: u32, peer: IpAddr, via_proxy: bool) -> io::Result<Frame> {
         self.recover_weapon_launch()?;
-        self.stop_following();
         if self.transition_pending.is_some() {
             return Err(invalid(
                 "Character transition is waiting for storage recovery.",
@@ -470,9 +481,19 @@ impl PlayerSession {
         if slot != 0 {
             return Err(invalid("only character slot 0 exists in this sandbox"));
         }
-        if self.selected_peer.is_some() && self.last_seen.elapsed() < Duration::from_secs(45) {
-            return Err(invalid("the local character is already logged in"));
+        if self.selected_peer.is_some() {
+            // Selection follows successful account authentication. A fresh
+            // login may replace a stale native/proxy connection immediately.
+            // Retire its claims, transport and casts before issuing a ticket;
+            // old endpoint/comms logout packets then fail the normal pin checks.
+            println!(
+                "Authenticated session takeover: {}",
+                self.account.character.name
+            );
+            self.logout()?;
+            self.outgoing.clear();
         }
+        self.stop_following();
         self.selected_peer = Some(peer);
         self.session_epoch = rand::random::<u64>().max(1);
         self.gate_transit = None;
@@ -545,7 +566,11 @@ impl PlayerSession {
                 {
                     self.comms = Some(peer);
                 }
-                0x1008 if packet.player == self.player_id() && self.comms == Some(peer) => {
+                0x1008
+                    if self.logged_in
+                        && packet.player == self.player_id()
+                        && self.comms == Some(peer) =>
+                {
                     self.logout()?;
                 }
                 0x3005 if self.comms == Some(peer) => {
@@ -675,6 +700,7 @@ impl PlayerSession {
                         resources: self.ship_resources(),
                     },
                 ));
+                self.publish_reputation();
                 let shared = Arc::clone(&self.combat);
                 let combat = lock_combat(&shared)?;
                 self.mob_visible.fill(false);
@@ -685,6 +711,7 @@ impl PlayerSession {
                             MOB_ID + index as u32,
                             mob,
                             self.tick_ms(),
+                            self.mob_relationship(mob),
                         ));
                     }
                 }
@@ -1079,6 +1106,15 @@ impl PlayerSession {
         candidate.validate(&self.items)?;
         let equipment = EquipmentStats::derive(&candidate, &self.items, &self.skill_catalog)?;
         let prices = self.vendor_prices(&candidate)?;
+        let reputation = if candidate.faction_standings == self.inventory.faction_standings
+            && self.reputation.class_faction == self.account.character.class().faction()
+        {
+            Arc::clone(&self.reputation)
+        } else {
+            self.factions
+                .reactions(self.account.character.class(), &candidate.faction_standings)?
+        };
+        let reputation_changed = self.reputation != reputation;
         let previous_templates: std::collections::BTreeSet<u32> = self
             .inventory
             .templates(&self.items)?
@@ -1102,8 +1138,12 @@ impl PlayerSession {
             &candidate,
         )?;
         self.inventory = candidate;
+        self.reputation = reputation;
         self.equipment = equipment;
         self.apply_equipment_parameters();
+        if reputation_changed {
+            self.publish_reputation();
+        }
         // A restored production job can create a template the client has never
         // seen. Cache metadata before publishing the new owned-item reference.
         self.pending.extend(new_metadata);

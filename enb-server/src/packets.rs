@@ -363,6 +363,50 @@ pub fn cloak(id: u32, enabled: bool) -> Frame {
     ship_diff(id, BTreeMap::from([(19, vec![u8::from(enabled)])]))
 }
 
+pub fn reputation(
+    catalog: &crate::factions::FactionCatalog,
+    reactions: &crate::factions::FactionReactions,
+) -> Frame {
+    let entries = catalog
+        .visible()
+        .enumerate()
+        .map(|(index, faction)| {
+            (
+                index,
+                aux_record(
+                    3,
+                    &[],
+                    BTreeMap::from([
+                        (0, text(&faction.pda_text)),
+                        (1, reactions.standing(faction.id).to_le_bytes().to_vec()),
+                        (2, (index as u32).to_le_bytes().to_vec()),
+                    ]),
+                ),
+            )
+        })
+        .collect();
+    let reputation = aux_record(
+        2,
+        &[0],
+        BTreeMap::from([
+            (0, aux_record(32, &[], entries)),
+            (1, text(&reactions.affiliation)),
+        ]),
+    );
+    aux_frame(0, aux_diff(18, BTreeMap::from([(10, reputation)])))
+}
+
+pub fn ship_faction(id: u32, identifier: &str) -> Frame {
+    ship_diff(id, BTreeMap::from([(57, text(identifier))]))
+}
+
+pub fn relationship(id: u32, reaction: u32) -> Frame {
+    let mut body = Vec::from(id.to_be_bytes());
+    body.extend_from_slice(&reaction.to_le_bytes());
+    body.push(0);
+    Frame::new(0x89, body)
+}
+
 pub fn group_invite(leader: &str) -> Frame {
     let message = format!("{leader} is requesting you to join their group");
     let mut body = Vec::from(((message.len() + 1) as u16).to_le_bytes());
@@ -809,7 +853,7 @@ pub fn mob_status(id: u32, mob: &Mob) -> Frame {
     )
 }
 
-pub fn mob_spawn(id: u32, mob: &Mob, tick: u32) -> Vec<Frame> {
+pub fn mob_spawn(id: u32, mob: &Mob, tick: u32, reaction: u32) -> Vec<Frame> {
     let mut model = create(id, mob.definition.asset);
     // MOB::MOB uses Create.Type=0. Type 1 creates a player actor, whose
     // avatar association is absent for MOBs and leaves "Default" labels.
@@ -818,12 +862,9 @@ pub fn mob_spawn(id: u32, mob: &Mob, tick: u32) -> Vec<Frame> {
     for (index, value) in mob.definition.hsv.iter().enumerate() {
         float(&mut model.body, 11 + index * 4, *value);
     }
-    let mut relation = Vec::from(id.to_be_bytes());
-    relation.extend_from_slice(&(if mob.definition.aggressive { 0u32 } else { 2 }).to_le_bytes());
-    relation.push(0);
     vec![
         model,
-        Frame::new(0x89, relation),
+        relationship(id, reaction),
         mob_movement(id, mob, tick),
         mob_status(id, mob),
     ]

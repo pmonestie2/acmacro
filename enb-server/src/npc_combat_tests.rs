@@ -45,6 +45,7 @@ fn player() -> PlayerThreat {
         visible: true,
         signature: 0.,
         stealth: None,
+        factions: crate::factions::FactionReactions::neutral(),
     }
 }
 
