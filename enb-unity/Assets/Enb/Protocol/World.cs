@@ -243,6 +243,10 @@ namespace Enb.Protocol
         public StationState Station { get; private set; }
         public DialogueState Dialogue { get; private set; }
         public ulong Credits { get; private set; }
+        public uint[] AvailableAbilities { get; private set; } = Array.Empty<uint>();
+        public uint CastingAbilityId { get; private set; } = uint.MaxValue;
+        public long CastEndsAt { get; private set; }
+        public Dictionary<uint, long> AbilityCooldownEnds { get; } = new Dictionary<uint, long>();
         public ItemState[] Vendor { get; private set; } = Array.Empty<ItemState>();
         public Dictionary<uint, ResourceState> Resources { get; } = new Dictionary<uint, ResourceState>();
         public uint ResourceTargetId { get; private set; }
@@ -365,6 +369,21 @@ namespace Enb.Protocol
                     {
                         ulong? credits = AuxState.ReadCredits(b);
                         if (credits.HasValue) Credits = credits.Value;
+                        uint[] abilities = AuxState.ReadAvailableAbilities(b);
+                        if (abilities != null) AvailableAbilities = abilities;
+                        AbilityProgress progress = AuxState.ReadAbilityProgress(b);
+                        if (progress != null)
+                        {
+                            CastingAbilityId = progress.Id;
+                            CastEndsAt = progress.Id == uint.MaxValue ? 0 :
+                                System.Diagnostics.Stopwatch.GetTimestamp() +
+                                (long)(progress.DurationMs * (double)System.Diagnostics.Stopwatch.Frequency / 1000);
+                        }
+                        SkillCooldown[] cooldowns = AuxState.ReadSkillCooldowns(b);
+                        if (cooldowns != null)
+                            foreach (SkillCooldown cooldown in cooldowns)
+                                AbilityCooldownEnds[cooldown.SkillId] = System.Diagnostics.Stopwatch.GetTimestamp() +
+                                    (long)(cooldown.DurationMs * (double)System.Diagnostics.Stopwatch.Frequency / 1000);
                         ItemState[] vendor = AuxState.ReadVendor(b);
                         if (vendor != null) Vendor = vendor;
                         GroupState group = AuxState.ReadGroup(b);
@@ -475,6 +494,10 @@ namespace Enb.Protocol
         public readonly StationState Station;
         public readonly DialogueState Dialogue;
         public readonly ulong Credits;
+        public readonly uint[] AvailableAbilities;
+        public readonly uint CastingAbilityId;
+        public readonly float CastRemainingSeconds;
+        public readonly IReadOnlyDictionary<uint, float> AbilityCooldownSeconds;
         public readonly ItemView[] Vendor;
         public readonly ResourceView[] Resources;
         public readonly uint ResourceTargetId;
@@ -503,6 +526,14 @@ namespace Enb.Protocol
             PlayerId = world.PlayerId; Shots = world.Shots.ToArray(); Damages = world.Damages.ToArray();
             Group = world.Group; Station = world.Station; Dialogue = world.Dialogue; Credits = world.Credits;
             Vendor = new ItemView[world.Vendor.Length];
+            AvailableAbilities = (uint[])world.AvailableAbilities.Clone();
+            long now = System.Diagnostics.Stopwatch.GetTimestamp();
+            CastingAbilityId = world.CastingAbilityId;
+            CastRemainingSeconds = (float)Math.Max(0,
+                (world.CastEndsAt - now) / (double)System.Diagnostics.Stopwatch.Frequency);
+            AbilityCooldownSeconds = world.AbilityCooldownEnds.ToDictionary(entry => entry.Key,
+                entry => (float)Math.Max(0,
+                    (entry.Value - now) / (double)System.Diagnostics.Stopwatch.Frequency));
             for (int i = 0; i < Vendor.Length; i++)
                 if (world.Vendor[i]?.Present == true) Vendor[i] = new ItemView(i, world.Vendor[i], world.ItemCatalog);
             Resources = world.Resources.Values.Select(state => new ResourceView(state, world.ItemCatalog)).ToArray();

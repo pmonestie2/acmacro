@@ -256,8 +256,7 @@ namespace Enb.Client
             Navigation(snapshot);
             Radar(snapshot);
             Social(snapshot);
-            TargetLock(snapshot);
-            WreckPanel(snapshot);
+            if (!client.AbilitiesOpen) { TargetLock(snapshot); WreckPanel(snapshot); }
             if (equipmentOpen) Equipment(snapshot);
             InputFocused = GUI.GetNameOfFocusedControl() == "Group invite";
             ChatEntry();

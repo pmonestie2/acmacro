@@ -426,6 +426,15 @@ namespace Enb.Protocol
             Status = "Prospecting " + resource.Items[slot].Template;
         }
 
+        /// <summary>Activate an ability listed in this character's authoritative RPG state.</summary>
+        public void ActivateAbility(uint id)
+        {
+            if (!Ready || gate != 0 || World.Station != null ||
+                !World.AvailableAbilities.Contains(id)) return;
+            Send(0x58, Wire.Body(w => { w.Write(Player); w.Write(0u); w.Write(id); }));
+            Status = "Activating ability " + id;
+        }
+
         /// <summary>Send one native group formation action after local validation.</summary>
         public void Formation(uint action, uint target = 0)
         {

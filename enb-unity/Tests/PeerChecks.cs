@@ -76,6 +76,17 @@ internal static class PeerChecks
             Wait(observer, null, () => observer.World.Equipment.Mounted[3]?.Present == true &&
                 observer.World.ItemCatalog.TryGetValue(observer.World.Equipment.Mounted[3].Template, out ItemTemplateInfo template) &&
                 template.Name.Length > 0, "Starter weapon or item template was not decoded.");
+            Wait(observer, null, () => observer.Ready && observer.World.AvailableAbilities.Contains(44u) &&
+                observer.World.Equipment.Energy > 0, "Character ability list or reactor energy did not arrive.");
+            float energyBeforeAbility = observer.World.Equipment.Energy;
+            observer.ActivateAbility(44);
+            Wait(observer, null, () => observer.World.Equipment.Energy < energyBeforeAbility - .001f,
+                "Native ability activation did not charge reactor energy.");
+            Require(observer.World.CastingAbilityId == 44 && observer.World.CastEndsAt > Stopwatch.GetTimestamp(),
+                "Native ability charge progress was not decoded.");
+            Wait(observer, null, () => observer.World.AbilityCooldownEnds.ContainsKey(23),
+                "Native skill cooldown was not decoded after the cast.");
+            Console.WriteLine("PASS: server-advertised abilities, native activation, charge and cooldown");
             uint peerId;
             using (var visitor = new LocalSession(CancellationToken.None))
             {

@@ -25,6 +25,23 @@ namespace Enb.Protocol
         { IsLeader = isLeader; Members = members; Formation = formation; Formed = formed; }
     }
 
+    /// <summary>One native cast progress revision for the character.</summary>
+    public sealed class AbilityProgress
+    {
+        public readonly uint Id, DurationMs;
+        /// <summary>Keep the advertised ability and remaining cast duration together.</summary>
+        public AbilityProgress(uint id, uint durationMs) { Id = id; DurationMs = durationMs; }
+    }
+
+    /// <summary>One server-owned skill cooldown revision.</summary>
+    public sealed class SkillCooldown
+    {
+        public readonly uint SkillId, DurationMs;
+        /// <summary>Keep the skill identity with its recovery duration.</summary>
+        public SkillCooldown(uint skillId, uint durationMs)
+        { SkillId = skillId; DurationMs = durationMs; }
+    }
+
     /// <summary>Read the supported prefixes of native AUX records without guessing unknown layouts.</summary>
     internal sealed class AuxState
     {
@@ -224,6 +241,115 @@ namespace Enb.Protocol
             var reader = new AuxState(body); Flags fields = reader.Mask(18);
             if (!fields.Present[0]) return null;
             return reader.UInt() | ((ulong)reader.UInt() << 32);
+        }
+
+        /// <returns>uint[]: Ability IDs advertised for this character, or null for another AUX update.</returns>
+        public static uint[] ReadAvailableAbilities(byte[] body)
+        {
+            var reader = new AuxState(body); Flags outer = reader.Mask(18);
+            if (!outer.Present[6]) return null;
+            for (int field = 0; field < 6; field++)
+            {
+                if (outer.Present[field])
+                {
+                    if (field == 0) { reader.UInt(); reader.UInt(); }
+                    else if (field == 2) reader.SkipSlots(96, 10);
+                    else return null;
+                }
+                else if (outer.Default[field] && field >= 2 && reader.Byte() != 5)
+                    throw new InvalidDataException("Invalid global AUX reset before skills.");
+            }
+            Flags rpg = reader.Mask(16);
+            if (!rpg.Present[3]) return null;
+            if (rpg.Present[0]) reader.UInt();
+            if (rpg.Present[1]) reader.UInt();
+            if (rpg.Present[2]) reader.SkipSkillSlots();
+            else if (rpg.Default[2] && reader.Byte() != 5)
+                throw new InvalidDataException("Invalid skill reset.");
+            Flags slots = reader.Mask(170);
+            var available = new List<uint>();
+            for (uint id = 0; id < 170; id++)
+            {
+                if (slots.Present[id])
+                {
+                    Flags ability = reader.Mask(7);
+                    for (int field = 0; field < 7; field++)
+                    {
+                        if (!ability.Present[field]) continue;
+                        if (field == 0) { if (reader.Byte() != 0) available.Add(id); }
+                        else if (field == 3 || field == 4) reader.UInt();
+                        else throw new InvalidDataException("Unknown advertised ability field.");
+                    }
+                }
+                else if (slots.Default[id] && reader.Byte() != 5)
+                    throw new InvalidDataException("Invalid ability reset.");
+            }
+            return available.ToArray();
+        }
+
+        /// <summary>Consume the server's skill ranks before its ability list.</summary>
+        private void SkipSkillSlots()
+        {
+            Flags slots = Mask(64);
+            for (int skill = 0; skill < 64; skill++)
+            {
+                if (slots.Present[skill])
+                {
+                    Flags fields = Mask(7);
+                    for (int field = 0; field < 7; field++)
+                    {
+                        if (!fields.Present[field]) continue;
+                        if (field == 3) { UInt(); UInt(); UInt(); UInt(); }
+                        else UInt();
+                    }
+                }
+                else if (slots.Default[skill] && Byte() != 5)
+                    throw new InvalidDataException("Invalid skill slot reset.");
+            }
+        }
+
+        /// <returns>AbilityProgress: Native cast progress, or null for another AUX update.</returns>
+        public static AbilityProgress ReadAbilityProgress(byte[] body)
+        {
+            var reader = new AuxState(body); Flags outer = reader.Mask(18);
+            if (!outer.Present[6]) return null;
+            for (int i = 0; i < 6; i++) if (outer.Present[i]) return null;
+            Flags rpg = reader.Mask(16);
+            if (!rpg.Present[13] || !rpg.Present[14] || !rpg.Present[15]) return null;
+            for (int i = 0; i < 13; i++) if (rpg.Present[i]) return null;
+            uint start = reader.UInt(), finish = reader.UInt(), id = reader.UInt();
+            uint duration = unchecked(finish - start);
+            if (duration > 120000) throw new InvalidDataException("Invalid ability charge duration.");
+            return new AbilityProgress(id, duration);
+        }
+
+        /// <returns>SkillCooldown[]: Native recovery updates, or null for another AUX update.</returns>
+        public static SkillCooldown[] ReadSkillCooldowns(byte[] body)
+        {
+            var reader = new AuxState(body); Flags outer = reader.Mask(18);
+            if (!outer.Present[6]) return null;
+            for (int i = 0; i < 6; i++) if (outer.Present[i]) return null;
+            Flags rpg = reader.Mask(16);
+            if (!rpg.Present[2]) return null;
+            if (rpg.Present[0] || rpg.Present[1]) return null;
+            Flags slots = reader.Mask(64);
+            var cooldowns = new List<SkillCooldown>();
+            for (uint skill = 0; skill < 64; skill++)
+            {
+                if (!slots.Present[skill]) continue;
+                Flags fields = reader.Mask(7);
+                uint duration = 0;
+                for (int field = 0; field < 7; field++)
+                {
+                    if (!fields.Present[field]) continue;
+                    if (field == 1) duration = reader.UInt();
+                    else if (field == 2) reader.UInt();
+                    else throw new InvalidDataException("Unknown cooldown field.");
+                }
+                if (duration > 120000) throw new InvalidDataException("Invalid skill cooldown.");
+                cooldowns.Add(new SkillCooldown(skill, duration));
+            }
+            return cooldowns.ToArray();
         }
 
         /// <returns>A complete vendor stock update, or null for another global AUX.</returns>

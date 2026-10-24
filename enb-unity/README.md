@@ -156,6 +156,12 @@ Explorer pilots can click a mineable asteroid or gas cloud, open its prospecting
 window, and choose a server-listed ore slot. The server checks the ship, skill,
 distance, reactor energy, and shared resource claim before it awards ore to cargo.
 The panel shows the resource level, depletion, and stock from native packets.
+The Skills button lists abilities advertised by the connected character's native
+RPG packet. Selecting one sends the native activation command, and the panel
+shows the server's charge and cooldown updates. The server applies target, range,
+energy, charge, and cooldown rules. Refresh display labels from
+the public Rust catalog with `python3 enb-unity/Tools/sync_ability_catalog.py`
+after server skill-content changes.
 Models are placeholders rather than the original NPC assets. Station interiors
 and the full original combat and equipment UI remain unfinished.
 

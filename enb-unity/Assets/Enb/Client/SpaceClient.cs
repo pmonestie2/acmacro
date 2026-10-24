@@ -22,6 +22,8 @@ namespace Enb.Client
         private CombatEffects combatEffects;
         private FlightHud hud;
         private MiningHud miningHud;
+        private AbilityHud abilityHud;
+        public bool AbilitiesOpen => abilityHud != null && abilityHud.IsOpen;
         private Transform ship, worldRoot, environment, hangar;
         private readonly Dictionary<uint, Transform> bodies = new Dictionary<uint, Transform>();
         private string host = "192.168.47.128", username = "toon", password = "pass", status = "Ready to connect", sector = "";
@@ -64,6 +66,7 @@ namespace Enb.Client
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 120;
             art = new SpaceArt(); hud = new FlightHud(this); miningHud = new MiningHud(this, hud);
+            abilityHud = new AbilityHud(this, hud);
             worldRoot = new GameObject("Server world").transform; worldRoot.SetParent(transform, false);
             remoteShips = new RemoteShips(art, worldRoot);
             ship = art.Ship(transform); combatEffects = new CombatEffects(transform, ship, remoteShips); ship.localScale = Vector3.one * .25f;
@@ -213,7 +216,7 @@ namespace Enb.Client
             if (yaw != previousYaw || pitch != previousPitch)
             { worker.Submit(new ClientCommand(CommandKind.Steer, yaw: yaw, pitch: pitch)); previousYaw = yaw; previousPitch = pitch; }
             if (bindings.Pressed(ControlAction.Follow)) FollowSelected();
-            if (!hud.ContainsPointer() && !miningHud.ContainsPointer())
+            if (!hud.ContainsPointer() && !miningHud.ContainsPointer() && !abilityHud.ContainsPointer())
             {
                 if (Input.GetMouseButton(1) && !chart)
                 { orbitYaw += Input.GetAxis("Mouse X") * 3; orbitPitch = Mathf.Clamp(orbitPitch - Input.GetAxis("Mouse Y") * 3, -65, 65); }
@@ -437,6 +440,13 @@ namespace Enb.Client
                 worker.Submit(new ClientCommand(CommandKind.ProspectResource, slot: slot));
         }
 
+        /// <summary>Use a class ability advertised by the connected server.</summary>
+        public void ActivateAbility(uint id)
+        {
+            if (Ready && snapshot.Station == null && snapshot.AvailableAbilities.Contains(id))
+                worker.Submit(new ClientCommand(CommandKind.ActivateAbility, id));
+        }
+
         /// <summary>Set the authoritative target of a visible contact.</summary>
         public void SelectContact(uint id)
         {
@@ -504,7 +514,8 @@ namespace Enb.Client
             try
             {
                 hud.Draw(ref host, ref username, ref password);
-                if (!hud.SettingsOpen && !hud.EquipmentOpen) miningHud.Draw(snapshot);
+                if (!hud.SettingsOpen && !hud.EquipmentOpen && !AbilitiesOpen) miningHud.Draw(snapshot);
+                if (!hud.SettingsOpen && !hud.EquipmentOpen) abilityHud.Draw(snapshot);
             }
             finally { GUI.matrix = previous; }
         }
