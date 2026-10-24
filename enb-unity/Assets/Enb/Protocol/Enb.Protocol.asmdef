@@ -1,0 +1,5 @@
+{
+  "name": "Enb.Protocol",
+  "rootNamespace": "Enb.Protocol",
+  "noEngineReferences": true
+}

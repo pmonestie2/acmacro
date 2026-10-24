@@ -1,0 +1,5 @@
+{
+  "name": "Enb.Editor",
+  "references": ["Enb.Client", "Enb.Protocol"],
+  "includePlatforms": ["Editor"]
+}

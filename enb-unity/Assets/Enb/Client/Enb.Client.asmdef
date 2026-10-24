@@ -1,0 +1,5 @@
+{
+  "name": "Enb.Client",
+  "rootNamespace": "Enb.Client",
+  "references": ["Enb.Protocol"]
+}

@@ -2,6 +2,13 @@
 
 Uses Python 3.13 at C:\PYTHON\python.exe.
 
+## 42 and Beyond Unity client
+
+The [42 and Beyond client](enb-unity/README.md) connects directly to the local
+Rust server and displays a solid 3D ship, asteroids, stations, gates, flight controls,
+warp, and gate travel. It needs no original client or Net7Proxy. See its README
+for setup, controls, and verification limits.
+
 ## Move game windows with Alt-drag
 
 Double-click `enb_drag.exe` and accept elevation if requested. Hold **Alt** and
