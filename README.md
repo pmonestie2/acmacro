@@ -2,47 +2,6 @@
 
 Uses Python 3.13 at C:\PYTHON\python.exe.
 
-## 42 and Beyond Unity client
-
-The [42 and Beyond client](enb-unity/README.md) connects directly to the local
-Rust server and displays a solid 3D ship, asteroids, stations, gates, flight controls,
-warp, and gate travel. It needs no original client or Net7Proxy. See its README
-for setup, controls, and verification limits.
-
-## Move game windows with Alt-drag
-
-Double-click `enb_drag.exe` and accept elevation if requested. Hold **Alt** and
-**left-drag anywhere inside an E&B window** to move it. The helper stays in the
-system tray without a console; right-click its icon to disable dragging or exit.
-Normal clicks, injected macro input, and other applications are left alone.
-Ctrl+Alt dragging is excluded so AltGr is not treated as the move modifier.
-Window sizes are preserved, and enough title bar is kept on-screen to recover
-the window. No macro positioning code is changed.
-
-This is a standalone 64-bit native C executable using Windows system DLLs.
-It has single-instance protection and no background timer while idle. Mouse
-movement is applied on a 16 ms timer only during a drag; asynchronous window
-positioning avoids waiting for an unresponsive game in the mouse hook.
-
-Source: `native/enb_drag.c`. Rebuild and run the noninteractive self-tests with
-`powershell -ExecutionPolicy Bypass -File .\native\build_enb_drag.ps1`.
-The build uses the local [TinyCC](https://bellard.org/tcc/) compiler and its
-full Windows API headers under `diagnostics/native_tools`; alternate locations
-can be passed with `-Compiler` and `-WinApiInclude`. The hook follows the
-[Windows low-level mouse hook API](https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelmouseproc).
-
-## Re-layout currently open games
-
-Run `.\relayout.cmd` from the game desktop session. It chooses a grid for the
-current window count and monitor work area: two games can sit side by side,
-four use two rows, and six normally use three columns. Window sizes and game
-resolution are preserved; when they cannot all fit, windows overlap evenly.
-The plain `ENB` window is renamed `ENB_a`; additional unnamed windows receive
-unused letter names. Existing character names are preserved. Minimized games
-are restored. Use `.\relayout.cmd --list` to preview positions and names.
-This command chooses an adaptive layout; the macros' fixed character layout
-still applies when they start or repair their own window positions.
-
 ## Explore sector gates
 
 `explore_gates.py` selects gates with opcode `0x17`, activates them with `0x2c`
